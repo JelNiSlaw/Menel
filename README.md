@@ -15,3 +15,5 @@ My Python [Discord Bot](https://jelnislaw.ml/menelbot/) rewrite
 - [mati82821](https://github.com/mati82821) - brought us cookies
 - [JelNiSław](https://github.com/JelNiSlaw) - no contributions
 - [pxseu](https://github.com/pxseu) - quality assurance
+- [POSEUXCK](https://github.com/pxseu) - documentation
+- [ribon](https://github.com/05xapresses) - api.BADosz.com
