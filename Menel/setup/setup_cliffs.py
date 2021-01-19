@@ -17,3 +17,6 @@ def setup_cliffs() -> CommandDispatcher:
         parser={'all_case_insensitive': True, 'simplify': 'yes'},
         matcher=CallMatcher(literal_threshold=0.5)
     )
+
+
+cliffs = setup_cliffs()

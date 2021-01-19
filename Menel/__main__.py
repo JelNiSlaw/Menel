@@ -1,20 +1,12 @@
 import os
 
-from .handlers import connect, guild_join, guild_remove, message, reaction_add, ready, shard_connect
+from . import commands, handlers
 from .objects.bot import bot
-from .setup.import_commands import import_commands
-from .setup.setup_cliffs import setup_cliffs
+from .setup.auto_import import auto_import
+from .setup.setup_cliffs import cliffs
 
 
-cliffs = setup_cliffs()
-import_commands(cliffs)
-
-connect.setup(bot)
-shard_connect.setup(bot)
-ready.setup(bot)
-message.setup(bot, cliffs)
-reaction_add.setup(bot)
-guild_join.setup(bot)
-guild_remove.setup(bot)
+auto_import(commands, cliffs)
+auto_import(handlers, bot)
 
 bot.run(os.getenv('DISCORD_TOKEN'), bot=True)
