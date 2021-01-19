@@ -18,7 +18,7 @@ CHARSETS = (
 
 
 def setup(cliffs):
-    @cliffs.command('(ascii|asciiart) {[(blocks|standard|minimal):charset] [invert|inv|inverted]:invert}',
+    @cliffs.command('(ascii|asciiart|ascii-art) {[(blocks|standard|minimal):charset] [invert|inv|inverted]:invert}',
         name='asciiart', cooldown=5)
     async def command(m: Message, charset=0, invert=None):
         if not m.attachments:
@@ -26,15 +26,16 @@ def setup(cliffs):
             return
 
         try:
-            image = Image.open(BytesIO(await m.attachments[0].read()))
+            image = Image.open(BytesIO(await m.attachments[0].read()))  # download and open the file
         except discord.HTTPException:
             await m.error('Nie udało się pobrać załączonego pliku')
             return
 
-        if image.width < 16 or image.height < 16:
+        if image.width < 64 or image.height < 64:
             await m.error('To zdjęcie jest za małe.')
             return
 
+        # generate ASCII art in a new thread
         ascii_img = await m.bot.loop.run_in_executor(
             futures.ThreadPoolExecutor(),
             lambda: image_to_ascii(
@@ -47,14 +48,16 @@ def setup(cliffs):
             await m.error('Coś poszło nie tak podczas przesyłania obrazka.')
             return
 
-        await sleep(2)
+        await sleep(2.5)
 
         await m.send(r['formattedLink'])
 
 
     def image_to_ascii(image, charset: list, invert: bool) -> str:
-        image = image.resize(
-            (150, round(image.height * 75 / image.width)), Image.LANCZOS)
+        if image.width >= image.height:
+            image = image.resize((150, round(image.height / image.width * 75)), Image.LANCZOS)
+        else:
+            image = image.resize((round(image.width / image.height * 300), 150), Image.LANCZOS)
 
         if invert:
             charset = reversed(charset)

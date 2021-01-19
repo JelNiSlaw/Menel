@@ -1,7 +1,6 @@
 import re
 
 import discord
-from cliffs import CommandDispatcher
 
 from ..command_dispatcher.dispatch import dispatch
 from ..functions.constant_length_text import constant_length_text as clt
@@ -10,9 +9,10 @@ from ..objects.bot import Menel
 from ..objects.cooldowns import cooldowns
 from ..objects.message import Message
 from ..resources import regexes
+from ..setup.setup_cliffs import cliffs
 
 
-def setup(bot: Menel, cliffs: CommandDispatcher):
+def setup(bot: Menel):
     @bot.event
     async def on_message(m: discord.Message):
         m = Message(m)
