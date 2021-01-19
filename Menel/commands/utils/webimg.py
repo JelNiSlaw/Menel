@@ -5,8 +5,8 @@ from discord import File
 from pyppeteer import launch
 from pyppeteer.errors import NetworkError, PageError, TimeoutError
 
-from ..objects.bot import bot
-from ..objects.message import Message
+from ...objects.bot import bot
+from ...objects.message import Message
 
 
 def setup(cliffs):

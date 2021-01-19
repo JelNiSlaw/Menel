@@ -3,8 +3,8 @@ from time import perf_counter
 
 import discord
 
-from ..functions.cut_long_text import cut_long_text
-from ..objects.message import Message
+from ...functions.cut_long_text import cut_long_text
+from ...objects.message import Message
 
 
 def setup(cliffs):

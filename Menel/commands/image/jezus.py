@@ -5,7 +5,7 @@ from os import getenv
 import aiohttp
 import discord
 
-from ..objects.message import Message
+from ...objects.message import Message
 
 
 def setup(cliffs):
@@ -18,6 +18,7 @@ def setup(cliffs):
         ) as r:
             if r.status == 200:
                 file = BytesIO(await r.read())
-                await m.send(file=discord.File(file, filename=f'jezus.{imghdr.what(file)}'))
+                img_format = imghdr.what(file) or 'jpeg'
+                await m.send(file=discord.File(file, filename=f'jezus.{img_format}'))
             else:
                 await m.error('Nie wiem, nie działa.')

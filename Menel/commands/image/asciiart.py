@@ -6,8 +6,8 @@ from textwrap import dedent
 import discord
 from PIL import Image
 
-from ..functions.imperialbin_upload import imperialbin_upload
-from ..objects.message import Message
+from ...functions.imperialbin_upload import imperialbin_upload
+from ...objects.message import Message
 
 
 CHARSETS = (

@@ -3,9 +3,9 @@ from math import ceil
 
 from discord import Colour, Embed
 
-from ..functions.plural_time import plural_time
-from ..objects.cooldowns import cooldowns
-from ..objects.message import Message
+from ...functions.plural_time import plural_time
+from ...objects.cooldowns import cooldowns
+from ...objects.message import Message
 
 
 def setup(cliffs):

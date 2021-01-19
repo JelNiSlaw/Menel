@@ -2,8 +2,8 @@ from os import getenv
 
 import aiohttp
 
-from ..functions.clean_content import clean_content
-from ..objects.message import Message
+from ...functions.clean_content import clean_content
+from ...objects.message import Message
 
 
 def setup(cliffs):

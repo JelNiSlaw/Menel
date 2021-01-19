@@ -1,6 +1,6 @@
 import random
 
-from ..objects.message import Message
+from ...objects.message import Message
 
 
 def setup(cliffs):

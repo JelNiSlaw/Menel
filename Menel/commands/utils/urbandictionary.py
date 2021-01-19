@@ -4,9 +4,9 @@ from urllib import parse
 import aiohttp
 import discord
 
-from ..functions.clean_content import clean_content
-from ..functions.cut_long_text import cut_long_text
-from ..objects.message import Message
+from ...functions.clean_content import clean_content
+from ...functions.cut_long_text import cut_long_text
+from ...objects.message import Message
 
 
 def setup(cliffs):
