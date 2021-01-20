@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 import discord
@@ -9,6 +10,7 @@ class Message(discord.Message):
     def __init__(self, message: discord.Message):
         self.message = message
         self.bot = bot
+        self.settable_created_at = message.created_at
 
 
     def __getattr__(self, item):
@@ -44,3 +46,13 @@ class Message(discord.Message):
 
     async def error(self, text: str, delete_after: Optional[int] = None) -> discord.Message:
         return await self._send_embed(text, color=discord.Colour.red(), delete_after=delete_after)
+
+
+    @property
+    def created_at(self):
+        return self.settable_created_at
+
+
+    @created_at.setter
+    def created_at(self, time: datetime):
+        self.settable_created_at = time

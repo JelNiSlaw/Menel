@@ -25,8 +25,25 @@ def mismatched_parameter_type(e: MismatchedParameterType) -> str:
     return f'Wartość `{clean_content(e.actual.value)}` nie jest ' + {
         'int': 'liczbą całkowitą',
         'float': 'liczbą',
-    }.get(e.expected.typename, f'typu `{e.expected.typename}`')
+    }.get(e.expected.typename, f'typu `{e.expected.typename}`') + '.'
 
 
 def mismatched_literal_suggestion(e: MismatchedLiteralSuggestion) -> str:
-    return f'Masz na myśli `{clean_content(e.expected.value)}`?'
+    return f'Masz na myśli `{clean_content(e.expected.value)}`?\n' \
+           f'Możesz napisać `tak` `yes` `t` `y`.'
+
+
+def too_many_arguments():
+    return 'Zbyt wiele argumentów.'
+
+
+def missing_arguments():
+    return 'Brakujące argumenty.'
+
+
+def no_matched_variant():
+    return 'Wybrano nieprawidłową opcję.'
+
+
+def call_match_fail():
+    return 'Niepoprawne użycie komendy.'

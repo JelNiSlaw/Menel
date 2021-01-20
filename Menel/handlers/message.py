@@ -9,7 +9,6 @@ from ..objects.bot import Menel
 from ..objects.cooldowns import cooldowns
 from ..objects.message import Message
 from ..resources import regexes
-from ..setup.setup_cliffs import cliffs
 
 
 def setup(bot: Menel):
@@ -31,7 +30,7 @@ def setup(bot: Menel):
                 await m.channel.send('Cześć')
 
         elif m.content.lower().startswith(prefix):
-            await dispatch(cliffs, m, prefix)
+            await dispatch(m.content[len(prefix):], m, prefix)
 
-        elif re.match(regexes.mention(bot.user.id), m.content):
-            await dispatch(cliffs, m, f'@{bot.user.name}')
+        elif match := re.match(regexes.mention(bot.user.id), m.content):
+            await dispatch(m.content[len(match.group())], m, f'@{bot.user.name}')
