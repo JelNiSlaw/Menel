@@ -6,9 +6,15 @@ class Menel(AutoShardedClient):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.OWNER = 305765073689903104
+        self.owner = None
 
         self.cooldowns = {}
+
+
+    async def fetch_owner(self):
+        app = await self.application_info()
+        self.owner = app.owner.id
+        return app.owner
 
 
 # noinspection PyTypeChecker
