@@ -6,11 +6,20 @@ from pyppeteer import launch
 from pyppeteer.errors import NetworkError, PageError, TimeoutError
 
 from ...objects.bot import bot
+from ...objects.commands import Command
 from ...objects.message import Message
 
 
+COMMAND = Command(
+    'webimg',
+    syntax=None,
+    description='Wykonuje zdjęcie wybranej strony',
+    cooldown=5
+)
+
+
 def setup(cliffs):
-    @cliffs.command('webimg [scrolling|fullpage]:fullpage <url...>', name='webimg', cooldown=10)
+    @cliffs.command('webimg [scrolling|fullpage]:fullpage <url...>', command=COMMAND)
     async def command(m: Message, url, fullpage=None):
         async with m.channel.typing():
             browser = await launch(ignoreHTTPSErrors=True, headless=True, loop=bot.loop, args=['--no-sandbox'])

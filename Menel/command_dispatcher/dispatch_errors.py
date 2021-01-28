@@ -1,16 +1,26 @@
 from math import ceil
 
+import discord
 from cliffs import MismatchedLiteralSuggestion, MismatchedParameterType
 
 from ..functions.clean_content import clean_content
 from ..functions.plural_time import plural_time
+from ..functions.stringify_permissions import stringify_permissions
 
 
 def cooldown(time: float) -> str:
     return f'Poczekaj jeszcze {plural_time(ceil(time))} przed ponownym użyciem komendy.'
 
 
-def missing_perms(level: int) -> str:
+def missing_user_perms(perms: discord.Permissions) -> str:
+    return f'Aby użyć tej komendy potrzebujesz uprawnień {stringify_permissions(perms)}.'
+
+
+def missing_bot_perms(perms: discord.Permissions) -> str:
+    return f'Aby wykonać tę komendę potrzebuję uprawnień {stringify_permissions(perms)}.'
+
+
+def missing_global_perms(level: int) -> str:
     if level == 2:
         return 'Ta komenda wymaga uprawnień do zarządzania serwerem.'
     elif level == 3:

@@ -1,8 +1,8 @@
 import re
 
 
-DISCORD_BOT_TOKEN = re.compile(r'(?:[\w\-=]+)\.(?:[\w\-=]+)\.(?:[\w\-=]+)', re.ASCII)
-
-
 def mention(user_id: int) -> re.Pattern:
     return re.compile(rf'<@!?{user_id}>', re.IGNORECASE | re.ASCII)
+
+
+USER_MENTION = re.compile(r'<@!?(?P<ID>\d{18})>', re.IGNORECASE)

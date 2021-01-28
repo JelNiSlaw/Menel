@@ -3,14 +3,11 @@ from typing import Optional
 
 import discord
 
-from ..objects.bot import bot
-
 
 class Message(discord.Message):
     def __init__(self, message: discord.Message):
         self.message = message
-        self.bot = bot
-        self.settable_created_at = message.created_at
+        self._created_at = message.created_at
 
 
     def __getattr__(self, item):
@@ -50,9 +47,9 @@ class Message(discord.Message):
 
     @property
     def created_at(self):
-        return self.settable_created_at
+        return self._created_at
 
 
     @created_at.setter
     def created_at(self, time: datetime):
-        self.settable_created_at = time
+        self._created_at = time

@@ -1,10 +1,11 @@
 import discord
 
+from ..objects.bot import bot
 from ..objects.message import Message
 
 
-def user_perms(m: Message) -> int:
-    if m.author.id == m.bot.OWNER:
+def global_perms(m: Message) -> int:
+    if m.author.id == bot.OWNER:
         return 5  # bot owner
     elif m.author == m.guild.owner:
         return 4  # guild owner

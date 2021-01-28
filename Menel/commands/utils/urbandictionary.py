@@ -6,11 +6,20 @@ import discord
 
 from ...functions.clean_content import clean_content
 from ...functions.cut_long_text import cut_long_text
+from ...objects.commands import Command
 from ...objects.message import Message
 
 
+COMMAND = Command(
+    'urbandictionary',
+    syntax=None,
+    description='Wysyła definicję ze słownika Urban Dictionary',
+    cooldown=5
+)
+
+
 def setup(cliffs):
-    @cliffs.command('(urbandictionary|urban|ud) <query...>', name='urbandictionary', cooldown=5)
+    @cliffs.command('(urbandictionary|urban|ud) <query...>', command=COMMAND)
     async def command(m: Message, query):
         async with m.channel.typing():
             async with aiohttp.request(

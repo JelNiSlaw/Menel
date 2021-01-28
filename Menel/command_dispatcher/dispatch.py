@@ -12,7 +12,7 @@ from cliffs.syntax_tree.variant_group import NoMatchedVariant
 from ..command_dispatcher import dispatch_errors
 from ..command_dispatcher.redispatch import redispatch
 from ..functions.clean_content import clean_content
-from ..functions.user_perms import user_perms
+from ..functions.global_perms import global_perms
 from ..objects.cooldowns import cooldowns
 from ..objects.message import Message
 from ..setup.setup_cliffs import cliffs
@@ -52,18 +52,38 @@ async def dispatch(command: str, m: Message, prefix: str):
         if not result:
             return
 
-        if 'perms' in command.kwargs and user_perms(m) < command.kwargs['perms']:
-            await m.error(dispatch_errors.missing_perms(command.kwargs['perms']), delete_after=5)
+        if not m.guild.me.permissions_in(m.channel).send_messages:
+            return
+
+        command = command.kwargs['command']
+
+        if global_perms(m) < command.global_perms:
+            if not cooldowns.auto(m.author.id, '_global_perms', 2):
+                await m.error(dispatch_errors.missing_global_perms(command.global_perms), delete_after=10)
             Task(result).cancel()
             return
 
-        if not (cooldown := cooldowns.auto(m.author.id, command.kwargs['name'], command.kwargs['cooldown'])):
-            try:
-                await result
-            except Exception as e:
-                print_exc()
-                await m.error(f'An error occurred\n{clean_content(e)}')
-        else:
+        if not command.user_perms < m.author.permissions_in(m.channel):
+            if not cooldowns.auto(m.author.id, '_user_perms', 2):
+                await m.error(dispatch_errors.missing_user_perms(command.user_perms), delete_after=10)
             Task(result).cancel()
-            if not cooldowns.auto(m.author.id, '_cooldown', 2):
-                await m.error(dispatch_errors.cooldown(cooldown), delete_after=5)
+            return
+
+        if not command.bot_perms < m.guild.me.permissions_in(m.channel):
+            if not cooldowns.auto(m.author.id, '_bot_perms', 2):
+                await m.error(dispatch_errors.missing_bot_perms(command.bot_perms), delete_after=10)
+            Task(result).cancel()
+            return
+
+        if command.cooldown:
+            if cooldown := cooldowns.auto(m.author.id, command.name, command.cooldown):
+                if not cooldowns.auto(m.author.id, '_cooldown', 2):
+                    await m.error(dispatch_errors.cooldown(cooldown), delete_after=10)
+                Task(result).cancel()
+                return
+
+        try:
+            await result
+        except Exception as e:
+            print_exc()
+            await m.error(f'An error occurred\n{clean_content(f"{type(e).__name__}: {e}")}')

@@ -1,10 +1,19 @@
 import aiohttp
 
+from ...objects.commands import Command
 from ...objects.message import Message
 
 
+COMMAND = Command(
+    'dlist',
+    syntax=None,
+    description='Pokazuje dane o serwerze ze strony DList.top.',
+    cooldown=5
+)
+
+
 def setup(cliffs):
-    @cliffs.command('dlist|dlist.top|dlista|votes|głosy', name='dlist', cooldown=5)
+    @cliffs.command('dlist|dlist.top|dlista|votes|głosy', command=COMMAND)
     async def command(m: Message):
         async with aiohttp.request(
                 'GET', f'https://api.dlist.top/v1/servers/{m.guild.id}', timeout=aiohttp.ClientTimeout(total=20)

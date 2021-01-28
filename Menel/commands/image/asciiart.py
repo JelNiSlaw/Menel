@@ -7,8 +7,17 @@ import discord
 from PIL import Image
 
 from ...functions.imperialbin_upload import imperialbin_upload
+from ...objects.bot import bot
+from ...objects.commands import Command
 from ...objects.message import Message
 
+
+COMMAND = Command(
+    'asciiart',
+    syntax=None,
+    description='Tworzy ASCII art z załączonego obrazka',
+    cooldown=5
+)
 
 CHARSETS = (
     '█▓▒░ ',
@@ -19,7 +28,7 @@ CHARSETS = (
 
 def setup(cliffs):
     @cliffs.command('(ascii|asciiart|ascii-art) {[(blocks|standard|minimal):charset] [invert|inv|inverted]:invert}',
-        name='asciiart', cooldown=5)
+        command=COMMAND)
     async def command(m: Message, charset=0, invert=None):
         if not m.attachments:
             await m.error('Załącz najpierw jakiś plik.')
@@ -36,7 +45,7 @@ def setup(cliffs):
             return
 
         # generate ASCII art in a new thread
-        ascii_img = await m.bot.loop.run_in_executor(
+        ascii_img = await bot.loop.run_in_executor(
             futures.ThreadPoolExecutor(),
             lambda: image_to_ascii(
                 image, CHARSETS[charset], invert is not None)

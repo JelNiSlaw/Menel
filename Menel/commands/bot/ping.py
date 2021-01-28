@@ -1,16 +1,27 @@
 import discord
 
+from ...objects.commands import Command
 from ...objects.message import Message
 
 
+COMMAND = Command(
+    'ping',
+    syntax=None,
+    description='Sprawdza opóźnienie wysyłania wiadomości bota.',
+    cooldown=2,
+)
+
+
 def setup(cliffs):
-    @cliffs.command('ping', name='ping', cooldown=2)
+    @cliffs.command('ping', command=COMMAND)
     async def command(m: Message):
         message = await m.send('Pong!')
 
         delay = round((message.created_at.timestamp() - m.created_at.timestamp()) * 1000)
 
+        result = f'Ping: {delay} ms'
+
         try:
-            await message.edit(content=f'Ping: {delay} ms')
+            await message.edit(content=result)
         except discord.HTTPException:
-            pass
+            await m.send(result)

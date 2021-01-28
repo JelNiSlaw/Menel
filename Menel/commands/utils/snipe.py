@@ -2,12 +2,21 @@ from datetime import datetime, timedelta
 
 import discord
 
+from ...objects.commands import Command
 from ...objects.message import Message
 from ...objects.snipes import snipes
 
 
+COMMAND = Command(
+    'snipe',
+    syntax=None,
+    description='Pokazuje usunięte lub edytowane wiadomości.',
+    cooldown=1
+)
+
+
 def setup(cliffs):
-    @cliffs.command('(snipe|editsnipe|botsnipe|boteditsnipe):mode', name='snipe', cooldown=1)
+    @cliffs.command('(snipe|editsnipe|botsnipe|boteditsnipe):mode', command=COMMAND)
     async def command(m: Message, mode):
         snipe = (snipes.delete, snipes.edit, snipes.botdelete, snipes.botedit)[mode].get(m.channel.id, (None, None))
 

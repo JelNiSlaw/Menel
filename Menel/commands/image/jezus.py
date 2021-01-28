@@ -5,11 +5,20 @@ from os import getenv
 import aiohttp
 import discord
 
+from ...objects.commands import Command
 from ...objects.message import Message
 
 
+COMMAND = Command(
+    'jezus',
+    syntax=None,
+    description='Wysyła losowe zdjęcie Jezusa.',
+    cooldown=3
+)
+
+
 def setup(cliffs):
-    @cliffs.command('jezus', name='jezus', cooldown=3)
+    @cliffs.command('jezus|jesus', command=COMMAND)
     async def command(m: Message):
         async with aiohttp.request(
                 'GET', 'https://api.badosz.com/jesus',

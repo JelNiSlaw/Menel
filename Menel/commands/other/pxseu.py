@@ -3,11 +3,20 @@ from os import getenv
 import aiohttp
 
 from ...functions.clean_content import clean_content
+from ...objects.commands import Command
 from ...objects.message import Message
 
 
+COMMAND = Command(
+    'pxseu',
+    syntax=None,
+    description='Wysyła anonimową wiadomość przez API pxseu.',
+    cooldown=5
+)
+
+
 def setup(cliffs):
-    @cliffs.command('pxseu <message...>', name='pxseu', cooldown=5)
+    @cliffs.command('pxseu <message...>', command=COMMAND)
     async def command(m: Message, message):
         async with aiohttp.request(
                 'POST', 'https://www.pxseu.com/api/v2/sendMessage',

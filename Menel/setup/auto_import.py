@@ -3,6 +3,8 @@ import pkgutil
 from types import ModuleType
 from typing import Iterable
 
+from ..objects.commands import commands
+
 
 # Inspired by https://github.com/python-discord/bot/blob/master/bot/utils/extensions.py
 
@@ -14,9 +16,13 @@ def modules_to_str(modules: Iterable[ModuleType]):
     return ', '.join(unqualify(m.__name__) for m in modules)
 
 
-def auto_import(package, *args):
+def add_help(module: ModuleType):
+    # noinspection PyUnresolvedReferences
+    commands.update({module.COMMAND.name: module.COMMAND})
+
+
+def auto_import(package, *args, add_to_help: bool):
     modules = set()
-    skipped = set()
 
     for module in pkgutil.walk_packages(package.__path__, package.__name__ + '.'):
         if unqualify(module.name).startswith('_'):
@@ -26,14 +32,12 @@ def auto_import(package, *args):
             continue  # skip folders
 
         module = importlib.import_module(module.name)
-        if hasattr(module, 'setup'):
-            module.setup(*args)
-            modules.add(module)
-        else:
-            skipped.add(module)
+        # noinspection PyUnresolvedReferences
+        module.setup(*args)
+        if add_to_help:
+            add_help(module)
+        modules.add(module)
 
     print(f'Imported {modules_to_str(modules)}')
-    if skipped:  # this shouldn't be true
-        print(f'Skipped {modules_to_str(skipped)}')
 
     return modules
