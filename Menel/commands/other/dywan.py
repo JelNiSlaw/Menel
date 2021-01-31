@@ -24,7 +24,7 @@ def setup(cliffs):
 
         lines = list()
         for _ in range(length):
-            line = str()
+            line = ''
             for _ in range(width):
                 line += choice('╱╲')
 

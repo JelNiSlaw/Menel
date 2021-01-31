@@ -30,7 +30,7 @@ def setup(cliffs):
                 if r.status == 200:
                     query = parse.quote(query)
                 elif r.status == 302:
-                    query = r.headers['Location'].split('?term=', 1)[1]
+                    query = r.headers['Location'].split('term=', 1)[1]
                 else:
                     await m.error('Nie znalazłem tej frazy w Urban Dictionary.')
                     return
@@ -41,17 +41,21 @@ def setup(cliffs):
             ) as r:
                 json = await r.json()
 
+            if 'error' in json:
+                await m.error(f'Urban Dictionary zwróciło błąd:\n{json["error"]}')
+                return
+
             json = json['list'][0]
 
 
             def remove_brackets(text: str) -> str:
-                return re.sub(r'\[(?P<link>.*?)]', r'\g<link>', text)
+                return re.sub(r'\[(?P<link>.*?)]', r'\g<link>', text, re.DOTALL)
 
 
             embed = discord.Embed(
                 title=cut_long_text(json['word'], 256),
                 url=json['permalink'],
-                description=cut_long_text(clean_content(remove_brackets(json['definition'])), 1024),
+                description=cut_long_text(clean_content(remove_brackets(json['definition'])), 2048),
                 colour=discord.Colour.blurple()
             )
 
@@ -62,6 +66,6 @@ def setup(cliffs):
             )
 
             embed.set_footer(text=f'Author: {clean_content(json["author"])}\n'
-                                  f'{json["thumbs_up"]} 👍 {json["thumbs_down"]} 👎')
+                                  f'👍 {json["thumbs_up"]} 👎 {json["thumbs_down"]}')
 
             await m.send(embed=embed)
