@@ -35,6 +35,7 @@ def mismatched_parameter_type(e: MismatchedParameterType) -> str:
     return f'Wartość `{clean_content(e.actual.value)}` nie jest ' + {
         'int': 'liczbą całkowitą',
         'float': 'liczbą',
+        'url': 'adresem URL'
     }.get(e.expected.typename, f'typu `{e.expected.typename}`') + '.'
 
 

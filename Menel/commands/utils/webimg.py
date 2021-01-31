@@ -20,10 +20,11 @@ COMMAND = Command(
 
 
 def setup(cliffs):
-    @cliffs.command('webimg [scrolling|fullpage]:fullpage <url...>', command=COMMAND)
+    @cliffs.command('webimg [scrolling|fullpage]:fullpage <url: url>', command=COMMAND)
     async def command(m: Message, url, fullpage=None):
         if not m.channel.nsfw:
-            await m.error('Websites can contain NSFW content.\nThis command only works on channels marked as NSFW.')
+            await m.error('Strony mogą zawierać treści NSFW.\n'
+                          'Ta komenda działa jedynie na kanałach oznaczonych jako NSFW.')
             return
 
         async with m.channel.typing():
