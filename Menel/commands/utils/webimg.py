@@ -1,3 +1,4 @@
+import http.client
 from asyncio import sleep
 from io import BytesIO
 
@@ -13,7 +14,7 @@ from ...objects.message import Message
 COMMAND = Command(
     'webimg',
     syntax=None,
-    description='Wykonuje zdjęcie wybranej strony',
+    description='Wykonuje zdjęcie wybranej strony.',
     cooldown=5
 )
 
@@ -21,8 +22,17 @@ COMMAND = Command(
 def setup(cliffs):
     @cliffs.command('webimg [scrolling|fullpage]:fullpage <url...>', command=COMMAND)
     async def command(m: Message, url, fullpage=None):
+        if not m.channel.nsfw:
+            await m.error('Websites can contain NSFW content.\nThis command only works on channels marked as NSFW.')
+            return
+
         async with m.channel.typing():
-            browser = await launch(ignoreHTTPSErrors=True, headless=True, loop=bot.loop, args=['--no-sandbox'])
+            try:
+                browser = await launch(ignoreHTTPSErrors=True, headless=True, loop=bot.loop, args=['--no-sandbox'])
+            except http.client.BadStatusLine:
+                await m.error('Nie udało się otworzyć przeglądarki. Spróbuj ponownie.')
+                return
+
             page = await browser.newPage()
             await page.setViewport({'width': 2048, 'height': 1024, 'deviceScaleFactor': 2})
 

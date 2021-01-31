@@ -13,7 +13,7 @@ from ...objects.message import Message
 COMMAND = Command(
     'urbandictionary',
     syntax=None,
-    description='Wysyła definicję ze słownika Urban Dictionary',
+    description='Wysyła definicję ze słownika Urban Dictionary.',
     cooldown=5
 )
 
