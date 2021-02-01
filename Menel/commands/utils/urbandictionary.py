@@ -19,7 +19,7 @@ COMMAND = Command(
 
 
 def setup(cliffs):
-    @cliffs.command('(urbandictionary|urban|ud) <query...>', command=COMMAND)
+    @cliffs.command('(urbandictionary|urban-dictionary|urban|ud) <query...>', command=COMMAND)
     async def command(m: Message, query):
         async with m.channel.typing():
             async with aiohttp.request(

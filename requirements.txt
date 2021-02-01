@@ -7,3 +7,4 @@ git+https://github.com/theskumar/python-dotenv
 git+https://github.com/python-pillow/Pillow
 git+https://github.com/pyppeteer/pyppeteer
 git+https://github.com/kvesteri/validators
+git+https://github.com/jmoiron/humanize

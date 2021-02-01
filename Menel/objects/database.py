@@ -6,7 +6,7 @@ import motor.motor_asyncio
 class Database:
     def __init__(self):
         self.client = motor.motor_asyncio.AsyncIOMotorClient(
-            getenv('MONGODB_HOST'),
+            getenv('MONGODB_CONNECTION_STRING'),
             tz_aware=False,
             connect=True,
             directConnection=False,
@@ -19,6 +19,9 @@ class Database:
             readPreference='primaryPreferred',
             tls=True
         )
+
+        self.database = self.client['bot']
+        self.lastseen = self.database['lastseen']
 
 
 database = Database()
