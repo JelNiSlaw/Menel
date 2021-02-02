@@ -14,8 +14,6 @@ def setup(bot: Menel):
             return
 
         if not cooldowns.auto(after.id, '_status', 1, include_owner=True):
-            print(f'{after.name} jest teraz {after.status}')
-
             if after.status != discord.Status.offline:
                 source = after
             else:

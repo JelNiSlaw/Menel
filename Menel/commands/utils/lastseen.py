@@ -39,7 +39,7 @@ def setup(cliffs):
         document = await database.lastseen.find_one(user.id)
 
         if not document:
-            await m.error(f'Nie znam ostatniej daty, kiedy {clean_content(user.name)} był online.')
+            await m.error(f'Nie znam ostatniej daty, kiedy {clean_content(user.name)} był/a online.')
             return
 
         if isinstance(user, discord.Member) and user.status != discord.Status.offline:

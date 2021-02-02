@@ -1,25 +1,25 @@
 import asyncio
-from typing import Optional, Type, Union
+from typing import Optional, Union
 
 import discord
 
 from ..objects.bot import bot
-from ..resources.regexes import USER_MENTION
+from ..resources.regexes import DISCORD_ID, USER_MENTION
 
 
 async def get_user(
         search: str,
         guild: Optional[discord.Guild] = None,
-        force_type: Optional[Type[Union[discord.User, discord.Member]]] = None
+        force_member: bool = False
 ) -> Optional[Union[discord.Member, discord.User]]:
-    if force_type == discord.User and guild:
+    if force_member and not guild:
         raise ValueError
 
     if len(search) < 3:
         return None
 
-    if search.isdigit() and len(search) == 18:
-        user_id = int(search)
+    if match := DISCORD_ID.fullmatch(search):
+        user_id = int(match.group())
     elif match := USER_MENTION.fullmatch(search):
         user_id = int(match.group('ID'))
     else:
@@ -41,12 +41,12 @@ async def get_user(
         try:
             members = await guild.query_members(query=search)
         except asyncio.TimeoutError:
-            return None
+            pass
+        else:
+            if members:
+                return members[0]
 
-        if members:
-            return members[0]
-
-    if user_id and not force_type == discord.Member:
+    if user_id and not force_member:
         if user := bot.get_user(user_id):
             return user
 
