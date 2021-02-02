@@ -10,7 +10,8 @@ from ..resources.regexes import DISCORD_ID, USER_MENTION
 async def get_user(
         search: str,
         guild: Optional[discord.Guild] = None,
-        force_member: bool = False
+        force_member: bool = False,
+        force_fetch: bool = False
 ) -> Optional[Union[discord.Member, discord.User]]:
     if force_member and not guild:
         raise ValueError
@@ -27,16 +28,18 @@ async def get_user(
 
     if guild:
         if user_id:
-            if member := guild.get_member(user_id):
-                return member
+            if not force_fetch:
+                if member := guild.get_member(user_id):
+                    return member
 
             try:
                 return await guild.fetch_member(user_id)
             except discord.HTTPException:
                 pass
 
-        if member := guild.get_member_named(search):
-            return member
+        if not force_fetch:
+            if member := guild.get_member_named(search):
+                return member
 
         try:
             members = await guild.query_members(query=search)
@@ -47,8 +50,9 @@ async def get_user(
                 return members[0]
 
     if user_id and not force_member:
-        if user := bot.get_user(user_id):
-            return user
+        if not force_fetch:
+            if user := bot.get_user(user_id):
+                return user
 
         try:
             return await bot.fetch_user(user_id)

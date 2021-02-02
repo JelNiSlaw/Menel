@@ -10,7 +10,7 @@ from ..objects.database import database
 def setup(bot: Menel):
     @bot.event
     async def on_member_update(before: discord.Member, after: discord.Member):
-        if before.status == after.status:
+        if after.bot or before.status == after.status:
             return
 
         if not cooldowns.auto(after.id, '_status', 1, include_owner=True):
