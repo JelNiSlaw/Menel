@@ -17,7 +17,7 @@ COMMAND = Command(
 
 humanize.activate('pl_PL')
 
-TYPES = {
+STATUSES = {
     discord.Status.online.value: 'online',
     discord.Status.idle.value: 'zaraz wracam',
     discord.Status.dnd.value: 'nie przeszkadzać',
@@ -55,10 +55,11 @@ def setup(cliffs):
             time = m.created_at - document["time"]
             time = humanize.naturaldelta(time, months=False) + ' temu'
 
-            status = TYPES[document["status"]]
+            status = document["status"]
 
             devices = [device for device, value in zip(DEVICES, document['devices']) if value]
 
+        status = STATUSES[status]
         devices = ', ' + ', '.join(devices)
 
         await m.success(
