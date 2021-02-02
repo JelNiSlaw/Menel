@@ -38,7 +38,7 @@ def setup(cliffs):
 
         if isinstance(user, discord.Member) and user.status != discord.Status.offline:
             time = 'teraz'
-            status = user.status
+            status = user.status.value
             devices = (device for device, value in
                        zip(DEVICES, (user.desktop_status, user.web_status, user.mobile_status)) if value)
         else:
@@ -65,7 +65,7 @@ def setup(cliffs):
         await m.success(
             f'{clean_content(user.name)}:\n'
             f'Ostatnia aktywność: {time}\n'
-            f'Typ: {status}{devices}' +
+            f'Typ: ' + status + devices +
             ('\nTen użytkownik nie znajduje się na tym serwerze, więc dane mogą nie być dokładne.'
              if not isinstance(user, discord.Member) else '')
         )
