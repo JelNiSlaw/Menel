@@ -42,7 +42,7 @@ async def get_user(
                 return member
 
         try:
-            members = await guild.query_members(query=search)
+            members = await guild.query_members(query=search, presences=True)
         except asyncio.TimeoutError:
             pass
         else:
