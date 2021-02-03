@@ -4,7 +4,12 @@ import aiohttp
 
 
 async def imperialbin_upload(
-        text: str, *, longer_urls: bool, instant_delete: bool, image_embed: bool, expiration: int
+        text: str,
+        *,
+        longer_urls: bool = True,
+        instant_delete: bool = False,
+        image_embed: bool = True,
+        expiration: int = 7,
 ) -> dict:
     async with aiohttp.request(
             'POST', 'https://imperialb.in/api/postCode/',
@@ -16,7 +21,7 @@ async def imperialbin_upload(
                 'imageEmbed': image_embed,
                 'expiration': expiration
             },
-            headers={'User-Agent': 'Menel Discord Bot; (https://github.com/JelNiSlaw/Menel)'},
+            headers={'User-Agent': 'Menel Discord Bot (https://github.com/JelNiSlaw/Menel)'},
             timeout=aiohttp.ClientTimeout(total=20)
     ) as r:
         return await r.json()
