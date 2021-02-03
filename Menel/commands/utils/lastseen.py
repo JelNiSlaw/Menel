@@ -42,10 +42,6 @@ def setup(cliffs):
             devices = (device for device, value in
                        zip(DEVICES, (user.desktop_status, user.web_status, user.mobile_status)) if value)
         else:
-            if user.bot:
-                await m.error('Z powodów wydajności, nie zapisuję statusu botów.')
-                return
-
             document = await database.lastseen.find_one(user.id)
 
             if not document:
