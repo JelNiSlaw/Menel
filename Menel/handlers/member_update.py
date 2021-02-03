@@ -13,20 +13,18 @@ def setup(bot: Menel):
         if after.bot or before.status == after.status:
             return
 
-        if not cooldowns.auto(after.id, '_status', 1, include_owner=True):
-            if after.status != discord.Status.offline:
-                source = after
-            else:
-                source = before
+        if after.status != discord.Status.offline:
+            return
 
-            desktop = source.desktop_status != discord.Status.offline
-            web = source.web_status != discord.Status.offline
-            mobile = source.mobile_status != discord.Status.offline
+        if not cooldowns.auto(after.id, '_status', 1, include_owner=True):
+            desktop = before.desktop_status != discord.Status.offline
+            web = before.web_status != discord.Status.offline
+            mobile = before.mobile_status != discord.Status.offline
 
             await database.lastseen.replace_one(
                 {'_id': after.id},
                 {
-                    'status': source.status.value,
+                    'status': before.status.value,
                     'devices': (desktop, web, mobile),
                     'time': datetime.utcnow()
                 },

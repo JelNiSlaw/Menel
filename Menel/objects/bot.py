@@ -35,7 +35,7 @@ bot = Menel(
         reactions=True,
         typing=False
     ),
-    member_cache_flags=discord.MemberCacheFlags(online=False, voice=False, joined=True),
+    member_cache_flags=discord.MemberCacheFlags(online=True, voice=False, joined=True),
     chunk_guilds_at_startup=True,
     status=discord.Status.online,
     activity=discord.Activity(name='Menel Rewrite', type=discord.ActivityType.watching),
