@@ -66,13 +66,16 @@ def setup(cliffs):
 
 # Function from https://gist.github.com/nitros12/2c3c265813121492655bc95aa54da6b9
 def insert_returns(body) -> None:
+    if len(body) <= 0:
+        return
+
     if isinstance(body[-1], ast.Expr):
         body[-1] = ast.Return(body[-1].value)
         ast.fix_missing_locations(body[-1])
 
-    if isinstance(body[-1], ast.If):
+    elif isinstance(body[-1], ast.If):
         insert_returns(body[-1].body)
         insert_returns(body[-1].orelse)
 
-    if isinstance(body[-1], ast.With):
+    elif isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
