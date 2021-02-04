@@ -1,6 +1,26 @@
 from os import getenv
+from typing import Optional
 
 import aiohttp
+
+
+class ImperialbinPaste:
+    def __init__(
+            self,
+            *,
+            success: bool,
+            document_id: str,
+            raw_link: str,
+            formatted_link: str,
+            expires_in: int,
+            instant_delete: bool
+    ):
+        self.success = success
+        self.document_id = document_id
+        self.raw_link = raw_link
+        self.formatted_link = formatted_link
+        self.expires_in = expires_in
+        self.instant_delete = instant_delete
 
 
 async def imperialbin_upload(
@@ -10,7 +30,8 @@ async def imperialbin_upload(
         instant_delete: bool = False,
         image_embed: bool = True,
         expiration: int = 7,
-) -> dict:
+        language: Optional[str] = None
+) -> ImperialbinPaste:
     async with aiohttp.request(
             'POST', 'https://imperialb.in/api/postCode/',
             json={
@@ -24,4 +45,18 @@ async def imperialbin_upload(
             headers={'User-Agent': 'Menel Discord Bot (https://github.com/JelNiSlaw/Menel)'},
             timeout=aiohttp.ClientTimeout(total=20)
     ) as r:
-        return await r.json()
+        json = await r.json()
+
+    paste = ImperialbinPaste(
+        success=json['success'],
+        document_id=json['documentId'],
+        raw_link=json['rawLink'],
+        formatted_link=json['formattedLink'],
+        expires_in=json['expiresIn'],
+        instant_delete=json['instantDelete']
+    )
+
+    if language:
+        paste.formatted_link += f'?lang={language}'
+
+    return paste

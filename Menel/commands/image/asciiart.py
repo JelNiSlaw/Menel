@@ -51,15 +51,15 @@ def setup(cliffs):
                 image, CHARSETS[charset], invert is not None)
         )
 
-        r = await imperialbin_upload(ascii_img, expiration=1)
+        paste = await imperialbin_upload(ascii_img, expiration=2, language='NONE')
 
-        if not r['success']:
+        if not paste.success:
             await m.error('Coś poszło nie tak podczas przesyłania obrazka.')
             return
 
         await sleep(2.5)
 
-        await m.send(r['formattedLink'] + '?lang=NONE')
+        await m.send(paste.formatted_link)
 
 
     def image_to_ascii(image, charset: list, invert: bool) -> str:
