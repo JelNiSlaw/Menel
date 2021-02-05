@@ -6,11 +6,8 @@ from time import perf_counter
 
 import discord
 
-from ...functions.get_user import get_user
-from ...functions.imperialbin_upload import imperialbin_upload
-from ...objects.bot import bot
-from ...objects.commands import Command
-from ...objects.message import Message
+from ...functions import get_user, imperialbin_upload
+from ...objects import bot, Command, Message
 
 
 COMMAND = Command(

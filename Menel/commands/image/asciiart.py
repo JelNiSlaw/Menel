@@ -6,10 +6,8 @@ from textwrap import dedent
 import discord
 from PIL import Image
 
-from ...functions.imperialbin_upload import imperialbin_upload
-from ...objects.bot import bot
-from ...objects.commands import Command
-from ...objects.message import Message
+from ...functions import imperialbin_upload
+from ...objects import bot, Command, Message
 
 
 COMMAND = Command(

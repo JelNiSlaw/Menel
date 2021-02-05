@@ -1,6 +1,6 @@
 from random import choice
 
-from ...objects.commands import Command
+from ...objects import Command
 
 
 COMMAND = Command(

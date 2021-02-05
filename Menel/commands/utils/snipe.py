@@ -2,9 +2,7 @@ from datetime import datetime, timedelta
 
 import discord
 
-from ...objects.commands import Command
-from ...objects.message import Message
-from ...objects.snipes import snipes
+from ...objects import Command, Message, snipes
 
 
 COMMAND = Command(

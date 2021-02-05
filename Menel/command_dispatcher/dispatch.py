@@ -9,13 +9,10 @@ from cliffs import (
 from cliffs.syntax_tree.unordered_group import UnmatchedUnorderedGroup
 from cliffs.syntax_tree.variant_group import NoMatchedVariant
 
-from ..command_dispatcher import dispatch_errors
-from ..command_dispatcher.redispatch import redispatch
-from ..functions.clean_content import clean_content
-from ..functions.global_perms import global_perms
-from ..objects.cooldowns import cooldowns
-from ..objects.message import Message
-from ..setup.setup_cliffs import cliffs
+from ..command_dispatcher import dispatch_errors, redispatch
+from ..functions import clean_content, global_perms
+from ..objects import cooldowns, Message
+from ..setup import cliffs
 
 
 async def dispatch(command: str, m: Message, prefix: str):

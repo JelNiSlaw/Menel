@@ -2,9 +2,7 @@ from datetime import datetime
 
 import discord
 
-from ..objects.bot import Menel
-from ..objects.cooldowns import cooldowns
-from ..objects.database import database
+from ..objects import cooldowns, database, Menel
 
 
 def setup(bot: Menel):

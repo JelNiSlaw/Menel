@@ -1,7 +1,6 @@
 import discord
 
-from ..objects.bot import bot
-from ..objects.message import Message
+from ..objects import bot, Message
 
 
 def global_perms(m: Message) -> int:

@@ -6,9 +6,7 @@ from discord import File
 from pyppeteer import launch
 from pyppeteer.errors import NetworkError, PageError, TimeoutError
 
-from ...objects.bot import bot
-from ...objects.commands import Command
-from ...objects.message import Message
+from ...objects import bot, Command, Message
 
 
 COMMAND = Command(

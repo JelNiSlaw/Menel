@@ -3,8 +3,7 @@ import asyncio
 import discord
 from cliffs import MismatchedLiteralSuggestion
 
-from ..objects.bot import bot
-from ..objects.message import Message
+from ..objects import bot, Message
 
 
 async def redispatch(e: MismatchedLiteralSuggestion, m: Message, prefix: str, notice_msg: Message):
@@ -29,6 +28,6 @@ async def redispatch(e: MismatchedLiteralSuggestion, m: Message, prefix: str, no
     command = m.content[:e.actual.start] + e.expected.value + m.content[e.actual.end + 1:]
     m.created_at = message.created_at
 
-    from ..command_dispatcher.dispatch import dispatch
+    from ..command_dispatcher import dispatch
 
     await dispatch(command, m, prefix)

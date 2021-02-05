@@ -2,12 +2,9 @@ import re
 
 import discord
 
-from ..command_dispatcher.dispatch import dispatch
-from ..functions.constant_length_text import constant_length_text as clt
-from ..functions.cut_long_text import cut_long_text
-from ..objects.bot import Menel
-from ..objects.cooldowns import cooldowns
-from ..objects.message import Message
+from ..command_dispatcher import dispatch
+from ..functions import constant_length_text as clt, cut_long_text
+from ..objects import cooldowns, Menel, Message
 from ..resources import regexes
 
 

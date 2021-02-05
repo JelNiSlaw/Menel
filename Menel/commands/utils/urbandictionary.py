@@ -4,10 +4,8 @@ from urllib import parse
 import aiohttp
 import discord
 
-from ...functions.clean_content import clean_content
-from ...functions.cut_long_text import cut_long_text
-from ...objects.commands import Command
-from ...objects.message import Message
+from ...functions import clean_content, cut_long_text
+from ...objects import Command, Message
 
 
 COMMAND = Command(

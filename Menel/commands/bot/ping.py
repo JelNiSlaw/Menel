@@ -1,7 +1,6 @@
 import discord
 
-from ...objects.commands import Command
-from ...objects.message import Message
+from ...objects import Command, Message
 
 
 COMMAND = Command(

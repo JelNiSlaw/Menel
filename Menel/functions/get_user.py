@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 import discord
 
-from ..objects.bot import bot
+from ..objects import bot
 from ..resources.regexes import DISCORD_ID, USER_MENTION
 
 

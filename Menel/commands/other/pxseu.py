@@ -2,9 +2,8 @@ from os import getenv
 
 import aiohttp
 
-from ...functions.clean_content import clean_content
-from ...objects.commands import Command
-from ...objects.message import Message
+from ...functions import clean_content
+from ...objects import Command, Message
 
 
 COMMAND = Command(

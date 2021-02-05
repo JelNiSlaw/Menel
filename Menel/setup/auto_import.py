@@ -3,7 +3,7 @@ import pkgutil
 from types import ModuleType
 from typing import Iterable
 
-from ..objects.commands import commands
+from ..objects import commands
 
 
 # Inspired by https://github.com/python-discord/bot/blob/master/bot/utils/extensions.py

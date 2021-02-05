@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Optional
 
-from ..objects.bot import bot
+from ..objects import bot
 
 
 class Cooldowns:

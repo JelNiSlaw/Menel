@@ -1,7 +1,7 @@
 import os
 
 from . import commands, handlers
-from .objects.bot import bot
+from .objects import bot
 from .setup.auto_import import auto_import
 from .setup.setup_cliffs import cliffs
 

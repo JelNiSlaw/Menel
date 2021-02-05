@@ -3,9 +3,7 @@ from math import ceil
 import discord
 from cliffs import MismatchedLiteralSuggestion, MismatchedParameterType
 
-from ..functions.clean_content import clean_content
-from ..functions.plural_time import plural_time
-from ..functions.stringify_permissions import stringify_permissions
+from ..functions import clean_content, plural_time, stringify_permissions
 
 
 def cooldown(time: float) -> str:

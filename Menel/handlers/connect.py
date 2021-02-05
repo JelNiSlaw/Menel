@@ -1,4 +1,4 @@
-from ..objects.bot import Menel
+from ..objects import Menel
 
 
 def setup(bot: Menel):

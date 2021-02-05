@@ -2,7 +2,7 @@ from datetime import datetime
 
 import discord
 
-from ..objects.bot import Menel
+from ..objects import Menel
 
 
 def setup(bot: Menel):
@@ -11,7 +11,7 @@ def setup(bot: Menel):
         if not message.content:
             return
 
-        from ..objects.snipes import snipes
+        from ..objects import snipes
 
         if not message.author.bot:
             snipes = snipes.delete

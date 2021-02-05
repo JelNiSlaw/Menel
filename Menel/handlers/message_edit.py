@@ -1,6 +1,6 @@
 import discord
 
-from ..objects.bot import Menel
+from ..objects import Menel
 
 
 def setup(bot: Menel):
@@ -12,7 +12,7 @@ def setup(bot: Menel):
         if before.content == after.content:
             return
 
-        from ..objects.snipes import snipes
+        from ..objects import snipes
 
         if not after.author.bot:
             snipes = snipes.edit

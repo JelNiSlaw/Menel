@@ -1,11 +1,8 @@
 import discord
 import humanize
 
-from ...functions.clean_content import clean_content
-from ...functions.get_user import get_user
-from ...objects.commands import Command
-from ...objects.database import database
-from ...objects.message import Message
+from ...functions import clean_content, get_user
+from ...objects import Command, database, Message
 
 
 COMMAND = Command(
