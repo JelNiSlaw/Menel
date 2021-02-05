@@ -1,4 +1,5 @@
 import discord
+from discord.utils import escape_markdown, escape_mentions
 
 
 def cut_long_text(text: str, max_length: int = 2000):
@@ -13,6 +14,18 @@ def constant_length_text(text: str, length: int):
         return text[:length - 1] + '…'
     else:
         return text.ljust(length, ' ')
+
+
+def clean_content(content: any, *, markdown: bool = True, mentions: bool = True) -> str:
+    if not isinstance(content, str):
+        content = str(content)
+
+    if markdown:
+        content = escape_markdown(content)
+    if mentions:
+        content = escape_mentions(content)
+
+    return content
 
 
 def plural_word(count: int, one: str, few: str, many: str) -> str:
