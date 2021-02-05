@@ -15,6 +15,10 @@ async def redispatch(e: MismatchedLiteralSuggestion, m: Message, prefix: str, no
     try:
         message = await bot.wait_for('message', check=check, timeout=10)
     except asyncio.TimeoutError:
+        try:
+            await notice_msg.delete()
+        except discord.HTTPException:
+            pass
         return
 
     bot.loop.create_task(notice_msg.delete())

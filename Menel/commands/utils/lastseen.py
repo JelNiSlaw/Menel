@@ -33,7 +33,7 @@ def setup(cliffs):
         user = await get_user(user, m.guild)
 
         if not user:
-            await m.error('Nie znalazłem tego użytkownika.')
+            await m.error('Nie znalazłem takiego użytkownika.')
             return
 
         if isinstance(user, discord.Member) and user.status != discord.Status.offline:

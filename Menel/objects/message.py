@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 import discord
 
@@ -26,23 +25,22 @@ class Message(discord.Message):
                 pass
 
 
-    async def _send_embed(self, desc: str, color: discord.Colour,
-            delete_after: Optional[int] = None) -> discord.Message:
+    async def _send_embed(self, desc: str, color: discord.Colour, **kwargs) -> discord.Message:
         embed = discord.Embed(description=desc, colour=color)
         embed.set_author(name=str(self.author), icon_url=str(self.author.avatar_url_as(size=256)))
-        return await self.send(embed=embed, delete_after=delete_after)
+        return await self.send(embed=embed, **kwargs)
 
 
-    async def info(self, text: str) -> discord.Message:
-        return await self._send_embed(text, color=discord.Colour.blurple())
+    async def info(self, text: str, **kwargs) -> discord.Message:
+        return await self._send_embed(text, color=discord.Colour.blurple(), **kwargs)
 
 
-    async def success(self, text: str) -> discord.Message:
-        return await self._send_embed(text, color=discord.Colour.green())
+    async def success(self, text: str, **kwargs) -> discord.Message:
+        return await self._send_embed(text, color=discord.Colour.green(), **kwargs)
 
 
-    async def error(self, text: str, delete_after: Optional[int] = None) -> discord.Message:
-        return await self._send_embed(text, color=discord.Colour.red(), delete_after=delete_after)
+    async def error(self, text: str, **kwargs) -> discord.Message:
+        return await self._send_embed(text, color=discord.Colour.red(), **kwargs)
 
 
     @property
