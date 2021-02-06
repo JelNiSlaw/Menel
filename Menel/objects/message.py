@@ -13,7 +13,7 @@ class Message(discord.Message):
         return self.message.__getattribute__(item)
 
 
-    async def send(self, reply: bool = True, *args, **kwargs) -> discord.Message:
+    async def send(self, *args, reply: bool = True, **kwargs) -> discord.Message:
         if 'reference' in kwargs and not self.channel.permissions_for(self.guild.me).is_superset(
                 discord.Permissions(read_message_history=True)):
             kwargs.pop('reference')
