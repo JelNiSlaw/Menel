@@ -39,7 +39,7 @@ bot = Menel(
     chunk_guilds_at_startup=True,
     status=discord.Status.online,
     activity=discord.Activity(name='Menel Rewrite', type=discord.ActivityType.watching),
-    allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False, replied_user=True),
+    allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False, replied_user=False),
     heartbeat_timeout=10,
     guild_ready_timeout=5,
     guild_subscriptions=True

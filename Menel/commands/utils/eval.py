@@ -64,4 +64,4 @@ def setup(cliffs):
 
             embed.set_footer(text=f'{json["language"]} {json["version"]}')
 
-            await m.send(embed=embed, reference=m)
+            await m.send(embed=embed)

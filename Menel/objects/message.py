@@ -13,13 +13,19 @@ class Message(discord.Message):
         return self.message.__getattribute__(item)
 
 
-    async def send(self, *args, **kwargs) -> discord.Message:
+    async def send(self, reply: bool = True, *args, **kwargs) -> discord.Message:
+        if 'reference' in kwargs and not self.channel.permissions_for(self.guild.me).is_superset(
+                discord.Permissions(read_message_history=True)):
+            kwargs.pop('reference')
+        elif reply:
+            kwargs['reference'] = self.message
+
         try:
             return await self.channel.send(*args, **kwargs)
         except discord.Forbidden:
             pass
         except discord.HTTPException as e:
-            if e.code == 50035 and 'message_reference: Unknown message' in e.text:
+            if e.code == 50035 and 'message_reference: Unknown message' in e.text and 'reference' in kwargs:
                 kwargs.pop('reference')
                 await self.send(*args, **kwargs)
             else:
