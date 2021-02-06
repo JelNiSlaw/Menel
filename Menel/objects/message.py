@@ -19,10 +19,14 @@ class Message(discord.Message):
         except discord.Forbidden:
             pass
         except discord.HTTPException as e:
-            try:
-                return await self.channel.send(embed=discord.Embed(description=str(e), colour=discord.Colour.red()))
-            except discord.HTTPException:
-                pass
+            if e.code == 50035 and 'message_reference: Unknown message' in e.text:
+                kwargs.pop('reference')
+                await self.send(*args, **kwargs)
+            else:
+                try:
+                    return await self.channel.send(embed=discord.Embed(description=str(e), colour=discord.Colour.red()))
+                except discord.HTTPException:
+                    pass
 
 
     async def _send_embed(self, desc: str, color: discord.Colour, **kwargs) -> discord.Message:

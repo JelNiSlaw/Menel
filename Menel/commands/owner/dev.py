@@ -1,5 +1,4 @@
 import ast
-import re
 import traceback
 from textwrap import indent
 from time import perf_counter
@@ -8,6 +7,7 @@ import discord
 
 from ...functions import get_user, imperialbin_upload
 from ...objects import bot, Command, Message
+from ...resources.regexes import CODEBLOCK
 
 
 COMMAND = Command(
@@ -21,7 +21,7 @@ COMMAND = Command(
 def setup(cliffs):
     @cliffs.command('dev <code...>', command=COMMAND)
     async def command(m: Message, code):
-        if match := re.fullmatch(r'(?P<delim>```)\w*(?P<code>.+)?(?P=delim)', code, re.DOTALL):
+        if match := CODEBLOCK.fullmatch(code):
             code = match.group('code')
 
         variables = {

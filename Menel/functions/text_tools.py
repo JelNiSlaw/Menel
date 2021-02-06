@@ -2,16 +2,16 @@ import discord
 from discord.utils import escape_markdown, escape_mentions
 
 
-def cut_long_text(text: str, max_length: int = 2000):
+def cut_long_text(text: str, max_length: int = 2000, end: str = '…') -> str:
     if len(text) > max_length:
-        return f'{text[:max_length - 1].rstrip()}…'
+        return f'{text[:max_length - len(end)].rstrip()}{end}'
     else:
         return text
 
 
-def constant_length_text(text: str, length: int):
+def constant_length_text(text: str, length: int, end: str = '…') -> str:
     if len(text) > length:
-        return text[:length - 1] + '…'
+        return text[:length - len(end)] + end
     else:
         return text.ljust(length, ' ')
 

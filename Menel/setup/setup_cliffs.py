@@ -21,7 +21,7 @@ def setup_cliffs() -> CommandDispatcher:
 
     logger.addHandler(sh)
 
-    call_matcher = CallMatcher(literal_threshold=0.5)
+    call_matcher = CallMatcher(literal_threshold=2 / 3)
     call_matcher.register_type(validate_url, 'url')
 
     return CommandDispatcher(
