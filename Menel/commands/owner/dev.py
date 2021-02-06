@@ -11,7 +11,7 @@ from ...objects import bot, Command, Message
 
 
 COMMAND = Command(
-    'eval',
+    'dev',
     syntax=None,
     description='Wykonuje wpisany kod.',
     global_perms=5
@@ -19,7 +19,7 @@ COMMAND = Command(
 
 
 def setup(cliffs):
-    @cliffs.command('eval <code...>', command=COMMAND)
+    @cliffs.command('dev <code...>', command=COMMAND)
     async def command(m: Message, code):
         if match := re.fullmatch(r'(?P<delim>```)\w*(?P<code>.+)?(?P=delim)', code, re.DOTALL):
             code = match.group('code')
