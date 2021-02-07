@@ -57,11 +57,11 @@ def setup(cliffs):
                 output.append(codeblock(cut_long_text(json['stderr'], 512)))
 
             embed = discord.Embed(
-                description='\n'.join(output) if output else
-                'Twój kod nie zwrócił żadnego wyniku.',
+                description=('\n'.join(output) if output else
+                             'Twój kod nie zwrócił żadnego wyniku.') +
+                            f'\n{json["language"]} {json["version"]}\n'
+                            f'Powered by [Piston](https://github.com/engineer-man/piston).',
                 colour=discord.Colour.green() if not json['stderr'].strip() else discord.Colour.red()
             )
-
-            embed.set_footer(text=f'{json["language"]} {json["version"]}')
 
             await m.send(embed=embed)
