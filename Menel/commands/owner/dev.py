@@ -6,7 +6,7 @@ from time import perf_counter
 import discord
 
 from ...functions import get_user, imperialbin_upload
-from ...objects import bot, Command, Message
+from ...objects import bot, Category, Command, Message
 from ...resources.regexes import CODEBLOCK
 
 
@@ -14,7 +14,9 @@ COMMAND = Command(
     'dev',
     syntax=None,
     description='Wykonuje wpisany kod.',
-    global_perms=5
+    category=Category.OWNER,
+    global_perms=5,
+    hidden=True
 )
 
 

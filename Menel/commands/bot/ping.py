@@ -1,12 +1,13 @@
 import discord
 
-from ...objects import Command, Message
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
     'ping',
     syntax=None,
     description='Sprawdza opóźnienie wysyłania wiadomości bota.',
+    category=Category.BOT,
     cooldown=2,
 )
 

@@ -2,13 +2,14 @@ from datetime import datetime, timedelta
 
 import discord
 
-from ...objects import Command, Message, snipes
+from ...objects import Category, Command, Message, snipes
 
 
 COMMAND = Command(
     'snipe',
     syntax=None,
     description='Pokazuje usunięte lub edytowane wiadomości.',
+    category=Category.UTILS,
     cooldown=1
 )
 

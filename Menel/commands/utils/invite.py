@@ -1,13 +1,14 @@
 import discord
 
 from ...functions import clean_content, get_user
-from ...objects import Command, Message
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
     'invite',
     syntax=None,
     description='Tworzy link zaproszenia dowolnego bota.',
+    category=Category.UTILS,
     cooldown=2
 )
 

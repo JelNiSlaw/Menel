@@ -1,12 +1,14 @@
 import aiohttp
 
-from ...objects import Command, Message
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
     'dlist',
     syntax=None,
     description='Pokazuje dane o serwerze ze strony DList.top.',
+    aliases=('dlist.top', 'dlista', 'votes', 'głosy'),
+    category=Category.OTHER,
     cooldown=5
 )
 

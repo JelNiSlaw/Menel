@@ -4,7 +4,7 @@ import aiohttp
 import discord
 
 from ...functions import codeblock, cut_long_text
-from ...objects import Command, Message
+from ...objects import Category, Command, Message
 from ...resources.regexes import CODEBLOCK
 
 
@@ -12,6 +12,8 @@ COMMAND = Command(
     'eval',
     syntax=None,
     description='Wykonuje dowolny kod.',
+    aliases=('run',),
+    category=Category.UTILS,
     cooldown=3
 )
 

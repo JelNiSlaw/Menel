@@ -6,13 +6,14 @@ from discord import File
 from pyppeteer import launch
 from pyppeteer.errors import NetworkError, PageError, TimeoutError
 
-from ...objects import bot, Command, Message
+from ...objects import bot, Category, Command, Message
 
 
 COMMAND = Command(
     'webimg',
     syntax=None,
     description='Wykonuje zdjęcie wybranej strony.',
+    category=Category.UTILS,
     cooldown=5
 )
 

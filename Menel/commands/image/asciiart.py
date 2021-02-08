@@ -7,13 +7,15 @@ import discord
 from PIL import Image
 
 from ...functions import imperialbin_upload
-from ...objects import bot, Command, Message
+from ...objects import bot, Category, Command, Message
 
 
 COMMAND = Command(
     'asciiart',
     syntax=None,
     description='Tworzy ASCII art z załączonego obrazka',
+    aliases=('ascii-art', 'ascii'),
+    category=Category.IMAGE,
     cooldown=5
 )
 
@@ -25,7 +27,7 @@ CHARSETS = (
 
 
 def setup(cliffs):
-    @cliffs.command('(ascii|asciiart|ascii-art) {[(blocks|standard|minimal):charset] [invert|inv|inverted]:invert}',
+    @cliffs.command('(asciiart|ascii-art|ascii) {[(blocks|standard|minimal):charset] [invert|inv|inverted]:invert}',
         command=COMMAND)
     async def command(m: Message, charset=0, invert=None):
         if not m.attachments:

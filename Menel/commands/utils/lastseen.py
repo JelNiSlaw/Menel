@@ -2,13 +2,15 @@ import discord
 import humanize
 
 from ...functions import clean_content, get_user
-from ...objects import Command, database, Message
+from ...objects import Category, Command, database, Message
 
 
 COMMAND = Command(
     'lastseen',
     syntax=None,
     description='Pokazuję ostatnią datę kiedy wybrana osoba była online.',
+    aliases=('lastonline',),
+    category=Category.UTILS,
     cooldown=2
 )
 

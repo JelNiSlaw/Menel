@@ -1,19 +1,20 @@
 from random import choice
 
-from ...objects import Command
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
     'dywan',
     syntax=None,
     description='Wysyła darmowy dywan.',
+    category=Category.OTHER,
     cooldown=3
 )
 
 
 def setup(cliffs):
     @cliffs.command('dywan [<width: int>] [<length: int>]', command=COMMAND)
-    async def command(m, width=15, length=10):
+    async def command(m: Message, width=15, length=10):
         if width <= 0 or length <= 0:
             await m.error('Taki dywan byłby za mały, kasztanie')
             return

@@ -3,13 +3,14 @@ from os import getenv
 import aiohttp
 
 from ...functions import clean_content
-from ...objects import Command, Message
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
     'pxseu',
     syntax=None,
     description='Wysyła anonimową wiadomość przez API pxseu.',
+    category=Category.OTHER,
     cooldown=5
 )
 

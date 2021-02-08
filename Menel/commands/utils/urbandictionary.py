@@ -5,13 +5,15 @@ import aiohttp
 import discord
 
 from ...functions import clean_content, cut_long_text
-from ...objects import Command, Message
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
     'urbandictionary',
     syntax=None,
     description='Wysyła definicję ze słownika Urban Dictionary.',
+    aliases=('urban-dictionary', 'urban', 'ud'),
+    category=Category.UTILS,
     cooldown=5
 )
 

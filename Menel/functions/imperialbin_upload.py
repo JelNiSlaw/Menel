@@ -3,6 +3,8 @@ from typing import Optional
 
 import aiohttp
 
+from . import cut_long_text
+
 
 class ImperialbinPaste:
     def __init__(
@@ -30,12 +32,13 @@ async def imperialbin_upload(
         instant_delete: bool = False,
         image_embed: bool = True,
         expiration: int = 7,
+        max_len: int = 2**16,
         language: Optional[str] = None
 ) -> ImperialbinPaste:
     async with aiohttp.request(
             'POST', 'https://imperialb.in/api/postCode/',
             json={
-                'code': text,
+                'code': cut_long_text(text, max_len),
                 'apiToken': getenv('IMPERIALBIN_TOKEN'),
                 'longerUrls': longer_urls,
                 'instantDelete': instant_delete,

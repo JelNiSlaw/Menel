@@ -4,13 +4,14 @@ from math import ceil
 from discord import Colour, Embed
 
 from ...functions import plural_time
-from ...objects import Command, cooldowns, Message
+from ...objects import Category, Command, cooldowns, Message
 
 
 COMMAND = Command(
     'cooldowns',
     syntax=None,
     description='Pokazuje obecne spowolnienia komend.',
+    category=Category.OTHER,
     cooldown=2
 )
 

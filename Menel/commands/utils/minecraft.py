@@ -6,13 +6,15 @@ import aiohttp
 import discord
 
 from ...functions import clean_content
-from ...objects import Command, Message
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
     'minecraft',
     syntax=None,
     description='Pokazuje skin wybranego gracza.',
+    aliases=('mc', 'skin'),
+    category=Category.UTILS,
     cooldown=3
 )
 

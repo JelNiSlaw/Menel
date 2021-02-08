@@ -20,28 +20,34 @@ async def dispatch(command: str, m: Message, prefix: str):
     try:
         result, command = cliffs.dispatch(command, m=m, prefix=prefix)
     except MismatchedLiteralSuggestion as e:
-        notice_msg = await m.error(dispatch_errors.mismatched_literal_suggestion(e))
-        await redispatch(e, command, m, prefix, notice_msg)
+        if not e.command.kwargs['command'].hidden:
+            notice_msg = await m.error(dispatch_errors.mismatched_literal_suggestion(e))
+            await redispatch(e, command, m, prefix, notice_msg)
 
     except MismatchedParameterType as e:
-        await m.error(dispatch_errors.mismatched_parameter_type(e))
+        if not e.command.kwargs['command'].hidden:
+            await m.error(dispatch_errors.mismatched_parameter_type(e))
 
-    except TooManyArguments:
-        await m.error(dispatch_errors.too_many_arguments())
+    except TooManyArguments as e:
+        if not e.command.kwargs['command'].hidden:
+            await m.error(dispatch_errors.too_many_arguments())
 
     except (MissingLiteral,
             MissingParameter,
             MissingTail,
             MissingUnorderedGroup,
             MissingVariant,
-            UnmatchedUnorderedGroup):
-        await m.error(dispatch_errors.missing_arguments())
+            UnmatchedUnorderedGroup) as e:
+        if not e.command.kwargs['command'].hidden:
+            await m.error(dispatch_errors.missing_arguments())
 
-    except (MismatchedLiteral, NoMatchedVariant):
-        await m.error(dispatch_errors.no_matched_variant())
+    except (MismatchedLiteral, NoMatchedVariant) as e:
+        if not e.command.kwargs['command'].hidden:
+            await m.error(dispatch_errors.no_matched_variant())
 
-    except CallMatchFail:
-        await m.error(dispatch_errors.call_match_fail())
+    except CallMatchFail as e:
+        if not e.command.kwargs['command'].hidden:
+            await m.error(dispatch_errors.call_match_fail())
 
     except UnknownCommandError:
         pass
@@ -55,19 +61,19 @@ async def dispatch(command: str, m: Message, prefix: str):
 
         command = command.kwargs['command']
 
-        if global_perms(m) < command.global_perms:
-            if not cooldowns.auto(m.author.id, '_global_perms', 2):
+        if command.global_perms and global_perms(m) < command.global_perms:
+            if command.global_perms < 5 and not cooldowns.auto(m.author.id, '_global_perms', 2):
                 await m.error(dispatch_errors.missing_global_perms(command.global_perms), delete_after=10)
             Task(result).cancel()
             return
 
-        if not command.user_perms < m.author.permissions_in(m.channel):
+        if command.user_perms and not command.user_perms < m.author.permissions_in(m.channel):
             if not cooldowns.auto(m.author.id, '_user_perms', 2):
                 await m.error(dispatch_errors.missing_user_perms(command.user_perms), delete_after=10)
             Task(result).cancel()
             return
 
-        if not command.bot_perms < m.guild.me.permissions_in(m.channel):
+        if command.bot_perms and not command.bot_perms < m.guild.me.permissions_in(m.channel):
             if not cooldowns.auto(m.author.id, '_bot_perms', 2):
                 await m.error(dispatch_errors.missing_bot_perms(command.bot_perms), delete_after=10)
             Task(result).cancel()
@@ -84,4 +90,4 @@ async def dispatch(command: str, m: Message, prefix: str):
             await result
         except Exception as e:
             print_exc()
-            await m.error(f'An error occurred\n{clean_content(f"{type(e).__name__}: {e}")}')
+            await m.error(f'Wystąpił błąd:\n{clean_content(f"{type(e).__name__}: {e}")}')

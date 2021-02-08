@@ -5,13 +5,15 @@ from os import getenv
 import aiohttp
 import discord
 
-from ...objects import Command, Message
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
     'jezus',
     syntax=None,
     description='Wysyła losowe zdjęcie Jezusa.',
+    aliases=('jesus',),
+    category=Category.IMAGE,
     cooldown=3
 )
 
