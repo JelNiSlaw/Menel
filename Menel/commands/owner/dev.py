@@ -5,7 +5,8 @@ from time import perf_counter
 
 import discord
 
-from ...functions import get_user, imperialbin_upload
+from ...functions import get_user
+from ...helpers import imperialbin_upload
 from ...objects import bot, Category, Command, Message
 from ...resources.regexes import CODEBLOCK
 

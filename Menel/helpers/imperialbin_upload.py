@@ -3,7 +3,7 @@ from typing import Optional
 
 import aiohttp
 
-from . import cut_long_text
+from ..functions import cut_long_text
 
 
 class ImperialbinPaste:

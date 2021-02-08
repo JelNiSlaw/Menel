@@ -6,7 +6,7 @@ from textwrap import dedent
 import discord
 from PIL import Image
 
-from ...functions import imperialbin_upload
+from ...helpers import imperialbin_upload
 from ...objects import bot, Category, Command, Message
 
 
