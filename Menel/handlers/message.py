@@ -2,6 +2,7 @@ import discord
 
 from ..command_dispatcher import dispatch
 from ..functions import constant_length_text as const_len, cut_long_text
+from ..modules import autoresponders
 from ..objects import cooldowns, Menel, Message
 from ..resources import regexes
 
@@ -29,3 +30,6 @@ def setup(bot: Menel):
 
         elif match := regexes.mention(bot.user.id).match(m.content):
             await dispatch(m.content[len(match.group()):], m, f'@{bot.user.name}')
+
+        else:
+            await autoresponders.respond(m)

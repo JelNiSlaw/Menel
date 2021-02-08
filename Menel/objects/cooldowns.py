@@ -28,7 +28,7 @@ class Cooldowns:
             self.cooldowns[user_id][command] = (datetime.utcnow() + timedelta(seconds=time)).timestamp()
 
 
-    def auto(self, user_id: int, command: str, time: int, include_owner: bool = False) -> Optional[float]:
+    def auto(self, user_id: Optional[int], command: str, time: int, *, include_owner: bool = False) -> Optional[float]:
         cooldown = self.get(user_id, command, include_owner=include_owner)
 
         if not cooldown:
