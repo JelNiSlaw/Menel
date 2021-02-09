@@ -4,9 +4,7 @@ from ..objects import cooldowns, Message
 
 
 async def respond(m: Message):
-    if 'wafelki' in m.content.lower().split() and \
-            random.random() < 0.5 and \
-            not cooldowns.auto(None, '_autoresponders', 5, include_owner=True):
+    if 'wafelki' in m.content.lower() and not cooldowns.auto(None, '_wafelki', 3, include_owner=True):
         await m.send(random.choice((
             '<:wafelki:808343862384787466>',
             '<a:wafelki_spin:808344860398583868>',
