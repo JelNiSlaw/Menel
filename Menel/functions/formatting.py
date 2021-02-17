@@ -14,17 +14,13 @@ def strikethrough(text: str) -> str:
     return f'~~{text}~~'
 
 
-def code(text: str, escape: bool = True) -> str:
-    return f'`{_escape_code(text) if escape else text}`'
+def code(text: str) -> str:
+    return f'`{text}`'
 
 
 def codeblock(text: str, language: str = '', escape: bool = True) -> str:
-    return f'```{language}\n{_escape_code(text) if escape else text}\n```'
+    return f'```{language}\n{text.replace("`", "​`") if escape else text}\n```'
 
 
 def spoiler(text: str) -> str:
     return f'||{text}||'
-
-
-def _escape_code(text: str) -> str:
-    return text.replace('`', '​`')

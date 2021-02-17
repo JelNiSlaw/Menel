@@ -5,12 +5,12 @@ import discord
 
 
 class Category(Enum):
-    BOT = 'bot'
-    UTILS = 'utils'
-    MODERATION = 'moderation'
-    IMAGE = 'image'
-    OTHER = 'other'
-    OWNER = 'owner'
+    BOT = 'Bot'
+    UTILS = 'Narzędzia'
+    MODERATION = 'Moderacja'
+    IMAGE = 'Obrazki'
+    OTHER = 'Inne'
+    OWNER = 'Deweloperskie'
 
 
 class Command:
