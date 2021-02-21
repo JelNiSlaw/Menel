@@ -13,8 +13,8 @@ class Menel(AutoShardedClient):
 
     async def fetch_owner(self):
         app = await self.application_info()
-        self.owner = app.owner.id
-        return app.owner
+        self.owner = app.team.owner if app.team else app.owner
+        return self.owner
 
 
 # noinspection PyTypeChecker

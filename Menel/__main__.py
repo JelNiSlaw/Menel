@@ -2,8 +2,7 @@ import os
 
 from . import commands, handlers
 from .objects import bot
-from .setup.auto_import import auto_import
-from .setup.setup_cliffs import cliffs
+from .setup import auto_import, cliffs
 
 
 auto_import(commands, cliffs, add_to_help=True)

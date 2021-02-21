@@ -4,7 +4,7 @@ from ..objects import bot, Message
 
 
 def global_perms(m: Message) -> int:
-    if m.author.id == bot.owner:
+    if m.author == bot.owner:
         return 5  # bot owner
     elif m.author == m.guild.owner:
         return 4  # guild owner

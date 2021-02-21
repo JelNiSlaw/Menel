@@ -6,7 +6,7 @@ from discord import File
 from pyppeteer import launch
 from pyppeteer.errors import NetworkError, PageError, TimeoutError
 
-from ...objects import bot, Category, Command, Message
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
@@ -28,16 +28,16 @@ def setup(cliffs):
 
         async with m.channel.typing():
             try:
-                browser = await launch(ignoreHTTPSErrors=True, headless=True, loop=bot.loop, args=['--no-sandbox'])
+                browser = await launch(ignoreHTTPSErrors=True, headless=True, args=['--no-sandbox'])
             except http.client.BadStatusLine:
                 await m.error('Nie udało się otworzyć przeglądarki. Spróbuj ponownie.')
                 return
 
             page = await browser.newPage()
-            await page.setViewport({'width': 2048, 'height': 1024, 'deviceScaleFactor': 2})
+            await page.setViewport({'width': 2048, 'height': 1024, 'deviceScaleFactor': 1 if fullpage else 2})
 
             try:
-                await page.goto(url, timeout=60000)
+                await page.goto(url, timeout=30000)
             except TimeoutError:
                 await m.error('Minął czas na wczytanie strony.')
             except (PageError, NetworkError):

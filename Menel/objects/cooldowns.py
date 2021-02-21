@@ -14,7 +14,7 @@ class Cooldowns:
         if user_id not in self.cooldowns or command not in self.cooldowns[user_id]:
             return None
 
-        if user_id == bot.owner and not include_owner:
+        if not include_owner and user_id == bot.owner.id:
             return None
 
         if self.cooldowns[user_id][command] <= datetime.utcnow().timestamp():
