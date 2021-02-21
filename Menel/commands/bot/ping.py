@@ -2,7 +2,7 @@ from time import perf_counter
 
 import discord
 
-from ...objects import bot, Category, Command, Message
+from ...objects import Category, Command, Message, bot
 
 
 COMMAND = Command(

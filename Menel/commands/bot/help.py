@@ -3,7 +3,7 @@ from collections import defaultdict
 import discord
 
 from ...functions import code
-from ...objects import bot, Category, Command, commands, Message
+from ...objects import Category, Command, Message, bot, commands
 
 
 COMMAND = Command(

@@ -3,7 +3,7 @@ import asyncio
 import discord
 from cliffs import MismatchedLiteralSuggestion
 
-from ..objects import bot, Message
+from ..objects import Message, bot
 
 
 async def redispatch(e: MismatchedLiteralSuggestion, command: str, m: Message, prefix: str, notice_msg: Message):

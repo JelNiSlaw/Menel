@@ -2,6 +2,8 @@ from datetime import datetime
 
 import discord
 
+from ..functions import embed_with_author
+
 
 class Message(discord.Message):
     def __init__(self, message: discord.Message):
@@ -15,7 +17,8 @@ class Message(discord.Message):
 
     async def send(self, *args, reply: bool = True, **kwargs) -> discord.Message:
         if 'reference' in kwargs and not self.channel.permissions_for(self.guild.me).is_superset(
-                discord.Permissions(read_message_history=True)):
+                discord.Permissions(read_message_history=True)
+        ):
             kwargs.pop('reference')
         elif reply:
             kwargs['reference'] = self.message
@@ -37,7 +40,7 @@ class Message(discord.Message):
 
     async def _send_embed(self, desc: str, color: discord.Colour, **kwargs) -> discord.Message:
         embed = discord.Embed(description=desc, colour=color)
-        embed.set_author(name=str(self.author), icon_url=str(self.author.avatar_url_as(size=256)))
+        embed = embed_with_author(self.author, embed)
         return await self.send(embed=embed, **kwargs)
 
 

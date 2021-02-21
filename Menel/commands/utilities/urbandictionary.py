@@ -65,7 +65,9 @@ def setup(cliffs):
                 inline=False
             )
 
-            embed.set_footer(text=f'Author: {clean_content(json["author"])}\n'
-                                  f'👍 {json["thumbs_up"]} 👎 {json["thumbs_down"]}')
+            embed.set_footer(
+                text=f'Author: {clean_content(json["author"])}\n'
+                     f'👍 {json["thumbs_up"]} 👎 {json["thumbs_down"]}'
+            )
 
             await m.send(embed=embed)

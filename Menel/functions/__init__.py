@@ -1,3 +1,4 @@
+from .embed_with_author import embed_with_author
 from .formatting import bold, code, codeblock, italic, spoiler, strikethrough, underlined
 from .get_user import get_user
 from .global_perms import global_perms

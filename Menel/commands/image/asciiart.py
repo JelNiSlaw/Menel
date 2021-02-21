@@ -7,7 +7,7 @@ import discord
 from PIL import Image
 
 from ...helpers import imperialbin_upload
-from ...objects import bot, Category, Command, Message
+from ...objects import Category, Command, Message, bot
 
 
 COMMAND = Command(
@@ -27,8 +27,10 @@ CHARSETS = (
 
 
 def setup(cliffs):
-    @cliffs.command('(asciiart|ascii-art|ascii) {[(blocks|standard|minimal):charset] [invert|inv|inverted]:invert}',
-        command=COMMAND)
+    @cliffs.command(
+        '(asciiart|ascii-art|ascii) {[(blocks|standard|minimal):charset] [invert|inv|inverted]:invert}',
+        command=COMMAND
+    )
     async def command(m: Message, charset=0, invert=None):
         if not m.attachments:
             await m.error('Załącz najpierw jakiś plik.')
@@ -47,8 +49,7 @@ def setup(cliffs):
         # generate ASCII art in a new thread
         ascii_img = await bot.loop.run_in_executor(
             futures.ThreadPoolExecutor(),
-            lambda: image_to_ascii(
-                image, CHARSETS[charset], invert is not None)
+            lambda: image_to_ascii(image, CHARSETS[charset], invert is not None)
         )
 
         paste = await imperialbin_upload(ascii_img, expiration=2, language='NONE')
@@ -69,7 +70,7 @@ def setup(cliffs):
             image = image.resize((round(image.width / image.height * 300), 150), Image.LANCZOS)
 
         if invert:
-            charset = reversed(charset)
+            charset = charset[::-1]
 
         image = image.convert('L')
 

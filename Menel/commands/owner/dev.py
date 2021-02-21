@@ -7,7 +7,7 @@ import discord
 
 from ...functions import get_user
 from ...helpers import imperialbin_upload
-from ...objects import bot, Category, Command, Message
+from ...objects import Category, Command, Message, bot
 from ...resources.regexes import CODEBLOCK
 
 

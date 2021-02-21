@@ -15,18 +15,18 @@ class Category(Enum):
 
 class Command:
     def __init__(
-            self,
-            name: str,
-            *,
-            syntax: Optional[str],
-            description: str,
-            aliases: Optional[tuple] = None,
-            category: Category,
-            cooldown: Optional[int] = None,
-            global_perms: int = 0,
-            user_perms: Optional[discord.Permissions] = None,
-            bot_perms: Optional[discord.Permissions] = None,
-            hidden: bool = False
+        self,
+        name: str,
+        *,
+        syntax: Optional[str],
+        description: str,
+        aliases: Optional[tuple] = None,
+        category: Category,
+        cooldown: Optional[int] = None,
+        global_perms: int = 0,
+        user_perms: Optional[discord.Permissions] = None,
+        bot_perms: Optional[discord.Permissions] = None,
+        hidden: bool = False
     ):
         self.name = name
         self.syntax = syntax

@@ -12,7 +12,7 @@ from cliffs.syntax_tree.variant_group import NoMatchedVariant
 from . import dispatch_errors
 from .redispatch import redispatch
 from ..functions import clean_content, global_perms
-from ..objects import cooldowns, Message
+from ..objects import Message, cooldowns
 from ..setup import cliffs
 
 
@@ -32,12 +32,14 @@ async def dispatch(command: str, m: Message, prefix: str):
         if not e.command.kwargs['command'].hidden:
             await m.error(dispatch_errors.too_many_arguments())
 
-    except (MissingLiteral,
+    except (
+            MissingLiteral,
             MissingParameter,
             MissingTail,
             MissingUnorderedGroup,
             MissingVariant,
-            UnmatchedUnorderedGroup) as e:
+            UnmatchedUnorderedGroup
+    ) as e:
         if not e.command.kwargs['command'].hidden:
             await m.error(dispatch_errors.missing_arguments())
 

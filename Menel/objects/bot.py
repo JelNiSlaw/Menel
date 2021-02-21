@@ -11,7 +11,7 @@ class Menel(AutoShardedClient):
         self.cooldowns = {}
 
 
-    async def fetch_owner(self):
+    async def fetch_owner(self) -> discord.User:
         app = await self.application_info()
         self.owner = app.team.owner if app.team else app.owner
         return self.owner

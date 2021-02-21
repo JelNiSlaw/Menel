@@ -28,7 +28,10 @@ def setup(cliffs):
                     await m.error(
                         {
                             'not found': 'Ten serwer nie został dodany na DList.top.'
-                        }.get(this_guild.get('error'), this_guild.get('error', 'DList.top nie zwróciła treści błędu.'))
+                        }.get(
+                            this_guild.get('error'),
+                            this_guild.get('error', 'DList.top nie zwróciła treści błędu.')
+                        )
                     )
                     return
 
@@ -41,8 +44,10 @@ def setup(cliffs):
             else:
                 top_guild = await top_guild.json()
                 if top_guild.get('status') != 'success':
-                    await m.error('Podczas pobierania danych pierwszego serwera DList.top zwórciła błąd: ' +
-                                  top_guild.get('error') + '.')
+                    await m.error(
+                        'Podczas pobierania danych pierwszego serwera DList.top zwórciła błąd: ' +
+                        top_guild.get('error') + '.'
+                    )
                     return
 
         this_votes = this_guild["data"].get("votes", "?")
@@ -52,7 +57,8 @@ def setup(cliffs):
         else:
             percent = '?'
 
-        await m.info(f'Głosy tego serwera: {this_votes}\n'
-                     f'Głosy pierwszego serwera: {top_votes}\n'
-                     f'Procent głosów pierwszego serwera: {percent}%'
+        await m.info(
+            f'Głosy tego serwera: {this_votes}\n'
+            f'Głosy pierwszego serwera: {top_votes}\n'
+            f'Procent głosów pierwszego serwera: {percent}%'
         )

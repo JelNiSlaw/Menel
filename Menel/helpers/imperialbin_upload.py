@@ -8,14 +8,14 @@ from ..functions import cut_long_text
 
 class ImperialbinPaste:
     def __init__(
-            self,
-            *,
-            success: bool,
-            document_id: str,
-            raw_link: str,
-            formatted_link: str,
-            expires_in: int,
-            instant_delete: bool
+        self,
+        *,
+        success: bool,
+        document_id: str,
+        raw_link: str,
+        formatted_link: str,
+        expires_in: int,
+        instant_delete: bool
     ):
         self.success = success
         self.document_id = document_id
@@ -26,14 +26,14 @@ class ImperialbinPaste:
 
 
 async def imperialbin_upload(
-        text: str,
-        *,
-        longer_urls: bool = True,
-        instant_delete: bool = False,
-        image_embed: bool = True,
-        expiration: int = 7,
-        max_len: int = 2 ** 16,
-        language: Optional[str] = None
+    text: str,
+    *,
+    longer_urls: bool = True,
+    instant_delete: bool = False,
+    image_embed: bool = True,
+    expiration: int = 7,
+    max_len: int = 2 ** 16,
+    language: Optional[str] = None
 ) -> ImperialbinPaste:
     async with aiohttp.request(
             'POST', 'https://imperialb.in/api/postCode/',

@@ -1,1 +1,2 @@
+from .imgur_upload import imgur_upload
 from .imperialbin_upload import imperialbin_upload

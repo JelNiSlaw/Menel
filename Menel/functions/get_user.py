@@ -8,10 +8,10 @@ from ..resources.regexes import DISCORD_ID, USER_MENTION
 
 
 async def get_user(
-        search: str,
-        guild: Optional[discord.Guild] = None,
-        force_member: bool = False,
-        force_fetch: bool = False
+    search: str,
+    guild: Optional[discord.Guild] = None,
+    force_member: bool = False,
+    force_fetch: bool = False
 ) -> Optional[Union[discord.Member, discord.User]]:
     if force_member and not guild:
         raise ValueError

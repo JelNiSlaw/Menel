@@ -3,7 +3,7 @@ import discord
 from ..command_dispatcher import dispatch
 from ..functions import constant_length_text as const_len, cut_long_text
 from ..modules import autoresponders
-from ..objects import cooldowns, Menel, Message
+from ..objects import Menel, Message, cooldowns
 from ..resources import regexes
 
 
@@ -13,8 +13,10 @@ def setup(bot: Menel):
         m = Message(m)
 
         if m.content:
-            print(f'{const_len(str(m.guild), 16)}\t{const_len(str(m.channel), 16)}\t{const_len(str(m.author), 16)}' +
-                  ' -> ' + cut_long_text(m.clean_content, 128))
+            print(
+                f'{const_len(str(m.guild), 16)}\t{const_len(str(m.channel), 16)}\t{const_len(str(m.author), 16)}' +
+                ' -> ' + cut_long_text(m.clean_content, 128)
+            )
 
         if m.author.bot or not m.guild:
             return

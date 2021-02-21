@@ -2,7 +2,7 @@ import discord
 import humanize
 
 from ...functions import clean_content, get_user
-from ...objects import Category, Command, database, Message
+from ...objects import Category, Command, Message, database
 
 
 COMMAND = Command(
@@ -39,7 +39,7 @@ def setup(cliffs):
             time = 'teraz'
             status = user.status.value
             devices = (device for device, value in
-                       zip(DEVICES, (user.desktop_status, user.web_status, user.mobile_status)) if value)
+                zip(DEVICES, (user.desktop_status, user.web_status, user.mobile_status)) if value)
         else:
             document = await database.lastseen.find_one(user.id)
 

@@ -27,10 +27,14 @@ def setup(cliffs):
                 await m.error('Mogę tworzyć jedynie zaproszenia botów.')
                 return
 
-            await m.info(f'[Link zaproszenia {clean_content(user.name)}]'
-                         f'({discord.utils.oauth_url(user.id, discord.Permissions.none(), m.guild)})')
+            await m.info(
+                f'[Link zaproszenia {clean_content(user.name)}]'
+                f'({discord.utils.oauth_url(user.id, discord.Permissions.none(), m.guild)})'
+            )
         else:
             base = 'https://del.dog/'
-            await m.info(f'[Zaproś mnie na swój serwer]({base}Menel)\n'
-                         f'[Zaproś mnie na swój serwer z uprawnieniami administratora]({base}MenelA)\n'
-                         f'[Zaproś mnie na swój serwer bez dodatkowych uprawnień]({base}MenelNP)')
+            await m.info(
+                f'[Zaproś mnie na swój serwer]({base}Menel)\n'
+                f'[Zaproś mnie na swój serwer z uprawnieniami administratora]({base}MenelA)\n'
+                f'[Zaproś mnie na swój serwer bez dodatkowych uprawnień]({base}MenelNP)'
+            )

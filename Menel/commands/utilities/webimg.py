@@ -2,10 +2,12 @@ import http.client
 from asyncio import sleep
 from io import BytesIO
 
-from discord import File
+import discord
 from pyppeteer import launch
 from pyppeteer.errors import NetworkError, PageError, TimeoutError
 
+from ...functions import embed_with_author
+from ...helpers import imgur_upload
 from ...objects import Category, Command, Message
 
 
@@ -21,11 +23,6 @@ COMMAND = Command(
 def setup(cliffs):
     @cliffs.command('webimg [scrolling|fullpage]:fullpage <url: url>', command=COMMAND)
     async def command(m: Message, url, fullpage=None):
-        if not m.channel.nsfw:
-            await m.error('Strony mogą zawierać treści NSFW.\n'
-                          'Ta komenda działa jedynie na kanałach oznaczonych jako NSFW.')
-            return
-
         async with m.channel.typing():
             try:
                 browser = await launch(ignoreHTTPSErrors=True, headless=True, args=['--no-sandbox'])
@@ -54,7 +51,26 @@ def setup(cliffs):
                 except NetworkError as e:
                     await m.error(str(e))
                 else:
-                    await m.send(file=File(BytesIO(screenshot), 'screenshot.png'))
+                    embed = discord.Embed(colour=discord.Colour.green())
+                    embed = embed_with_author(m.author, embed)
+                    if m.channel.nsfw:
+                        embed.set_image(url='attachment://screenshot.png')
+                        await m.send(embed=embed, file=discord.File(BytesIO(screenshot), 'screenshot.png'))
+                    else:
+                        json = await imgur_upload(screenshot)
+
+                        if not json['success']:
+                            error = json["data"]["error"]
+                            if isinstance(error, dict):
+                                error = f'{error["type"]}: {error["message"]}'
+
+                            await m.error(f'Nie udało mi się przesłać zdjęcia na Imgur.\n{error}')
+                            return
+
+                        embed.description = f'Zdjęcie strony: {json["data"]["link"]}'
+                        embed.set_footer(text='Podgląd dostępny jest jedynie na kanałach NSFW')
+
+                        await m.send(embed=embed)
 
             finally:
                 await browser.close()
