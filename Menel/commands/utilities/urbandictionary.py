@@ -61,7 +61,7 @@ def setup(cliffs):
 
             embed.add_field(
                 name='Example',
-                value=cut_long_text(clean_content(remove_brackets(json['example'])), 1024),
+                value=cut_long_text(clean_content(remove_brackets(json['example']))),
                 inline=False
             )
 
