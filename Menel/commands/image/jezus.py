@@ -22,8 +22,8 @@ def setup(cliffs):
     @cliffs.command('jezus|jesus', command=COMMAND)
     async def command(m: Message):
         async with aiohttp.request(
-                'GET', 'https://api.badosz.com/jesus',
-                headers={'Authorization': getenv('BADOSZ_TOKEN')},
+                'GET', 'https://obrazium.com/v1/jesus',
+                headers={'Authorization': getenv('OBRAZIUM_TOKEN')},
                 timeout=aiohttp.ClientTimeout(total=10)
         ) as r:
             if r.status == 200:
