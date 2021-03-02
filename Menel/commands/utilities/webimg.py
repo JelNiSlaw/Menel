@@ -25,7 +25,9 @@ def setup(cliffs):
     async def command(m: Message, url, fullpage=None):
         async with m.channel.typing():
             try:
-                browser = await launch(ignoreHTTPSErrors=True, headless=True, args=['--no-sandbox'])
+                browser = await launch(
+                    ignoreHTTPSErrors=True, headless=True, args=['--no-sandbox', '--disable-dev-shm-usage']
+                )
             except http.client.BadStatusLine:
                 await m.error('Nie udało się otworzyć przeglądarki. Spróbuj ponownie.')
                 return
