@@ -23,7 +23,7 @@ def setup(cliffs):
         async with aiohttp.request(
                 'POST', 'https://cooltext.com/PostChange',
                 data={
-                    'LogoID': 3779758524,
+                    'LogoID': 4,
                     'Text': text,
                     'FontSize': 70,
                     'Color1_color': '#FF0000',
