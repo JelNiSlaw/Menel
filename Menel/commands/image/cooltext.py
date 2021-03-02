@@ -33,6 +33,7 @@ def setup(cliffs):
                     'Integer12': 'on',
                     'BackgroundColor_color': '#000000'
                 },
+                connector=aiohttp.TCPConnector(verify_ssl=False),
                 timeout=aiohttp.ClientTimeout(total=20)
         ) as r:
             file_url = (await r.json())['renderLocation']
