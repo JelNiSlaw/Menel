@@ -33,12 +33,15 @@ def setup(cliffs):
                     'Integer12': 'on',
                     'BackgroundColor_color': '#000000'
                 },
-                connector=aiohttp.TCPConnector(verify_ssl=False),
                 timeout=aiohttp.ClientTimeout(total=20)
         ) as r:
             file_url = (await r.json())['renderLocation']
 
-        async with aiohttp.request('GET', file_url, timeout=aiohttp.ClientTimeout(total=10)) as r:
+        async with aiohttp.request(
+                'GET', file_url,
+                connector=aiohttp.TCPConnector(verify_ssl=False),
+                timeout=aiohttp.ClientTimeout(total=10)
+        ) as r:
             file = await r.read()
 
         embed = discord.Embed(colour=discord.Colour.orange())
