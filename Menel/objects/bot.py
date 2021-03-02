@@ -17,8 +17,6 @@ class Menel(AutoShardedClient):
         return self.owner
 
 
-# noinspection PyTypeChecker
-# bad detected type
 bot = Menel(
     max_messages=10000,
     intents=discord.Intents(

@@ -1,8 +1,9 @@
 import discord
 import humanize
 
-from ...functions import clean_content, get_user
+from ...functions import clean_content, embed_with_author, get_user
 from ...objects import Category, Command, Message, database
+from ...strings import USER_NOT_FOUND
 
 
 COMMAND = Command(
@@ -27,13 +28,14 @@ DEVICES = ('na komputerze', 'w przeglądarce', 'na telefonie')
 
 
 def setup(cliffs):
-    @cliffs.command('(lastseen|lastonline) <user...>', command=COMMAND)
-    async def command(m: Message, user):
-        user = await get_user(user, m.guild)
-
-        if not user:
-            await m.error('Nie znalazłem takiego użytkownika.')
-            return
+    @cliffs.command('(lastseen|lastonline) [<user...>]', command=COMMAND)
+    async def command(m: Message, user=None):
+        if user:
+            if not (user := await get_user(user, m.guild)):
+                await m.error(USER_NOT_FOUND)
+                return
+        else:
+            user = m.author
 
         if isinstance(user, discord.Member) and user.status != discord.Status.offline:
             time = 'teraz'
@@ -57,10 +59,13 @@ def setup(cliffs):
         status = STATUSES[status]
         devices = ', ' + ', '.join(devices)
 
-        await m.success(
-            f'{clean_content(user.name)}:\n'
-            f'Ostatnia aktywność: {time}\n'
-            f'Typ: ' + status + devices +
-            ('\nTen użytkownik nie znajduje się na tym serwerze, więc dane mogą nie być dokładne.'
-             if not isinstance(user, discord.Member) else '')
+        embed = embed_with_author(m.author, discord.Embed(colour=discord.Colour.blurple()))
+
+        embed.description = (
+                f'Ostatnia aktywność: {time}\n'
+                f'Typ: ' + status + devices +
+                ('\nTen użytkownik nie znajduje się na tym serwerze, więc dane mogą nie być dokładne.'
+                 if not isinstance(user, discord.Member) else '')
         )
+
+        await m.send(embed=embed)

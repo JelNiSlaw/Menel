@@ -14,8 +14,8 @@ def setup(bot: Menel):
 
         if m.content:
             print(
-                f'{const_len(str(m.guild), 16)}\t{const_len(str(m.channel), 16)}\t{const_len(str(m.author), 16)}' +
-                ' -> ' + cut_long_text(m.clean_content, 128)
+                f'{const_len(str(m.guild), 16)} {const_len(str(m.channel), 16)} {const_len(str(m.author), 16)} '
+                f'{cut_long_text(m.clean_content, 128, 1)}'
             )
 
         if m.author.bot or not m.guild:

@@ -2,6 +2,7 @@ import discord
 
 from ...functions import clean_content, get_user
 from ...objects import Category, Command, Message
+from ...strings import ACCOUNT_NOT_FOUND
 
 
 COMMAND = Command(
@@ -20,7 +21,7 @@ def setup(cliffs):
             user = await get_user(user, m.guild)
 
             if not user:
-                await m.error('Nie znalazłem takiego konta.')
+                await m.error(ACCOUNT_NOT_FOUND)
                 return
 
             if not user.bot:

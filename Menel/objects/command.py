@@ -7,6 +7,7 @@ import discord
 class Category(Enum):
     BOT = 'Bot'
     UTILS = 'Narzędzia'
+    DISCORD_UTILS = 'Narzędzia do Discorda'
     MODERATION = 'Moderacja'
     IMAGE = 'Obrazki'
     OTHER = 'Inne'
