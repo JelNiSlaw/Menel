@@ -17,19 +17,21 @@ from ..setup import cliffs
 
 
 async def dispatch(command: str, m: Message, prefix: str):
+    can_send_embeds = m.channel.permissions_for(m.guild.me).embed_links
+
     try:
         result, command = cliffs.dispatch(command, m=m, prefix=prefix)
     except MismatchedLiteralSuggestion as e:
-        if not e.command.kwargs['command'].hidden:
+        if can_send_embeds and not e.command.kwargs['command'].hidden:
             notice_msg = await m.error(dispatch_errors.mismatched_literal_suggestion(e))
             await redispatch(e, command, m, prefix, notice_msg)
 
     except MismatchedParameterType as e:
-        if not e.command.kwargs['command'].hidden:
+        if can_send_embeds and not e.command.kwargs['command'].hidden:
             await m.error(dispatch_errors.mismatched_parameter_type(e))
 
     except TooManyArguments as e:
-        if not e.command.kwargs['command'].hidden:
+        if can_send_embeds and not e.command.kwargs['command'].hidden:
             await m.error(dispatch_errors.too_many_arguments())
 
     except (
@@ -40,15 +42,15 @@ async def dispatch(command: str, m: Message, prefix: str):
             MissingVariant,
             UnmatchedUnorderedGroup
     ) as e:
-        if not e.command.kwargs['command'].hidden:
+        if can_send_embeds and not e.command.kwargs['command'].hidden:
             await m.error(dispatch_errors.missing_arguments())
 
     except (MismatchedLiteral, NoMatchedVariant) as e:
-        if not e.command.kwargs['command'].hidden:
+        if can_send_embeds and not e.command.kwargs['command'].hidden:
             await m.error(dispatch_errors.no_matched_variant())
 
     except CallMatchFail as e:
-        if not e.command.kwargs['command'].hidden:
+        if can_send_embeds and not e.command.kwargs['command'].hidden:
             await m.error(dispatch_errors.call_match_fail())
 
     except UnknownCommandError:
@@ -58,7 +60,10 @@ async def dispatch(command: str, m: Message, prefix: str):
         if not result:
             return
 
-        if not m.guild.me.permissions_in(m.channel).send_messages:
+        if not can_send_embeds:
+            if not cooldowns.auto(m.author.id, '_no_embeds', 2):
+                await m.send('Nie mam uprawnień do wysyłania tu embedów')
+            Task(result).cancel()
             return
 
         command = command.kwargs['command']
