@@ -21,7 +21,6 @@ AUTO = 'auto'
 def setup(cliffs):
     @cliffs.command('(translate|trans|tr) [from <src>] [to <dest>] <text...>', command=COMMAND)
     async def command(m: Message, text, src=AUTO, dest='pl'):
-
         src = src.lower()
         dest = dest.lower()
 
@@ -39,29 +38,30 @@ def setup(cliffs):
                 await m.error('Podano nieprawiłowy język docelowy')
                 return
 
-        async with aiohttp.request(
-                'GET', 'https://translate.googleapis.com/translate_a/single',
-                params={
-                    'sl': src,  # source language
-                    'tl': dest,  # translation language
-                    'q': text,  # query string
-                    'client': 'gtx',  # probably Google Translate Extension
-                    'dj': 1,  # what
-                    'dt': 't'  # what even is this
-                },
-                timeout=aiohttp.ClientTimeout(total=10)
-        ) as r:
-            json = await r.json()
+        async with m.channel.typing():
+            async with aiohttp.request(
+                    'GET', 'https://translate.googleapis.com/translate_a/single',
+                    params={
+                        'sl': src,  # source language
+                        'tl': dest,  # translation language
+                        'q': text,  # query string
+                        'client': 'gtx',  # probably Google Translate Extension
+                        'dj': 1,  # what
+                        'dt': 't'  # what even is this
+                    },
+                    timeout=aiohttp.ClientTimeout(total=10)
+            ) as r:
+                json = await r.json()
 
-        if 'sentences' not in json:
-            await m.error('Tłumacz Google nie zwrócił tłumaczenia')
-            return
+            if 'sentences' not in json:
+                await m.error('Tłumacz Google nie zwrócił tłumaczenia')
+                return
 
-        if src == AUTO:
-            src = json.get('src', AUTO)
+            if src == AUTO:
+                src = json.get('src', AUTO)
 
-        embed = embed_with_author(m.author, discord.Embed(colour=discord.Colour.green()))
-        embed.title = LANGUAGES.get(src, src).capitalize() + ' → ' + LANGUAGES.get(dest, dest).capitalize()
-        embed.description = clean_content(cut_long_text(json['sentences'][0]['trans']))
+            embed = embed_with_author(m.author, discord.Embed(colour=discord.Colour.green()))
+            embed.title = LANGUAGES.get(src, src).capitalize() + ' → ' + LANGUAGES.get(dest, dest).capitalize()
+            embed.description = clean_content(cut_long_text(json['sentences'][0]['trans']))
 
-        await m.send(embed=embed)
+            await m.send(embed=embed)
