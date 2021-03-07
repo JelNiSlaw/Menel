@@ -9,7 +9,7 @@ COMMAND = Command(
     'invite',
     syntax=None,
     description='Tworzy link zaproszenia dowolnego bota.',
-    category=Category.UTILS,
+    category=Category.DISCORD_UTILS,
     cooldown=2
 )
 

@@ -37,12 +37,16 @@ def setup(cliffs):
         ) as r:
             file_url = (await r.json())['renderLocation']
 
+        connector = aiohttp.TCPConnector(verify_ssl=False)
+
         async with aiohttp.request(
                 'GET', file_url,
-                connector=aiohttp.TCPConnector(verify_ssl=False),
+                connector=connector,
                 timeout=aiohttp.ClientTimeout(total=10)
         ) as r:
             file = await r.read()
+
+        await connector.close()
 
         embed = discord.Embed(colour=discord.Colour.orange())
         embed = embed_with_author(m.author, embed)

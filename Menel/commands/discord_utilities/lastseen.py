@@ -11,7 +11,7 @@ COMMAND = Command(
     syntax=None,
     description='Pokazuję ostatnią datę kiedy wybrana osoba była online.',
     aliases=('lastonline',),
-    category=Category.UTILS,
+    category=Category.DISCORD_UTILS,
     cooldown=2
 )
 
