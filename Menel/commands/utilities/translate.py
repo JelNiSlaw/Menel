@@ -19,7 +19,7 @@ AUTO = 'auto'
 
 
 def setup(cliffs):
-    @cliffs.command('(translate|trans|tr) [from <src>] [to <dest>] <text...>', command=COMMAND)
+    @cliffs.command('(translate|trans|tr) {[from <src>] ([to] <dest>)} <text...>', command=COMMAND)
     async def command(m: Message, text, src=AUTO, dest='pl'):
         src = src.lower()
         dest = dest.lower()
@@ -62,6 +62,6 @@ def setup(cliffs):
 
             embed = embed_with_author(m.author, discord.Embed(colour=discord.Colour.green()))
             embed.title = LANGUAGES.get(src, src).capitalize() + ' → ' + LANGUAGES.get(dest, dest).capitalize()
-            embed.description = clean_content(cut_long_text(json['sentences'][0]['trans']))
+            embed.description = clean_content(cut_long_text(' '.join(s['trans'] for s in json['sentences'])))
 
             await m.send(embed=embed)
