@@ -1,1 +1,1 @@
-bot: pyppeteer-install && python -m Menel
+bot: pyppeteer-install & python -m Menel
