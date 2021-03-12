@@ -18,10 +18,10 @@ def setup(cliffs):
     async def command(m: Message, chars):
         output = []
 
-        for c in chars[:5]:
+        for c in chars[:16]:
             output.append(f'{c} – {"U+" + hex(ord(c))[2:].upper().zfill(4)} – {ud.name(c, "UNKNOWN CHARACTER")}')
 
-        if len(chars) > 5:
+        if len(chars) > 16:
             output.append('...')
 
         await m.send(codeblock('\n'.join(output)))
