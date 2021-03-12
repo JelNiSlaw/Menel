@@ -20,8 +20,8 @@ class Database:
             tls=True
         )
 
-        self.database = self.client['bot']
-        self.lastseen = self.database['lastseen']
+        self._database = self.client['bot']
+        self.lastseen = self._database['lastseen']
 
 
-database = Database()
+db = Database()

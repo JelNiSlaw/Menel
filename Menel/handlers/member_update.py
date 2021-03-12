@@ -2,7 +2,7 @@ from datetime import datetime
 
 import discord
 
-from ..objects import Menel, cooldowns, database
+from ..objects import Menel, cooldowns, db
 
 
 def setup(bot: Menel):
@@ -16,7 +16,7 @@ def setup(bot: Menel):
             web = before.web_status != discord.Status.offline
             mobile = before.mobile_status != discord.Status.offline
 
-            await database.lastseen.replace_one(
+            await db.lastseen.replace_one(
                 {'_id': after.id},
                 {
                     'status': before.status.value,

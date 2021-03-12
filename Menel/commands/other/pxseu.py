@@ -16,11 +16,11 @@ COMMAND = Command(
 
 
 def setup(cliffs):
-    @cliffs.command('pxseu <message...>', command=COMMAND)
-    async def command(m: Message, message):
+    @cliffs.command('pxseu [name <name>] <message...>', command=COMMAND)
+    async def command(m: Message, message, name=None):
         async with aiohttp.request(
                 'POST', 'https://www.pxseu.com/api/v2/sendMessage',
-                json={'message': message, 'user': m.author.id},
+                json={'name': name, 'message': message, 'user': m.author.id},
                 headers={'Authorization': 'Bearer ' + getenv('PXSEU_MESSAGE_TOKEN')},
                 timeout=aiohttp.ClientTimeout(total=10)
         ) as r:

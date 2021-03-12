@@ -40,7 +40,7 @@ class Message(discord.Message):
                 try:
                     return await self.channel.send(
                         embed=discord.Embed(
-                            description=cut_long_text(clean_content(e), 512, 4),
+                            description=clean_content(cut_long_text(e, 512, 4)),
                             colour=discord.Colour.red()
                         )
                     )
