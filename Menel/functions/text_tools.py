@@ -2,15 +2,15 @@ import discord
 from discord.utils import escape_markdown, escape_mentions
 
 
-def cut_long_text(text: str, max_length: int = 1024, max_lines: int = 32, end: str = '…') -> str:
+def cut_long_text(text: str, max_length: int = 1024, max_lines: int = 16, end: str = '…') -> str:
     shortened = False
+
+    if len(text.splitlines()) > max_lines:
+        text = ''.join(text.splitlines()[:max_lines])
+        shortened = True
 
     if len(text) > max_length:
         text = text[:max_length - len(end)]
-        shortened = True
-
-    if len(text.splitlines()) > max_lines:
-        text = ''.join(text[:max_lines])
         shortened = True
 
     if shortened:
