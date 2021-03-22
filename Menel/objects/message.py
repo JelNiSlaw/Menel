@@ -28,7 +28,7 @@ class Message(discord.Message):
             kwargs['reference'] = self.message
 
         try:
-            print(f'Sending message to {self.author} in {self.channel}')
+            print(f'Sending a message to @{self.author} in #{self.channel}')
             return await self.channel.send(*args, **kwargs)
 
         except discord.Forbidden as e:

@@ -1,4 +1,5 @@
 from asyncio import Task
+from time import perf_counter
 from traceback import print_exc
 
 from cliffs import (
@@ -93,8 +94,13 @@ async def dispatch(command: str, m: Message, prefix: str):
                 Task(result).cancel()
                 return
 
+        print(f'Running command {command.name} for @{m.author} in #{m.channel}')
+        start = perf_counter()
         try:
             await result
         except Exception as e:
             print_exc()
             await m.error(f'Wystąpił błąd:\n{clean_content(f"{type(e).__name__}: {e}")}')
+
+        stop = perf_counter()
+        print(f'Took {round(stop - start, 3)}s')
