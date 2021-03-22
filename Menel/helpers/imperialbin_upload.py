@@ -32,7 +32,7 @@ async def imperialbin_upload(
     instant_delete: bool = False,
     image_embed: bool = True,
     expiration: int = 7,
-    max_len: int = 2 ** 16,
+    max_len: Optional[int] = 2 ** 16,
     language: Optional[str] = None
 ) -> ImperialbinPaste:
     async with aiohttp.request(
