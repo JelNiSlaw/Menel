@@ -4,6 +4,15 @@ from sys import stdout
 import validators
 from cliffs import CallMatcher, CommandDispatcher
 
+from ..resources.regexes import DISCORD_ID
+
+
+def validate_id(x: str) -> int:
+    if not (match := DISCORD_ID.fullmatch(x)):
+        raise ValueError()
+    else:
+        return int(match.group())
+
 
 def validate_url(url: str) -> str:
     if not validators.url(url):
@@ -22,6 +31,7 @@ def setup_cliffs() -> CommandDispatcher:
     logger.addHandler(sh)
 
     call_matcher = CallMatcher(literal_threshold=2 / 3)
+    call_matcher.register_type(validate_id, 'id')
     call_matcher.register_type(validate_url, 'url')
 
     return CommandDispatcher(

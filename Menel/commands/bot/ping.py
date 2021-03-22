@@ -2,7 +2,7 @@ from time import perf_counter
 
 import discord
 
-from ...objects import Category, Command, Message, bot
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
@@ -25,7 +25,7 @@ def setup(cliffs):
             description=f'Ogólne opóźnienie wiadomości: '
                         f'{round((message.created_at.timestamp() - m.created_at.timestamp()) * 1000)} ms\n'
                         f'Czas wysyłania wiadomości: {round((stop - start) * 1000)} ms\n'
-                        f'Opóźnienie WebSocket: {round(bot.latency * 1000)} ms',
+                        f'Opóźnienie WebSocket: {round(m.bot.latency * 1000)} ms',
             colour=discord.Colour.blurple()
         )
 

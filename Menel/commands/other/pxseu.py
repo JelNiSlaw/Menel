@@ -16,7 +16,7 @@ COMMAND = Command(
 
 
 def setup(cliffs):
-    @cliffs.command('pxseu [name <name>] <message...>', command=COMMAND)
+    @cliffs.command('pxseu [(name|nick) <name>] <message...>', command=COMMAND)
     async def command(m: Message, message, name=None):
         async with aiohttp.request(
                 'POST', 'https://www.pxseu.com/api/v2/sendMessage',

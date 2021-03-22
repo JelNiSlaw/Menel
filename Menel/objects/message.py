@@ -1,7 +1,9 @@
 from datetime import datetime
+from typing import Iterable
 
 import discord
 
+from .bot import bot
 from ..functions import clean_content, cut_long_text, embed_with_author
 
 
@@ -9,6 +11,7 @@ class Message(discord.Message):
     def __init__(self, message: discord.Message):
         self.message = message
         self._created_at = message.created_at
+        self.bot = bot
 
 
     def __getattr__(self, item):
@@ -64,6 +67,11 @@ class Message(discord.Message):
 
     async def error(self, text: str, **kwargs) -> discord.Message:
         return await self._send_embed(text, color=discord.Colour.red(), **kwargs)
+
+
+    async def add_reactions(self, emojis: Iterable) -> None:
+        for e in emojis:
+            await self.add_reaction(e)
 
 
     @property

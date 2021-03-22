@@ -7,7 +7,7 @@ import discord
 from PIL import Image
 
 from ...helpers import imperialbin_upload
-from ...objects import Category, Command, Message, bot
+from ...objects import Category, Command, Message
 
 
 COMMAND = Command(
@@ -47,7 +47,7 @@ def setup(cliffs):
             return
 
         # generate ASCII art in a new thread
-        ascii_img = await bot.loop.run_in_executor(
+        ascii_img = await m.bot.loop.run_in_executor(
             futures.ThreadPoolExecutor(),
             lambda: image_to_ascii(image, CHARSETS[charset], invert is not None)
         )

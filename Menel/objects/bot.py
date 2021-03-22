@@ -6,15 +6,19 @@ class Menel(AutoShardedClient):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.owner = None
+        self.owners = None
 
         self.cooldowns = {}
 
 
     async def fetch_owner(self) -> discord.User:
         app = await self.application_info()
-        self.owner = app.team.owner if app.team else app.owner
-        return self.owner
+        self.owners = app.team.members if app.team else [app.owner]
+        return self.owners
+
+
+    def is_owner(self, user_id: int) -> bool:
+        return user_id in (o.id for o in self.owners)
 
 
 bot = Menel(

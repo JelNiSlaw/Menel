@@ -3,7 +3,7 @@ import asyncio
 import discord
 from cliffs import MismatchedLiteralSuggestion
 
-from ..objects import Message, bot
+from ..objects import Message
 
 
 async def redispatch(e: MismatchedLiteralSuggestion, command: str, m: Message, prefix: str, notice_msg: Message):
@@ -12,7 +12,7 @@ async def redispatch(e: MismatchedLiteralSuggestion, command: str, m: Message, p
 
 
     try:
-        message = await bot.wait_for('message', check=check, timeout=10)
+        message = await m.bot.wait_for('message', check=check, timeout=10)
     except asyncio.TimeoutError:
         try:
             await notice_msg.delete()
@@ -20,7 +20,7 @@ async def redispatch(e: MismatchedLiteralSuggestion, command: str, m: Message, p
             pass
         return
 
-    bot.loop.create_task(notice_msg.delete())
+    m.bot.loop.create_task(notice_msg.delete())
 
     if message.content.lower() not in ('tak', 'yes', 't', 'y'):
         return

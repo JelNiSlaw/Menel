@@ -2,7 +2,7 @@ import discord
 import humanize
 
 from ...functions import clean_content, embed_with_author, get_user
-from ...objects import Category, Command, Message, database
+from ...objects import Category, Command, Message, db
 from ...strings import USER_NOT_FOUND
 
 
@@ -43,7 +43,7 @@ def setup(cliffs):
             devices = (device for device, value in
                 zip(DEVICES, (user.desktop_status, user.web_status, user.mobile_status)) if value)
         else:
-            document = await database.lastseen.find_one(user.id)
+            document = await db.lastseen.find_one(user.id)
 
             if not document:
                 await m.error(f'Nie znam ostatniej daty, kiedy {clean_content(user.name)} był/a online.')
