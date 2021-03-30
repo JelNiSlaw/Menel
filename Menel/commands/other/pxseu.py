@@ -16,8 +16,8 @@ COMMAND = Command(
 
 
 def setup(cliffs):
-    @cliffs.command('pxseu {[(name|nick) <name>][(attachment|att|image|img) <url>]} <message...>', command=COMMAND)
-    async def command(m: Message, message, name=None, url=None):
+    @cliffs.command('pxseu {[(name|nick) <name>][(attachment|att|image|img) <url>]} [<message...>]', command=COMMAND)
+    async def command(m: Message, message=None, name=None, url=None):
         if url:
             attachment = url
         elif m.attachments:
