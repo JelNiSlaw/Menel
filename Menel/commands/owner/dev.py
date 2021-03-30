@@ -39,6 +39,7 @@ def setup(cliffs):
 
         try:
             code = ast.parse('async def _eval():\n' + indent(code, ' ' * 2), filename='eval')
+            # noinspection PyUnresolvedReferences
             insert_returns(code.body[0].body)
             exec(compile(code, filename='eval', mode='exec', optimize=2), variables, None)
             start = perf_counter()

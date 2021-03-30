@@ -3,7 +3,7 @@ import re
 import aiohttp
 import discord
 
-from ...functions import codeblock, cut_long_text
+from ...functions import clean_content, codeblock
 from ...objects import Category, Command, Message
 from ...resources.regexes import CODEBLOCK
 
@@ -51,12 +51,8 @@ def setup(cliffs):
                 await m.error(json.get('message', 'Nieznany błąd.'))
                 return
 
-            output = []
-            if json['stdout'].strip():
-                output.append(codeblock(cut_long_text(json['stdout'], 512)))
-
-            if json['stderr'].strip():
-                output.append(codeblock(cut_long_text(json['stderr'], 512)))
+            output = (codeblock(clean_content(json[out], False, False, 512, 16))
+                for out in ('stdout', 'stderr') if json[out].strip())
 
             embed = discord.Embed(
                 description=('\n'.join(output) if output else

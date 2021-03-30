@@ -1,7 +1,7 @@
 import aiohttp
 import discord
 
-from ...functions import clean_content, cut_long_text, embed_with_author
+from ...functions import clean_content, embed_with_author
 from ...objects import Category, Command, Message
 
 
@@ -28,9 +28,9 @@ def setup(cliffs):
 
             embed = embed_with_author(
                 m.author,
-                discord.Embed(description=clean_content(cut_long_text(json['error'] or json['result'])))
+                discord.Embed(description=clean_content(json['error'] or json['result'], max_length=1024, max_lines=8))
             )
             embed.colour = discord.Color.red() if json['error'] else discord.Color.green()
-            embed.set_footer(text='Kalkulator Stanisław Jelnicki\nmath.js API actually')
+            embed.set_footer(text='Kalkulator Stanisław Jelnicki')
 
             await m.send(embed=embed)

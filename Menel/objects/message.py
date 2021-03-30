@@ -4,7 +4,7 @@ from typing import Iterable
 import discord
 
 from .bot import bot
-from ..functions import clean_content, cut_long_text, embed_with_author
+from ..functions import clean_content, embed_with_author
 
 
 class Message(discord.Message):
@@ -43,7 +43,7 @@ class Message(discord.Message):
                 try:
                     return await self.channel.send(
                         embed=discord.Embed(
-                            description=clean_content(cut_long_text(e, 512, 4)),
+                            description=clean_content(str(e), max_length=512, max_lines=4),
                             colour=discord.Colour.red()
                         )
                     )

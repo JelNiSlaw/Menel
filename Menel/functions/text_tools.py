@@ -1,41 +1,33 @@
 from typing import Optional
 
 import discord
-from discord.utils import escape_markdown, escape_mentions
 
 
-def cut_long_text(text: str, max_length: Optional[int] = 1024, max_lines: Optional[int] = None, end: str = '…') -> str:
+def clean_content(
+    content: str,
+    markdown: bool = True,
+    mentions: bool = True,
+    max_length: Optional[int] = None,
+    max_lines: Optional[int] = None,
+    end: str = '…'
+) -> str:
+    if markdown:
+        content = discord.utils.escape_markdown(content)
+    if mentions:
+        content = discord.utils.escape_mentions(content)
+
     shortened = False
 
-    if max_lines is not None and len(text.splitlines()) > max_lines:
-        text = '\n'.join(text.splitlines()[:max_lines])
+    if max_lines is not None and len(content.splitlines()) > max_lines:
+        content = '\n'.join(content.splitlines()[:max_lines])
         shortened = True
 
-    if max_length is not None and len(text) > max_length:
-        text = text[:max_length - len(end)]
+    if max_length is not None and len(content) > max_length:
+        content = content[:max_length - len(end)]
         shortened = True
 
     if shortened:
-        text = text.rstrip() + end
-
-    return text
-
-
-def constant_length_text(text: str, length: int, end: str = '…') -> str:
-    if len(text) > length:
-        return text[:length - len(end)] + end
-    else:
-        return text.ljust(length, ' ')
-
-
-def clean_content(content: any, *, markdown: bool = True, mentions: bool = True) -> str:
-    if not isinstance(content, str):
-        content = str(content)
-
-    if markdown:
-        content = escape_markdown(content)
-    if mentions:
-        content = escape_mentions(content)
+        content = content.rstrip() + end
 
     return content
 

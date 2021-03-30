@@ -4,7 +4,7 @@ from urllib import parse
 import aiohttp
 import discord
 
-from ...functions import clean_content, cut_long_text
+from ...functions import clean_content
 from ...objects import Category, Command, Message
 
 
@@ -53,15 +53,15 @@ def setup(cliffs):
 
 
             embed = discord.Embed(
-                title=cut_long_text(json['word'], 256),
+                title=clean_content(json['word'], False, False, 256),
                 url=json['permalink'],
-                description=cut_long_text(clean_content(remove_brackets(json['definition'])), 2048),
+                description=clean_content(remove_brackets(json['definition']), max_length=1024, max_lines=16),
                 colour=discord.Colour.blurple()
             )
 
             embed.add_field(
                 name='Example',
-                value=cut_long_text(clean_content(remove_brackets(json['example']))),
+                value=clean_content(remove_brackets(json['example']), max_length=1024, max_lines=16),
                 inline=False
             )
 

@@ -2,7 +2,7 @@ import aiohttp
 import discord
 from googletrans.constants import LANGCODES, LANGUAGES
 
-from ...functions import clean_content, cut_long_text, embed_with_author
+from ...functions import clean_content, embed_with_author
 from ...objects import Category, Command, Message
 
 
@@ -62,6 +62,10 @@ def setup(cliffs):
 
             embed = embed_with_author(m.author, discord.Embed(colour=discord.Colour.green()))
             embed.title = LANGUAGES.get(src, src).capitalize() + ' → ' + LANGUAGES.get(dest, dest).capitalize()
-            embed.description = clean_content(cut_long_text(' '.join(s['trans'] for s in json['sentences'])))
+            embed.description = clean_content(
+                ' '.join(s['trans'] for s in json['sentences']),
+                max_length=2048,
+                max_lines=32
+            )
 
             await m.send(embed=embed)
