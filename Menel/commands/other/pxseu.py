@@ -18,19 +18,15 @@ COMMAND = Command(
 def setup(cliffs):
     @cliffs.command('pxseu {[(name|nick) <name>][(attachment|att|image|img) <url>]} [<message...>]', command=COMMAND)
     async def command(m: Message, message=None, name=None, url=None):
-        if url:
-            attachment = url
-        elif m.attachments:
-            attachment = m.attachments[0].url
-        else:
-            attachment = None
+        if not url and m.attachments:
+            url = m.attachments[0].url
 
         async with aiohttp.request(
                 'POST', 'https://www.pxseu.com/api/v2/sendMessage',
                 json={
                     'message': message,
                     'name': name,
-                    'attachment': attachment,
+                    'attachment': url,
                     'user': m.author.id
                 },
                 headers={'Authorization': 'Bearer ' + getenv('PXSEU_MESSAGE_TOKEN')},
@@ -38,7 +34,7 @@ def setup(cliffs):
         ) as r:
             json = await r.json()
 
-        if json['status'] == 200:
-            await m.success('good')
+        if r.status == 200:
+            await m.success(clean_content(json['message']))
         else:
-            await m.error(f'{json["status"]}: {clean_content(json["message"])}')
+            await m.error(f'{r.status}: {clean_content(json["message"])}')
