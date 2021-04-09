@@ -11,7 +11,7 @@ def main():
     auto_import(commands, cliffs, add_to_help=True)
     auto_import(handlers, bot, add_to_help=False)
 
-    bot.run(getenv('DISCORD_TOKEN'), bot=True)
+    bot.run(getenv('DISCORD_TOKEN'))
 
 
 if __name__ == '__main__':
