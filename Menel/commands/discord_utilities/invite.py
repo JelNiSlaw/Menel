@@ -16,22 +16,26 @@ COMMAND = Command(
 
 def setup(cliffs):
     @cliffs.command('invite [<user...>]', command=COMMAND)
-    async def command(m: Message, user=None):
-        if user:
-            user = await get_user(user, m.guild)
+    async def command(m: Message, bot=None):
+        if bot:
+            bot = await get_user(bot, m.guild)
 
-            if not user:
+            if not bot:
                 await m.error(ACCOUNT_NOT_FOUND)
                 return
 
-            if not user.bot:
+            if not bot.bot:
                 await m.error('Mogę tworzyć jedynie zaproszenia botów.')
                 return
 
-            await m.info(
-                f'[Link zaproszenia {clean_content(user.name)}]'
-                f'({discord.utils.oauth_url(user.id, discord.Permissions.none(), m.guild)})'
+            link = discord.utils.oauth_url(
+                client_id=bot.id,
+                permissions=discord.Permissions.none(),
+                guild=m.guild,
+                scopes=('bot', 'applications.commands')
             )
+
+            await m.info(f'[Link zaproszenia {clean_content(bot.name)}]({link})')
         else:
             base = 'https://del.dog/'
             await m.info(
