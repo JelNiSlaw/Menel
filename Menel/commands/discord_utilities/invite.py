@@ -13,9 +13,11 @@ COMMAND = Command(
     cooldown=2
 )
 
+SCOPES = ('bot', 'applications.commands')
+
 
 def setup(cliffs):
-    @cliffs.command('invite [<user...>]', command=COMMAND)
+    @cliffs.command('(invite|oauth) [<user...>]', command=COMMAND)
     async def command(m: Message, bot=None):
         if bot:
             bot = await get_user(bot, m.guild)
@@ -28,18 +30,18 @@ def setup(cliffs):
                 await m.error('Mogę tworzyć jedynie zaproszenia botów.')
                 return
 
-            link = discord.utils.oauth_url(
-                client_id=bot.id,
-                permissions=discord.Permissions.none(),
-                guild=m.guild,
-                scopes=('bot', 'applications.commands')
+            await m.info(f'[Link zaproszenia {clean_content(bot.name)}]({create_link(bot.id, 0)})')
+        else:
+            await m.info(
+                f'[Zaproś mnie na swój serwer]({create_link(m.bot.user.id, 686947414)})\n'
+                f'[Zaproś mnie na swój serwer z uprawnieniami administratora]({create_link(m.bot.user.id, 8)})\n'
+                f'[Zaproś mnie na swój serwer bez dodatkowych uprawnień]({create_link(m.bot.user.id, 0)})'
             )
 
-            await m.info(f'[Link zaproszenia {clean_content(bot.name)}]({link})')
-        else:
-            base = 'https://del.dog/'
-            await m.info(
-                f'[Zaproś mnie na swój serwer]({base}Menel)\n'
-                f'[Zaproś mnie na swój serwer z uprawnieniami administratora]({base}MenelA)\n'
-                f'[Zaproś mnie na swój serwer bez dodatkowych uprawnień]({base}MenelNP)'
-            )
+
+def create_link(client_id: int, permissions: int) -> str:
+    return discord.utils.oauth_url(
+        client_id=str(client_id),
+        permissions=discord.Permissions(permissions),
+        scopes=SCOPES
+    )

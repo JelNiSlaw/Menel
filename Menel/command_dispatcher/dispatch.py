@@ -94,7 +94,8 @@ async def dispatch(command: str, m: Message, prefix: str):
                 Task(result).cancel()
                 return
 
-        print(f'Running command {command.name} for @{m.author} in #{m.channel}')
+        print(f'Running command {command.name} for @{m.author} in #{m.channel} in {m.guild}')
+
         start = perf_counter()
         try:
             await result

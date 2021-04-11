@@ -21,34 +21,28 @@ class Message(discord.Message):
     async def send(self, *args, reply: bool = True, **kwargs) -> discord.Message:
         if not self.channel.permissions_for(self.guild.me).read_message_history:
             if 'reference' in kwargs:
-                print('a')
                 kwargs.pop('reference')
 
         elif reply:
-            kwargs['reference'] = self.message
+            kwargs['reference'] = self.message.to_reference(fail_if_not_exists=False)
 
         try:
-            print(f'Sending a message to @{self.author} in #{self.channel}')
+            print(f'Sending a message to @{self.author} in #{self.channel} in {self.guild}')
             return await self.channel.send(*args, **kwargs)
 
         except discord.Forbidden as e:
             print(e)
 
         except discord.HTTPException as e:
-            if e.code == 50035 and 'message_reference' in e.text and 'reference' in kwargs:
-                kwargs.pop('reference')
-                await self.send(*args, **kwargs, reply=False)
-
-            else:
-                try:
-                    return await self.channel.send(
-                        embed=discord.Embed(
-                            description=clean_content(str(e), max_length=512, max_lines=4),
-                            colour=discord.Colour.red()
-                        )
+            try:
+                return await self.channel.send(
+                    embed=discord.Embed(
+                        description=clean_content(str(e), max_length=512, max_lines=4),
+                        colour=discord.Colour.red()
                     )
-                except discord.HTTPException:
-                    print(e)
+                )
+            except discord.HTTPException:
+                print(e)
 
 
     async def _send_embed(self, desc: str, color: discord.Colour, **kwargs) -> discord.Message:
