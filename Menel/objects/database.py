@@ -21,7 +21,6 @@ class Database:
         )
 
         self._database = self.client['bot']
-        self.lastseen = self._database['lastseen']
 
 
 db = Database()

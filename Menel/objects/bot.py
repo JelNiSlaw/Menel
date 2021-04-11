@@ -43,6 +43,5 @@ bot = Menel(
     activity=discord.Activity(name='Menel Rewrite', type=discord.ActivityType.watching),
     allowed_mentions=discord.AllowedMentions.none(),
     heartbeat_timeout=10,
-    guild_ready_timeout=20,
     guild_subscriptions=True
 )
