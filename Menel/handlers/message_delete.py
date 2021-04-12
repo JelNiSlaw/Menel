@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import discord
 
 from ..objects import Menel
@@ -18,4 +16,4 @@ def setup(bot: Menel):
         else:
             snipes = snipes.botdelete
 
-        snipes[message.channel.id] = (message, datetime.utcnow())
+        snipes[message.channel.id] = (message, discord.utils.utcnow())

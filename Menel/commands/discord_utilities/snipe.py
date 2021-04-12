@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import discord
 
@@ -21,7 +21,7 @@ def setup(cliffs):
 
         snipe, time = snipe
 
-        if not snipe or time + timedelta(minutes=30) < datetime.utcnow():
+        if not snipe or time + timedelta(minutes=30) < discord.utils.utcnow():
             await m.error(f'Nie znalazłem żadnej {("usuniętej", "edytowanej")[mode % 2]} wiadomości.')
             return
 
