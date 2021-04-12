@@ -59,11 +59,12 @@ def setup(cliffs):
                 colour=discord.Colour.blurple()
             )
 
-            embed.add_field(
-                name='Example',
-                value=clean_content(remove_brackets(json['example']), max_length=1024, max_lines=16),
-                inline=False
-            )
+            if json['example'].strip():
+                embed.add_field(
+                    name='Example',
+                    value=clean_content(remove_brackets(json['example']), max_length=1024, max_lines=16),
+                    inline=False
+                )
 
             embed.set_footer(
                 text=f'Author: {clean_content(json["author"])}\n'
