@@ -6,5 +6,5 @@ from ..objects import Menel
 
 def setup(bot: Menel):
     @bot.event
-    async def on_guild_remove(guild: discord.Guild):
-        log.info(f'Left server {guild}')
+    async def on_interaction(interaction: discord.Interaction):
+        log.debug(interaction.data)

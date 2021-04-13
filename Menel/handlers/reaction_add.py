@@ -1,5 +1,6 @@
 import discord
 
+from .. import log
 from ..objects import Menel
 
 
@@ -12,4 +13,4 @@ def setup(bot: Menel):
                 if message.author == bot.user:
                     await message.delete()
             except discord.HTTPException as e:
-                print(e)
+                log.warning(e)

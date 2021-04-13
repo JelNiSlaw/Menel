@@ -1,12 +1,12 @@
+from os import getenv
+
+from . import commands, handlers, log
+from .objects import bot
+from .setup import auto_import, cliffs
+
+
 def main():
-    from dotenv import load_dotenv
-
-    load_dotenv(override=True)
-
-    from os import getenv
-    from .setup import auto_import, cliffs
-    from .objects import bot
-    from . import commands, handlers
+    log.info('Starting')
 
     auto_import(commands, cliffs, add_to_help=True)
     auto_import(handlers, bot, add_to_help=False)

@@ -3,6 +3,7 @@ import pkgutil
 from types import ModuleType
 from typing import Iterable
 
+from .. import log
 from ..objects import commands
 
 
@@ -38,6 +39,6 @@ def auto_import(package, *args, add_to_help: bool):
             add_help(module)
         modules.add(module)
 
-    print(f'Imported {modules_to_str(modules)}')
+    log.debug(f'Imported {modules_to_str(modules)}')
 
     return modules

@@ -1,6 +1,6 @@
+import traceback
 from asyncio import Task
 from time import perf_counter
-from traceback import print_exc
 
 from cliffs import (
     CallMatchFail, MismatchedLiteral, MismatchedLiteralSuggestion, MismatchedParameterType,
@@ -12,6 +12,7 @@ from cliffs.syntax_tree.variant_group import NoMatchedVariant
 
 from . import dispatch_errors
 from .redispatch import redispatch
+from .. import log
 from ..functions import clean_content, global_perms
 from ..objects import Message, cooldowns
 from ..setup import cliffs
@@ -94,14 +95,14 @@ async def dispatch(command: str, m: Message, prefix: str):
                 Task(result).cancel()
                 return
 
-        print(f'Running command {command.name} for @{m.author} in #{m.channel} in {m.guild}')
+        log.info(f'Running command {command.name} for @{m.author} in #{m.channel} in {m.guild}')
 
         start = perf_counter()
         try:
             await result
         except Exception as e:
-            print_exc()
+            log.error(traceback.format_exc())
             await m.error(f'Wystąpił błąd:\n{clean_content(f"{type(e).__name__}: {e}")}')
 
         stop = perf_counter()
-        print(f'Took {round(stop - start, 3)}s')
+        log.debug(f'Took {round(stop - start, 3)}s')

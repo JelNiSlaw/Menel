@@ -4,6 +4,7 @@ from typing import Iterable
 import discord
 
 from .bot import bot
+from .. import log
 from ..functions import clean_content, embed_with_author
 
 
@@ -27,11 +28,11 @@ class Message(discord.Message):
             kwargs['reference'] = self.message.to_reference(fail_if_not_exists=False)
 
         try:
-            print(f'Sending a message to @{self.author} in #{self.channel} in {self.guild}')
+            log.debug(f'Sending a message to @{self.author} in #{self.channel} in {self.guild}')
             return await self.channel.send(*args, **kwargs)
 
         except discord.Forbidden as e:
-            print(e)
+            log.error(e)
 
         except discord.HTTPException as e:
             try:
@@ -42,7 +43,7 @@ class Message(discord.Message):
                     )
                 )
             except discord.HTTPException:
-                print(e)
+                log.error(e)
 
 
     async def _send_embed(self, desc: str, color: discord.Colour, **kwargs) -> discord.Message:
