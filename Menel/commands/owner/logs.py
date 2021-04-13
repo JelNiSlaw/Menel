@@ -20,4 +20,4 @@ def setup(cliffs):
         dest = m.channel if here else m.author.dm_channel or await m.author.create_dm()
 
         with open(logpath, mode='rb') as f:
-            await m.send(file=discord.File(f, f'{discord.utils.utcnow().timestamp()}.log'), channel=dest)
+            await m.send(file=discord.File(f, f'{discord.utils.utcnow().timestamp()}.log'), channel=dest, reply=False)
