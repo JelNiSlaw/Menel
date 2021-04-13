@@ -19,8 +19,17 @@ class Message(discord.Message):
         return self.message.__getattribute__(item)
 
 
-    async def send(self, *args, reply: bool = True, **kwargs) -> discord.Message:
-        if not self.channel.permissions_for(self.guild.me).read_message_history:
+    async def send(
+        self,
+        *args,
+        channel: discord.abc.Messageable = None,
+        reply: bool = True,
+        **kwargs
+    ) -> discord.Message:
+        if not channel:
+            channel = self.channel
+
+        if not channel.permissions_for(self.guild.me).read_message_history:
             if 'reference' in kwargs:
                 kwargs.pop('reference')
 
@@ -28,15 +37,15 @@ class Message(discord.Message):
             kwargs['reference'] = self.message.to_reference(fail_if_not_exists=False)
 
         try:
-            log.debug(f'Sending a message to @{self.author} in #{self.channel} in {self.guild}')
-            return await self.channel.send(*args, **kwargs)
+            log.debug(f'Sending a message to @{self.author} in #{channel} in {self.guild}')
+            return await channel.send(*args, **kwargs)
 
         except discord.Forbidden as e:
             log.error(e)
 
         except discord.HTTPException as e:
             try:
-                return await self.channel.send(
+                return await channel.send(
                     embed=discord.Embed(
                         description=clean_content(str(e), max_length=512, max_lines=4),
                         colour=discord.Colour.red()
