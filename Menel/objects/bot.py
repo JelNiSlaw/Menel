@@ -26,13 +26,13 @@ bot = Menel(
     intents=discord.Intents(
         guilds=True,
         members=True,
-        bans=True,
+        bans=False,
         emojis=False,
         integrations=False,
         webhooks=False,
         invites=False,
         voice_states=False,
-        presences=True,
+        presences=False,
         messages=True,
         reactions=True,
         typing=False
@@ -42,6 +42,5 @@ bot = Menel(
     status=discord.Status.online,
     activity=discord.Activity(name='Menel Rewrite', type=discord.ActivityType.watching),
     allowed_mentions=discord.AllowedMentions.none(),
-    heartbeat_timeout=10,
-    guild_subscriptions=True
+    heartbeat_timeout=10
 )
