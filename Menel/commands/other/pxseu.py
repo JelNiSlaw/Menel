@@ -34,7 +34,12 @@ def setup(cliffs):
         ) as r:
             json = await r.json()
 
+        message = clean_content(json['message'])
+
         if r.status == 200:
-            await m.success(clean_content(json['message']))
+            await m.success(message)
         else:
-            await m.error(f'{r.status}: {clean_content(json["message"])}')
+            if 'retry_after' in json:
+                message += f'\nTry again in {json["retry_after"]}s'
+
+            await m.error(f'{r.status}: {message}')
