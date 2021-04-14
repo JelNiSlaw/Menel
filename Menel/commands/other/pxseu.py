@@ -11,7 +11,7 @@ COMMAND = Command(
     syntax=None,
     description='Wysyła wiadomość przez API pxseu.',
     category=Category.OTHER,
-    cooldown=5
+    cooldown=10
 )
 
 
