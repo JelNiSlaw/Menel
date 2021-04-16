@@ -17,7 +17,7 @@ SCOPES = ('bot', 'applications.commands')
 
 
 def setup(cliffs):
-    @cliffs.command('(invite|oauth) [<user...>]', command=COMMAND)
+    @cliffs.command('(invite|oauth) [<bot...>]', command=COMMAND)
     async def command(m: Message, bot=None):
         if bot:
             bot = await get_user(bot, m.guild)
@@ -30,6 +30,10 @@ def setup(cliffs):
                 await m.error('Mogę tworzyć jedynie zaproszenia botów.')
                 return
 
+        else:
+            bot = m.bot.user
+
+        if bot != m.bot.user:
             await m.info(f'[Link zaproszenia {clean_content(bot.name)}]({create_link(bot.id, 0)})')
         else:
             await m.info(
