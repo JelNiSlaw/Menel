@@ -2,6 +2,7 @@ import re
 from urllib import parse
 
 import aiohttp
+import dateutil.parser
 import discord
 
 from ...functions import clean_content
@@ -66,9 +67,7 @@ def setup(cliffs):
                     inline=False
                 )
 
-            embed.set_footer(
-                text=f'Author: {clean_content(json["author"])}\n'
-                     f'👍 {json["thumbs_up"]} 👎 {json["thumbs_down"]}'
-            )
+            embed.set_footer(text=f'Author: {json["author"]}\n👍 {json["thumbs_up"]} 👎 {json["thumbs_down"]}')
+            embed.timestamp = dateutil.parser.parse(json['written_on'])
 
             await m.send(embed=embed)
