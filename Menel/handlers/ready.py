@@ -1,5 +1,9 @@
-from .. import log
+import logging
+
 from ..objects import Menel
+
+
+log = logging.getLogger(__name__)
 
 
 def setup(bot: Menel):

@@ -1,11 +1,17 @@
+import logging
 from os import getenv
 
-from . import commands, handlers, log
+from . import commands, handlers
 from .objects import bot
-from .setup import auto_import, cliffs
+from .setup import auto_import, cliffs, logs
+
+
+log = logging.getLogger(__name__)
 
 
 def main():
+    logs.setup()
+
     log.info('Starting')
 
     auto_import(commands, cliffs, add_to_help=True)

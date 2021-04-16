@@ -1,7 +1,11 @@
+import logging
+
 import discord
 
-from .. import log
 from ..objects import Menel
+
+
+log = logging.getLogger(__name__)
 
 
 def setup(bot: Menel):

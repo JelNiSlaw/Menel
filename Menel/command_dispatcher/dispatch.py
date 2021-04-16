@@ -1,3 +1,4 @@
+import logging
 import traceback
 from asyncio import Task
 from time import perf_counter
@@ -12,10 +13,12 @@ from cliffs.syntax_tree.variant_group import NoMatchedVariant
 
 from . import dispatch_errors
 from .redispatch import redispatch
-from .. import log
 from ..functions import clean_content, global_perms
 from ..objects import Message, cooldowns
 from ..setup import cliffs
+
+
+log = logging.getLogger(__name__)
 
 
 async def dispatch(command: str, m: Message, prefix: str):

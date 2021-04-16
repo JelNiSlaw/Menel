@@ -1,11 +1,14 @@
+import logging
 from datetime import datetime
 from typing import Iterable
 
 import discord
 
 from .bot import bot
-from .. import log
 from ..functions import clean_content, embed_with_author
+
+
+log = logging.getLogger(__name__)
 
 
 class Message(discord.Message):
