@@ -29,7 +29,7 @@ def setup(cliffs):
             colour=discord.Colour.blurple()
         )
 
-        embed.set_thumbnail(url=m.bot.user.avatar_url_as(static_format='png', size=256))
+        embed.set_thumbnail(url=m.bot.user.avatar.replace(size=256))
 
         for category, cmds in categories.items():
             if value := ' '.join(code(c.name) for c in cmds if not c.hidden):
