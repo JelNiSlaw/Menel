@@ -26,6 +26,6 @@ def setup(cliffs):
             return
 
         embed = discord.Embed(description=snipe.content, colour=snipe.author.colour, timestamp=time)
-        embed.set_author(name=str(snipe.author), icon_url=snipe.author.avatar.replace(size=256))
+        embed.set_author(name=str(snipe.author), icon_url=snipe.author.avatar.replace(256))
 
         await m.send(embed=embed)

@@ -28,9 +28,9 @@ def setup(cliffs):
         embed = embed_with_author(user, discord.Embed(colour=discord.Colour.green()))
 
         embed.description = ' '.join(
-            f'[{fmt}]({user.avatar.replace(format=fmt, size=4096)})' for fmt in ('png', 'webp', 'jpeg')
+            f'[{fmt}]({user.avatar.replace(size=4096, static_format=fmt)})' for fmt in ('png', 'webp', 'jpeg')
         )
 
-        embed.set_image(url=str(user.avatar.replace(size=4096)))
+        embed.set_image(url=str(user.avatar.replace(4096)))
 
         await m.send(embed=embed)

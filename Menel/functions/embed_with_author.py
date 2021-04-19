@@ -5,6 +5,6 @@ def embed_with_author(user: discord.User, embed: discord.Embed = None) -> discor
     if embed is None:
         embed = discord.Embed()
 
-    embed.set_author(name=str(user), icon_url=str(user.avatar.replace(size=256)))
+    embed.set_author(name=str(user), icon_url=user.avatar.replace(256))
 
     return embed
