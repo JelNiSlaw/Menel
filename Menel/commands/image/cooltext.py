@@ -53,4 +53,4 @@ def setup(cliffs):
             embed = embed_with_author(m.author, embed)
             embed.set_image(url='attachment://burning.gif')
 
-            await m.send(embed=embed, file=discord.File(BytesIO(file), 'burning.gif'))
+        await m.send(embed=embed, file=discord.File(BytesIO(file), 'burning.gif'))

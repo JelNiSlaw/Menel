@@ -52,7 +52,7 @@ def setup(cliffs):
             embed.set_thumbnail(url='attachment://avatar.png')
             embed.set_image(url='attachment://body.png')
 
-            await m.send(embed=embed, files=[avatar, head, body])
+        await m.send(embed=embed, files=[avatar, head, body])
 
 
 async def get_name_history(uuid: str) -> str:

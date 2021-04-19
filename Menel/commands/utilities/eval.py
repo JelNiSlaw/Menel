@@ -62,4 +62,4 @@ def setup(cliffs):
                 colour=discord.Colour.green() if not json['stderr'].strip() else discord.Colour.red()
             )
 
-            await m.send(embed=embed)
+        await m.send(embed=embed)

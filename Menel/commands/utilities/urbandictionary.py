@@ -70,4 +70,4 @@ def setup(cliffs):
             embed.set_footer(text=f'Author: {json["author"]}\n👍 {json["thumbs_up"]} 👎 {json["thumbs_down"]}')
             embed.timestamp = dateutil.parser.parse(json['written_on'])
 
-            await m.send(embed=embed)
+        await m.send(embed=embed)

@@ -68,4 +68,4 @@ def setup(cliffs):
                 max_lines=32
             )
 
-            await m.send(embed=embed)
+        await m.send(embed=embed)
