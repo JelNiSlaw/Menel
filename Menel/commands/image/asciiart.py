@@ -1,4 +1,3 @@
-from asyncio import sleep
 from concurrent import futures
 from io import BytesIO
 from textwrap import dedent
@@ -6,7 +5,7 @@ from textwrap import dedent
 import discord
 from PIL import Image
 
-from ...helpers import imperialbin_upload
+from ...helpers import imperial
 from ...objects import Category, Command, Message
 
 
@@ -52,15 +51,9 @@ def setup(cliffs):
             lambda: image_to_ascii(image, CHARSETS[charset], invert is not None)
         )
 
-        paste = await imperialbin_upload(ascii_img, expiration=2, language='NONE')
+        paste = await imperial.create_document(ascii_img, expiration=14)
 
-        if not paste.success:
-            await m.error('Coś poszło nie tak podczas przesyłania obrazka.')
-            return
-
-        await sleep(2.5)
-
-        await m.send(paste.formatted_link)
+        await m.send(paste.raw_link)
 
 
     def image_to_ascii(image, charset: list, invert: bool) -> str:

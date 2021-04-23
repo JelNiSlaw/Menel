@@ -9,4 +9,4 @@ git+https://github.com/ssut/py-googletrans
 git+https://github.com/pyppeteer/pyppeteer
 git+https://github.com/dateutil/dateutil
 git+https://github.com/kvesteri/validators
-git+https://github.com/jmoiron/humanize
+git+https://github.com/avian2/unidecode

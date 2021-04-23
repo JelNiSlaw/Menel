@@ -6,7 +6,7 @@ from time import perf_counter
 import discord
 
 from ...functions import get_user
-from ...helpers import imperialbin_upload
+from ...helpers import imperial
 from ...objects import Category, Command, Message, bot
 from ...resources.regexes import CODEBLOCK
 
@@ -54,7 +54,7 @@ def setup(cliffs):
         if len(output) < 1024:
             output = f'```\n{output}\n```'
         else:
-            paste = await imperialbin_upload(output, image_embed=False, expiration=1, language='NONE')
+            paste = await imperial.create_document(output)
             output = paste.formatted_link
 
         embed = discord.Embed(colour=discord.Colour.green() if success else discord.Colour.red())

@@ -25,7 +25,8 @@ def setup(cliffs):
             await m.error(f'Nie znalazłem żadnej {("usuniętej", "edytowanej")[mode % 2]} wiadomości.')
             return
 
-        embed = discord.Embed(description=snipe.content, colour=snipe.author.colour, timestamp=time)
+        color = snipe.author.colour.value or discord.Colour.green()
+        embed = discord.Embed(description=snipe.content, colour=color, timestamp=time)
         embed.set_author(name=str(snipe.author), icon_url=snipe.author.avatar.replace(256))
 
         await m.send(embed=embed)
