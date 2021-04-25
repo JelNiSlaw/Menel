@@ -1,1 +1,1 @@
-bot: python -m Menel -X utf8 & pyppeteer-install
+bot: pyppeteer-install & python -m Menel -X utf8
