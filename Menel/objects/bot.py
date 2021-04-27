@@ -42,5 +42,5 @@ bot = Menel(
     status=discord.Status.online,
     activity=discord.Activity(name='Menel Rewrite', type=discord.ActivityType.watching),
     allowed_mentions=discord.AllowedMentions.none(),
-    heartbeat_timeout=10
+    heartbeat_timeout=120
 )
