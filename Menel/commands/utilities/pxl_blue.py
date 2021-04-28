@@ -6,14 +6,15 @@ COMMAND = Command(
     'pxl',
     syntax=None,
     description='Przesyła plik na pxl.blue.',
-    category=Category.OWNER,
-    global_perms=5,
+    aliases=('pxl.blue',),
+    category=Category.UTILS,
+    cooldown=10,
     hidden=True
 )
 
 
 def setup(cliffs):
-    @cliffs.command('pxl', command=COMMAND)
+    @cliffs.command('pxl.blue|pxl', command=COMMAND)
     async def command(m: Message):
         if not m.attachments:
             await m.error('Załącz plik do przesłania')
