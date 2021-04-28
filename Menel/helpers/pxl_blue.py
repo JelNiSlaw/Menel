@@ -21,20 +21,20 @@ async def upload(
     filename: str,
     *,
     content_type: Optional[str] = None,
-    host: str = 'i.pxl.blue'
+    domain: Optional[str] = None
 ) -> PxlBlueUpload:
     if '.' not in filename:
         filename += '.bin'
 
     form = aiohttp.FormData()
     form.add_field('file', file, filename=filename, content_type=content_type or 'application/octet-stream')
-    form.add_field('host', host)
+    form.add_field('host', domain or 'i.pxl.blue')
     form.add_field('key', getenv('PXL_BLUE_KEY'))
 
     async with aiohttp.request(
             'POST', 'https://api.pxl.blue/upload/extra',
             data=form,
-            timeout=aiohttp.ClientTimeout(total=20)
+            timeout=aiohttp.ClientTimeout(total=60)
     ) as r:
         json = await r.json()
 
