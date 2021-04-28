@@ -19,6 +19,6 @@ def setup(cliffs):
             await m.error('Załącz plik do przesłania')
             return
 
-        attachment = m.attachments[0]
-        image = await pxl_blue.upload(await attachment.read(), attachment.filename)
+        a = m.attachments[0]
+        image = await pxl_blue.upload(await a.read(), a.filename, content_type=a.content_type)
         await m.success(f'Plik przesłano na {image.raw_url}')

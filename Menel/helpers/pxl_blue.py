@@ -1,4 +1,3 @@
-import mimetypes
 from os import getenv
 from typing import Optional
 
@@ -24,13 +23,11 @@ async def upload(
     content_type: Optional[str] = None,
     host: str = 'i.pxl.blue'
 ) -> PxlBlueUpload:
+    if '.' not in filename:
+        filename += '.bin'
+
     form = aiohttp.FormData()
-    form.add_field(
-        'file',
-        file,
-        filename=filename,
-        content_type=content_type or mimetypes.guess_type(filename, strict=False)[0]
-    )
+    form.add_field('file', file, filename=filename, content_type=content_type or 'application/octet-stream')
     form.add_field('host', host)
     form.add_field('key', getenv('PXL_BLUE_KEY'))
 
