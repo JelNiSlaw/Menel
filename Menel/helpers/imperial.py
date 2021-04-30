@@ -50,9 +50,9 @@ async def create_document(
                 'encrypted': encrypted,
                 'password': password,
                 'expiration': expiration,
-                'editorArray': editor_array,
-                'apiToken': getenv('IMPERIALBIN_TOKEN')
+                'editorArray': editor_array
             },
+            headers={'authorization': getenv('IMPERIAL_TOKEN')},
             timeout=aiohttp.ClientTimeout(total=20)
     ) as r:
         json = await r.json()
