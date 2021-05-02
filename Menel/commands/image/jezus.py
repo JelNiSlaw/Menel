@@ -21,14 +21,15 @@ COMMAND = Command(
 def setup(cliffs):
     @cliffs.command('jezus|jesus', command=COMMAND)
     async def command(m: Message):
-        async with aiohttp.request(
-                'GET', 'https://obrazium.com/v1/jesus',
-                headers={'Authorization': getenv('OBRAZIUM_TOKEN')},
-                timeout=aiohttp.ClientTimeout(total=10)
-        ) as r:
-            if r.status == 200:
-                file = BytesIO(await r.read())
-                img_format = imghdr.what(file) or 'jpeg'
-                await m.send(file=discord.File(file, filename=f'jezus.{img_format}'))
-            else:
-                await m.error('Nie wiem, nie działa.')
+        async with m.channel.typing():
+            async with aiohttp.request(
+                    'GET', 'https://obrazium.com/v1/jesus',
+                    headers={'Authorization': getenv('OBRAZIUM_TOKEN')},
+                    timeout=aiohttp.ClientTimeout(total=10)
+            ) as r:
+                if r.status == 200:
+                    file = BytesIO(await r.read())
+                    ext = imghdr.what(file) or 'jpeg'
+                    await m.send(file=discord.File(file, filename='jezus.' + ext))
+                else:
+                    await m.error('Nie działa')

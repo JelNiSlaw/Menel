@@ -34,7 +34,6 @@ async def create_document(
     language: str = 'plain_text',
     image_embed: bool = False,
     instant_delete: bool = False,
-    encrypted: bool = False,
     password: Optional[str] = None,
     expiration: int = 1,
     editor_array: Optional[List[str]] = None
@@ -47,12 +46,12 @@ async def create_document(
                 'language': language,
                 'imageEmbed': image_embed,
                 'instantDelete': instant_delete,
-                'encrypted': encrypted,
+                'encrypted': password is not None,
                 'password': password,
                 'expiration': expiration,
                 'editorArray': editor_array
             },
-            headers={'authorization': getenv('IMPERIAL_TOKEN')},
+            headers={'Authorization': getenv('IMPERIAL_TOKEN')},
             timeout=aiohttp.ClientTimeout(total=20)
     ) as r:
         json = await r.json()
