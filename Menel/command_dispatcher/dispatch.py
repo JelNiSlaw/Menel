@@ -12,7 +12,6 @@ from cliffs.syntax_tree.unordered_group import UnmatchedUnorderedGroup
 from cliffs.syntax_tree.variant_group import NoMatchedVariant
 
 from . import dispatch_errors
-from .redispatch import redispatch
 from ..functions import clean_content, global_perms
 from ..objects import Message, cooldowns
 from ..setup import cliffs
@@ -28,8 +27,7 @@ async def dispatch(command: str, m: Message, prefix: str):
         result, command = cliffs.dispatch(command, m=m, prefix=prefix)
     except MismatchedLiteralSuggestion as e:
         if can_send_embeds and not e.command.kwargs['command'].hidden:
-            notice_msg = await m.error(dispatch_errors.mismatched_literal_suggestion(e))
-            await redispatch(e, command, m, prefix, notice_msg)
+            await m.error(dispatch_errors.mismatched_literal_suggestion(e))
 
     except MismatchedParameterType as e:
         if can_send_embeds and not e.command.kwargs['command'].hidden:

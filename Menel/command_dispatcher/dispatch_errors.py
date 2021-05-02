@@ -39,8 +39,7 @@ def mismatched_parameter_type(e: MismatchedParameterType) -> str:
 
 
 def mismatched_literal_suggestion(e: MismatchedLiteralSuggestion) -> str:
-    return f'Masz na myśli `{clean_content(e.expected.value)}`?\n' \
-           f'Możesz napisać `tak` `yes` `t` `y`.'
+    return f'Masz na myśli `{clean_content(e.expected.value)}`?'
 
 
 def too_many_arguments():
