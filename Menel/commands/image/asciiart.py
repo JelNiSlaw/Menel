@@ -1,6 +1,5 @@
-from concurrent import futures
+import asyncio
 from io import BytesIO
-from textwrap import dedent
 
 import discord
 from PIL import Image
@@ -24,6 +23,8 @@ CHARSETS = (
     '@%+*:=-. '
 )
 
+IMG_SIZE = 128
+
 
 def setup(cliffs):
     @cliffs.command(
@@ -36,46 +37,43 @@ def setup(cliffs):
             return
 
         try:
-            image = Image.open(BytesIO(await m.attachments[0].read()))  # download and open the file
+            image = Image.open(BytesIO(await m.attachments[0].read()))
         except discord.HTTPException:
             await m.error('Nie udało się pobrać załączonego pliku')
             return
 
         if image.width < 64 or image.height < 64:
-            await m.error('To zdjęcie jest za małe.')
+            await m.error('To zdjęcie jest za małe')
             return
 
-        # generate ASCII art in a new thread
-        ascii_img = await m.bot.loop.run_in_executor(
-            futures.ThreadPoolExecutor(),
-            lambda: image_to_ascii(image, CHARSETS[charset], invert is not None)
-        )
-
-        paste = await imperial.create_document(ascii_img, expiration=14)
-
-        await m.send(paste.raw_link)
+        image = await asyncio.to_thread(image_to_ascii, image, CHARSETS[charset], invert is not None)
+        document = await imperial.create_document(image, expiration=14)
+        await m.send(document.raw_link)
 
 
-    def image_to_ascii(image, charset: list, invert: bool) -> str:
-        if image.width >= image.height:
-            image = image.resize((150, round(image.height / image.width * 75)), Image.LANCZOS)
+def image_to_ascii(image: Image, charset: str, invert: bool) -> str:
+    if image.width >= image.height:
+        size = IMG_SIZE, round((image.height / image.width) * (IMG_SIZE // 2))
+    else:
+        size = round((image.width / image.height) * (IMG_SIZE * 2)), IMG_SIZE
+
+    image = image.resize(size, Image.LANCZOS)
+
+    if image.mode != 'L':
+        if not invert:
+            white = Image.new('RGB', image.size, color=0xFFFFFF)
+            white.paste(image, mask=image)
+            image = white.convert('L', dither=Image.NONE)
         else:
-            image = image.resize((round(image.width / image.height * 300), 150), Image.LANCZOS)
+            image = image.convert('L', dither=Image.NONE)
 
-        if invert:
-            charset = charset[::-1]
+    if invert:
+        charset = charset[::-1]
 
-        image = image.convert('L')
+    ascii_image = ''
+    imagedata = list(image.getdata())
+    for i in range(0, image.width * image.height - 1, image.width):
+        row = (charset[round(pixel / 255 * (len(charset) - 1))] for pixel in imagedata[i:i + image.width])
+        ascii_image += ''.join(row).rstrip() + '\n'
 
-        ascii_str = ''
-        for pixel in image.getdata():
-            ascii_str += charset[round(pixel / 255 * (len(charset) - 1))]
-
-        ascii_img = ''
-
-        for i in range(0, len(ascii_str), image.width):
-            if not ascii_str[i:i + image.width].strip():
-                continue
-            ascii_img += ascii_str[i:i + image.width].rstrip() + '\n'
-
-        return dedent(ascii_img)
+    return ascii_image
