@@ -44,7 +44,7 @@ def setup(cliffs):
                     params={
                         'sl': src,  # source language
                         'tl': dest,  # translation language
-                        'q': text,  # query string
+                        'q': text,  # query
                         'client': 'gtx',  # probably Google Translate Extension
                         'dj': 1,  # what
                         'dt': 't'  # what even is this
@@ -61,7 +61,7 @@ def setup(cliffs):
                 src = json.get('src', AUTO)
 
             embed = embed_with_author(m.author, discord.Embed(colour=discord.Colour.green()))
-            embed.title = LANGUAGES.get(src, src).capitalize() + ' → ' + LANGUAGES.get(dest, dest).capitalize()
+            embed.title = LANGUAGES.get(src, src).capitalize() + ' ➜ ' + LANGUAGES.get(dest, dest).capitalize()
             embed.description = clean_content(
                 ' '.join(s['trans'] for s in json['sentences']),
                 max_length=2048,
