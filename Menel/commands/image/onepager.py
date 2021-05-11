@@ -28,7 +28,9 @@ COMMAND = Command(
 def setup(cliffs):
     @cliffs.command('onepager', command=COMMAND)
     async def command(m: Message):
-        if not m.attachments or not m.attachments[0].content_type.startswith('text/'):
+        if not m.attachments or \
+                not (m.attachments[0]).content_type or \
+                not (m.attachments[0]).content_type.startswith('text/'):
             await m.error('Załącz plik tekstowy')
             return
 
