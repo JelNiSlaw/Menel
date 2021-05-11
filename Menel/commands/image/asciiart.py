@@ -33,7 +33,7 @@ def setup(cliffs):
     )
     async def command(m: Message, charset=0, invert=None):
         if not m.attachments:
-            await m.error('Załącz najpierw jakiś plik.')
+            await m.error('Załącz jakiś obraz')
             return
 
         try:
