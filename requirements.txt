@@ -1,4 +1,5 @@
-git+https://github.com/Rapptz/discord.py
+git+https://github.com/Rapptz/discord.py@1740533969877e7ebe24635c5b389fdaf9923925
+# git+https://github.com/Rapptz/discord.py
 git+https://github.com/michalwa/py-cliffs
 git+https://github.com/mongodb/motor
 git+https://github.com/rthalley/dnspython
