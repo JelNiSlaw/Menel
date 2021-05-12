@@ -53,9 +53,10 @@ def setup(cliffs):
 
 
 def prepare_text(text: str) -> str:
+    text = re.sub(r'\s+', ' ', text.strip())
     return '\n'.join(
         textwrap.wrap(
-            re.sub(r'\s+', ' ', text),
+            text,
             width=round(sqrt(len(text)) * 1.25),
             expand_tabs=False,
             replace_whitespace=True,
