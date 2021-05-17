@@ -1,4 +1,5 @@
 import asyncio
+import mimetypes
 from math import floor
 from pathlib import Path
 
@@ -22,40 +23,41 @@ COMMAND = Command(
 
 
 class Downloader:
-    def __init__(self, video: str):
-        self.video = video
+    def __init__(self, *, only_audio: bool = False):
         self.status = {}
 
         self.OPTIONS = {
-            'limit-rate': '0.1M',
             'format': 'best',
             'outtmpl': str(PATH / 'temp' / (unique_id() + '.%(ext)s')),
-            'merge-output-format': 'mp4',
+            'merge_output_format': 'mp4',
+            'default_search': 'auto',
             'progress_hooks': [self._hook],
-            'max-downloads': 1,
-            'ignore-config': True,
-            'no-playlist': True,
-            'no-mark-watched': True,
-            'geo-bypass': True,
+            'max_downloads': 1,
+            'ignore_config': True,
+            'no_playlist': True,
+            'no_mark_watched': True,
+            'geo_bypass': True,
             'no_color': True,
-            'abort-on-error': True,
-            'abort-on-unavailable-fragment': True,
-            'no-overwrites': True,
-            'no-continue': True,
+            'abort_on_error': True,
+            'abort_on_unavailable_fragment': True,
+            'no_overwrites': True,
+            'no_continue': True,
             'quiet': True,
         }
 
+        if only_audio:
+            self.OPTIONS.update({'format': 'bestaudio/best', 'extract_audio': True})
 
-    async def download(self) -> None:
+        self.ydl = youtube_dl.YoutubeDL(self.OPTIONS)
+
+
+    async def download(self, video: str) -> None:
         self.status.clear()
-
-        with youtube_dl.YoutubeDL(self.OPTIONS) as ydl:
-            await asyncio.to_thread(ydl.extract_info, self.video)
+        await asyncio.to_thread(self.ydl.extract_info, video)
 
 
-    async def extract_info(self) -> dict:
-        with youtube_dl.YoutubeDL(self.OPTIONS) as ydl:
-            return await asyncio.to_thread(ydl.extract_info, self.video, False)
+    async def extract_info(self, video: str) -> dict:
+        return await asyncio.to_thread(self.ydl.extract_info, video, False)
 
 
     def _hook(self, info: dict) -> None:
@@ -84,14 +86,17 @@ class Downloader:
 
 
 def setup(cliffs):
-    @cliffs.command('(youtube-dl|youtubedl|yt-dl|ytdl|download|dl) <video...>', command=COMMAND)
-    async def command(m: Message, video):
+    @cliffs.command('(youtube-dl|youtubedl|yt-dl|ytdl|download|dl) [audio]:audio <video...>', command=COMMAND)
+    async def command(m: Message, audio, video):
         await m.channel.trigger_typing()
-        downloader = Downloader(video)
+        downloader = Downloader(only_audio=audio)
 
         progress_message = None
         try:
-            info = await downloader.extract_info()
+            info = await downloader.extract_info(video)
+
+            if '_type' in info and info['_type'] == 'playlist':
+                info = info['entries'][0]
 
             if not info.get('duration'):
                 await m.error('Nieznana długość filmu')
@@ -106,7 +111,7 @@ def setup(cliffs):
                 return
 
             progress_message = asyncio.create_task(downloader.progress_message(m))
-            await downloader.download()
+            await downloader.download(info['webpage_url'])
         except youtube_dl.utils.YoutubeDLError as e:
             if progress_message:
                 progress_message.cancel()
@@ -118,7 +123,11 @@ def setup(cliffs):
             path = Path(downloader.status['filename'])
 
             with open(path, 'rb') as f:
-                file = await pxl_blue.upload(f.read(), f"{info['title']}.{info['ext']}", content_type='video/mp4')
+                file = await pxl_blue.upload(
+                    f.read(),
+                    '.'.join((info['title'], info['ext'])),
+                    content_type=mimetypes.types_map.get('.' + info['ext'])
+                )
 
         await m.send(file.raw_url)
 
