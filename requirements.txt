@@ -10,5 +10,5 @@ git+https://github.com/ssut/py-googletrans
 git+https://github.com/pyppeteer/pyppeteer
 git+https://github.com/dateutil/dateutil
 git+https://github.com/kvesteri/validators
+git+https://github.com/ytdl-org/youtube-dl
 git+https://github.com/avian2/unidecode
-git+https://github.com/n0spaces/get-stick-bugged-lol

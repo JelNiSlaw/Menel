@@ -53,14 +53,14 @@ def setup(cliffs):
             file=discord.File(path, 'video.mp4')
         )
 
-        path.unlink(missing_ok=True)
+        path.unlink(True)
 
 
 def generate_video(image: BytesIO) -> Path:
     sb = StickBug(Image.open(image), video_resolution=(1024, 1024), lsd_scale=0.5)
 
-    videopath = TEMP_PATH / (random_string(16) + '.mp4')
-    audiopath = TEMP_PATH / (random_string(16) + '.wav')
+    videopath = TEMP_PATH / (random_string() + '.mp4')
+    audiopath = TEMP_PATH / (random_string() + '.wav')
 
     sb.process_video()
 
