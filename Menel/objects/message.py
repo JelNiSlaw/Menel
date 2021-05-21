@@ -32,10 +32,6 @@ class Message(discord.Message):
         if not channel:
             channel = self.channel
 
-        if not channel.permissions_for(self.guild.me).read_message_history:
-            if 'reference' in kwargs:
-                kwargs.pop('reference')
-
         elif reply:
             kwargs['reference'] = self.message.to_reference(fail_if_not_exists=False)
 

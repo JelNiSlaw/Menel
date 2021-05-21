@@ -7,6 +7,7 @@ def clean_content(
     content: str,
     markdown: bool = True,
     mentions: bool = True,
+    /, *,
     max_length: Optional[int] = None,
     max_lines: Optional[int] = None,
     end: str = '…'

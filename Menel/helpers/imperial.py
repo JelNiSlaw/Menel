@@ -41,7 +41,7 @@ async def create_document(
     async with aiohttp.request(
             'POST', 'https://imperialb.in/api/document',
             json={
-                'code': clean_content(text, False, False, 128 * 1024),
+                'code': clean_content(text, False, False, max_length=128 * 1024),
                 'longerUrls': longer_urls,
                 'language': language,
                 'imageEmbed': image_embed,

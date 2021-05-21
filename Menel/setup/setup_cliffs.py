@@ -15,6 +15,9 @@ def validate_id(x: str) -> int:
 
 
 def validate_url(url: str) -> str:
+    if url.startswith('<') and url.endswith('>'):
+        url = url[1:-1]
+
     if not validators.url(url):
         raise ValueError()
     else:

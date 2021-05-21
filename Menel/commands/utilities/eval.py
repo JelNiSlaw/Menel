@@ -51,7 +51,7 @@ def setup(cliffs):
                 await m.error(json.get('message', 'Nieznany błąd.'))
                 return
 
-            output = [codeblock(clean_content(json[out], False, False, 512, 16))
+            output = [codeblock(clean_content(json[out], False, False, max_length=512, max_lines=16))
                 for out in ('stdout', 'stderr') if json[out].strip()]
 
             embed = discord.Embed(
