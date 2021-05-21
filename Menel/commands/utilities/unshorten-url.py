@@ -1,6 +1,6 @@
 import aiohttp
 
-from ...functions import bold, clean_content, code
+from ...functions import clean_content, code
 from ...objects import Category, Command, Message
 
 
@@ -48,6 +48,6 @@ def setup(cliffs):
 
         text = '\n'.join(code(clean_content(url, False, False, max_length=64)) for url in urls)
         text += '\n' * 2
-        text += bold(code(clean_content(last, False, False, max_length=512))) if not shortened else '…'
+        text += clean_content(last, False, False, max_length=512) if not shortened else '…'
 
         await m.info(text)
