@@ -46,8 +46,6 @@ def setup(cliffs):
         else:
             last = None
 
-        text = '\n'.join(code(clean_content(url, False, False, max_length=64)) for url in urls)
-        text += '\n' * 2
-        text += clean_content(last, False, False, max_length=512) if not shortened else '…'
-
-        await m.info(text)
+        text = [code(clean_content(url, False, False, max_length=64)) for url in urls]
+        text.append(clean_content(last, False, False, max_length=512) if not shortened else '…')
+        await m.info('\n'.join(text))

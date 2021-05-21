@@ -2,7 +2,7 @@ import discord
 
 from ..command_dispatcher import dispatch
 from ..functions import clean_content, code
-from ..modules import autoresponders
+from ..modules import autoresponder
 from ..objects import Menel, Message, cooldowns
 from ..resources import regexes
 
@@ -28,4 +28,4 @@ def setup(bot: Menel):
             await dispatch(m.content[len(match.group()):], m, f'@{bot.user.name}')
 
         else:
-            await autoresponders.respond(m)
+            await autoresponder.respond(m)

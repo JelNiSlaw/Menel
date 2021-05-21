@@ -1,14 +1,18 @@
 import discord
 from discord import AutoShardedClient
+from discord.ext import tasks
+
+from ..resources.statuses import random_status
 
 
 class Menel(AutoShardedClient):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.owners = None
-
+        self.owners = []
         self.cooldowns = {}
+
+        self.status_loop.start()
 
 
     async def fetch_owner(self) -> discord.User:
@@ -19,6 +23,21 @@ class Menel(AutoShardedClient):
 
     def is_owner(self, user_id: int) -> bool:
         return user_id in (o.id for o in self.owners)
+
+
+    @tasks.loop(seconds=30)
+    async def status_loop(self):
+        await self.change_presence(
+            activity=discord.Activity(
+                name=random_status(self),
+                type=discord.ActivityType.watching
+            )
+        )
+
+
+    @status_loop.before_loop
+    async def before_status_loop(self):
+        await self.wait_until_ready()
 
 
 bot = Menel(
@@ -40,7 +59,6 @@ bot = Menel(
     member_cache_flags=discord.MemberCacheFlags(voice=False, joined=True),
     chunk_guilds_at_startup=True,
     status=discord.Status.online,
-    activity=discord.Activity(name='Menel Rewrite', type=discord.ActivityType.watching),
     allowed_mentions=discord.AllowedMentions.none(),
     heartbeat_timeout=120
 )
