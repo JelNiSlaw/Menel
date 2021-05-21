@@ -53,7 +53,7 @@ def setup(cliffs):
             file=discord.File(path, 'video.mp4')
         )
 
-        path.unlink(True)
+        path.unlink(missing_ok=True)
 
 
 def generate_video(image: BytesIO) -> Path:

@@ -46,7 +46,7 @@ class Downloader:
         }
 
         if only_audio:
-            self.OPTIONS.update({'format': 'bestaudio/best', 'extract_audio': True})
+            self.OPTIONS.update(format='bestaudio/best', extract_audio=True)
 
         self.ydl = youtube_dl.YoutubeDL(self.OPTIONS)
 
@@ -98,15 +98,18 @@ def setup(cliffs):
             if '_type' in info and info['_type'] == 'playlist':
                 info = info['entries'][0]
 
-            if not info.get('duration'):
-                await m.error('Nieznana długość filmu')
+            duration = info.get('duration')
+            filesize = info.get('filesize')
+
+            if not duration and not filesize:
+                await m.error('Nieznana długość i rozmiar filmu')
                 return
 
-            if info['duration'] > 600:
-                await m.error('Maksymalna długość filmu to 10 minut')
+            if duration and duration > 60 * 30:
+                await m.error('Maksymalna długość filmu to 30 minut')
                 return
 
-            if (info.get('filesize') or 0) > 100 * filesizes.MiB:
+            if filesize and filesize > 100 * filesizes.MiB:
                 await m.error('Maksymalny rozmiar filmu to 100 MiB')
                 return
 
@@ -119,16 +122,17 @@ def setup(cliffs):
             await m.error(clean_content('\n'.join(e.args), max_length=1024, max_lines=16))
             return
 
-        async with m.channel.typing():
-            path = Path(downloader.status['filename'])
+        path = Path(downloader.status['filename'])
 
-            with open(path, 'rb') as f:
-                file = await pxl_blue.upload(
-                    f.read(),
-                    '.'.join((info['title'], info['ext'])),
-                    content_type=mimetypes.types_map.get('.' + info['ext'])
-                )
+        try:
+            async with m.channel.typing():
+                with open(path, 'rb') as f:
+                    file = await pxl_blue.upload(
+                        f.read(),
+                        '.'.join((info['title'], path.suffix)),
+                        content_type=mimetypes.types_map.get('.' + path.suffix)
+                    )
+        finally:
+            path.unlink(missing_ok=True)
 
         await m.send(file.raw_url)
-
-        path.unlink(True)
