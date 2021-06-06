@@ -6,7 +6,7 @@
 
 ### About
 
-My Python [Discord Bot](https://jelnislaw.ml/menelbot/) rewrite
+My Python [Discord Bot](https://jelnislaw.ml/menelbot/) made using discord.py
 
 ### Contributors
 
@@ -16,4 +16,4 @@ My Python [Discord Bot](https://jelnislaw.ml/menelbot/) rewrite
 - [JelNiSław](https://github.com/JelNiSlaw) - no contributions
 - [pxseu](https://github.com/pxseu) - quality assurance
 - [POSEUXCK](https://github.com/pxseu) - documentation
-- [ribon](https://github.com/05xapresses) - api.BADosz.com
+- [ribon](https://github.com/05xapresses) - obrazium.com (api.BADosz.com)
