@@ -5,9 +5,9 @@ from os import getenv
 import discord
 from dotenv import load_dotenv
 
-from . import PATH, commands, handlers
-from .objects import bot
-from .setup import auto_import, cliffs, logs
+from Menel.utils import logs
+from . import PATH
+from .objects.bot import Menel
 
 
 def main():
@@ -20,9 +20,7 @@ def main():
     log.info(f'Python {platform.python_version()}')
     log.info(f'discord.py {discord.__version__}')
 
-    auto_import(commands, cliffs, add_to_help=True)
-    auto_import(handlers, bot, add_to_help=False)
-
+    bot = Menel()
     bot.run(getenv('DISCORD_TOKEN'))
 
 
