@@ -1,10 +1,10 @@
 from datetime import datetime
 from os import getenv
-from typing import List, Optional
+from typing import Optional
 
 import aiohttp
 
-from ..functions import clean_content
+from Menel.utils.text_tools import clean_content
 
 
 class ImperialDocument:
@@ -17,7 +17,7 @@ class ImperialDocument:
         self.instant_delete: bool = data['document']['instantDelete']
         self.creation_date: datetime = datetime.utcfromtimestamp(data['document']['creationDate'] / 1000)
         self.expiration_date: datetime = datetime.utcfromtimestamp(data['document']['expirationDate'] / 1000)
-        self.allowed_editors: List[str] = data['document']['allowedEditors']
+        self.allowed_editors: list[str] = data['document']['allowedEditors']
         self.encrypted: bool = data['document']['encrypted']
         self.password: Optional[str] = data['document']['password']
         self.views: int = data['document']['views']
@@ -36,7 +36,7 @@ async def create_document(
     instant_delete: bool = False,
     password: Optional[str] = None,
     expiration: int = 1,
-    editor_array: Optional[List[str]] = None
+    editor_array: Optional[list[str]] = None
 ) -> ImperialDocument:
     async with aiohttp.request(
             'POST', 'https://imperialb.in/api/document',

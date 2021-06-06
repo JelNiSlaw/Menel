@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from .. import PATH
+from Menel import PATH
 
 
 LOGPATH = PATH.parent.joinpath('.log')

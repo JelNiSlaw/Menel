@@ -1,6 +1,7 @@
 from typing import Optional
 
 import discord
+from discord.ext import commands
 
 
 def clean_content(
@@ -33,7 +34,7 @@ def clean_content(
     return content
 
 
-def plural_word(count: int, one: str, few: str, many: str) -> str:
+def plural(count: int, one: str, few: str, many: str) -> str:
     if count == 1:
         word = one
     elif 10 <= count < 20:
@@ -46,7 +47,7 @@ def plural_word(count: int, one: str, few: str, many: str) -> str:
         else:
             word = many
 
-    return f'{count} {word}'
+    return f'{count:,} {word}'
 
 
 def plural_time(number: int) -> str:
@@ -59,8 +60,30 @@ def plural_time(number: int) -> str:
     else:
         unit = 'sekund'
 
-    return plural_word(number, one=unit + 'ę', few=unit + 'y', many=unit)
+    return plural(number, one=unit + 'ę', few=unit + 'y', many=unit)
 
 
-def stringify_permissions(permissions: discord.Permissions) -> str:
+# based on https://stackoverflow.com/a/1094933/11619130
+def human_size(num: int, suffix: str = 'B') -> str:
+    for unit in '', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi', 'Yi':
+        if abs(num) < 1024:
+            break
+        num /= 1024
+
+    return f'{num:,.1f} {unit}{suffix}'
+
+
+def name_id(obj: discord.Object) -> str:
+    return f'{obj} ({obj.id})'
+
+
+def ctx_location(ctx: commands.Context):
+    return location(ctx.author, ctx.channel, ctx.guild)
+
+
+def location(author: discord.Object, channel: discord.Object, guild: discord.Object) -> str:
+    return f"@{author} in #{channel} in {guild or 'DM'}"
+
+
+def str_permissions(permissions: discord.Permissions) -> str:
     return ', '.join(f'`{perm.replace("_", " ")}`' for perm, value in iter(permissions) if value)
