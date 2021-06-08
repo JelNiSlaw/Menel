@@ -87,7 +87,7 @@ def render_page(text: str) -> BytesIO:
     return file
 
 
-class Image(commands.Cog):
+class Image(commands.Cog, name='Obrazki'):
     @commands.command(aliases=['ascii-art', 'ascii'])
     @has_attachments(1)
     async def asciiart(

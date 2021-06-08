@@ -8,17 +8,15 @@ from ..utils import converters, embeds
 from ..utils.text_tools import clean_content
 
 
-class DiscordUtilities(commands.Cog):
-    def __init__(self):
-        self.OAUTH2_SCOPES = 'bot', 'applications.commands'
+def oauth2_link(client_id: int, permissions: int) -> str:
+    return discord.utils.oauth_url(
+        client_id=str(client_id),
+        permissions=discord.Permissions(permissions),
+        scopes=('bot', 'applications.commands')
+    )
 
-    def oauth2_link(self, client_id: int, permissions: int) -> str:
-        return discord.utils.oauth_url(
-            client_id=str(client_id),
-            permissions=discord.Permissions(permissions),
-            scopes=self.OAUTH2_SCOPES
-        )
 
+class DiscordUtilities(commands.Cog, name='Narzędzia Discord'):
     @commands.command(aliases=['av'])
     async def avatar(self, ctx: Context, user: Optional[discord.User]):
         if not user:
@@ -35,12 +33,12 @@ class DiscordUtilities(commands.Cog):
             bot = ctx.bot.user
 
         if bot != ctx.bot.user:
-            await ctx.info(f'[Link zaproszenia {clean_content(bot.name)}]({self.oauth2_link(bot.id, 0)})')
+            await ctx.info(f'[Link zaproszenia {clean_content(bot.name)}]({oauth2_link(bot.id, 0)})')
         else:
             await ctx.info(
-                f'[Zaproś mnie na swój serwer]({self.oauth2_link(ctx.bot.user.id, 686947414)})\n'
-                f'[Zaproś mnie na swój serwer z uprawnieniami administratora]({self.oauth2_link(ctx.bot.user.id, 8)})\n'
-                f'[Zaproś mnie na swój serwer bez dodatkowych uprawnień]({self.oauth2_link(ctx.bot.user.id, 0)})'
+                f'[Zaproś mnie na swój serwer]({oauth2_link(ctx.bot.user.id, 686947414)})\n'
+                f'[Zaproś mnie na swój serwer z uprawnieniami administratora]({oauth2_link(ctx.bot.user.id, 8)})\n'
+                f'[Zaproś mnie na swój serwer bez dodatkowych uprawnień]({oauth2_link(ctx.bot.user.id, 0)})'
             )
 
 

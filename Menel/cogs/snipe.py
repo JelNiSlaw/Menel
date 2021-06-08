@@ -22,7 +22,7 @@ class SnipeNotFound(commands.CommandError):
     pass
 
 
-class Snipe(commands.Cog):
+class Snipe(commands.Cog, name='Snipe'):
     def __init__(self):
         self.delete_snipes: _SNIPES_TYPE = {}
         self.edit_snipes: _SNIPES_TYPE = {}

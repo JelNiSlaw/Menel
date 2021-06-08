@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 
 from ..utils import embeds
+from ..utils.formatting import code
 from ..utils.text_tools import clean_content, location
 
 
@@ -48,9 +49,6 @@ class Context(commands.Context):
         return await self.send(embed=embeds.with_author(self.author, description=desc, colour=color), **kwargs)
 
     async def info(self, text: str, **kwargs) -> discord.Message:
-        return await self._send_embed(text, color=discord.Colour.blurple(), **kwargs)
-
-    async def success(self, text: str, **kwargs) -> discord.Message:
         return await self._send_embed(text, color=discord.Colour.green(), **kwargs)
 
     async def error(self, text: str, **kwargs) -> discord.Message:
@@ -94,3 +92,7 @@ class Context(commands.Context):
 
     def author_permissions(self) -> discord.Permissions:
         return self.channel.permissions_for(self.author)
+
+    async def get_prefixes_str(self, *, join: str = ' ') -> str:
+        prefixes = await self.db.get_prefixes(self.guild)
+        return join.join([code('@' + self.bot.user.name)] + list(map(code, prefixes)))

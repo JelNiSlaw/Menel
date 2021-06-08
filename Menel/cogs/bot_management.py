@@ -8,36 +8,34 @@ from Menel.utils.logs import LOGPATH
 from ..objects.context import Context
 
 
-class Admin(commands.Cog):
+class BotManagement(commands.Cog, name='Zarządzanie Botem'):
     def __init__(self, bot):
         self.bot = bot
 
     async def cog_check(self, ctx):
-        if not await ctx.bot.is_owner(ctx.author):
-            return False
-        return True
+        return await ctx.bot.is_owner(ctx.author)
 
-    @commands.command(aliases=['r'])
+    @commands.command(aliases=['r'], hidden=True)
     async def reload(self, ctx: Context):
         self.bot.reload_extensions()
         await ctx.react_or_send('\N{OK HAND SIGN}')
 
-    @commands.command('clear-cache', aliases=['cc'])
+    @commands.command('clear-cache', aliases=['cc'], hidden=True)
     async def clear_cache(self, ctx: Context):
         self.bot.clear()
         await ctx.react_or_send('\N{OK HAND SIGN}')
 
-    @commands.command(aliases=['stop', 's'])
+    @commands.command(aliases=['stop', 's'], hidden=True)
     async def shutdown(self, ctx: Context):
         await ctx.react_or_send('\N{WAVING HAND SIGN}')
         await self.bot.close()
 
-    @commands.command(aliases=['del'])
+    @commands.command(aliases=['del'], hidden=True)
     async def delete(self, ctx: Context, *, message: discord.PartialMessage):
         await message.delete()
         await ctx.react_or_send('\N{OK HAND SIGN}')
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def logs(self, ctx: Context, *, here: Literal['here'] = None):
         destination = ctx.channel if here is not None else ctx.author
         await ctx.send(file=discord.File(LOGPATH, f'{time.time_ns()}.log'), channel=destination, reply=False)
@@ -49,4 +47,4 @@ class Admin(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Admin(bot))
+    bot.add_cog(BotManagement(bot))

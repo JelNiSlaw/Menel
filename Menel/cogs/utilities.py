@@ -124,7 +124,7 @@ async def get_body(uuid: str) -> bytes:
         return await r.read()
 
 
-class Utilities(commands.Cog):
+class Utilities(commands.Cog, name='Narzędzia'):
     @commands.command(aliases=['trans', 'tr'])
     async def translate(self, ctx: Context, lang1: LanguageConverter, lang2: Optional[LanguageConverter], *, text: str):
         if lang2 is not None:
@@ -202,7 +202,7 @@ class Utilities(commands.Cog):
                 title=clean_content(json['word'], False, False, max_length=256),
                 url=json['permalink'],
                 description=clean_content(remove_brackets(json['definition']), max_length=1024, max_lines=16),
-                colour=discord.Colour.blurple()
+                colour=discord.Colour.green()
             )
 
             if json['example'].strip():

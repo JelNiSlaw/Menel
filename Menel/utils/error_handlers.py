@@ -4,8 +4,8 @@ import logging
 import discord
 from discord.ext import commands
 
-from .formatting import bold, code
-from .text_tools import clean_content, name_id
+from .formatting import code
+from .text_tools import clean_content, name_id, str_permissions, user_input
 from ..objects.context import Context
 from ..utils import errors
 
@@ -30,14 +30,6 @@ REPORT_ORIGINAL_EXCEPTIONS = (
     commands.CommandInvokeError,
     commands.ConversionError
 )
-
-
-def user_input(text: str):
-    return bold(clean_content(text, max_length=32))
-
-
-def str_permissions(permissions: list[str]) -> str:
-    return ', '.join(perm.replace('_', ' ').title() for perm in permissions)
 
 
 async def command_error(ctx: Context, error: commands.CommandError):

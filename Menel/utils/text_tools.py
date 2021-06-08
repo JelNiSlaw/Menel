@@ -3,6 +3,8 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
+from Menel.utils.formatting import bold
+
 
 def clean_content(
     content: str,
@@ -83,3 +85,11 @@ def ctx_location(ctx: commands.Context):
 
 def location(author: discord.Object, channel: discord.Object, guild: discord.Object) -> str:
     return f"@{author} in #{channel} in {guild or 'DM'}"
+
+
+def user_input(text: str):
+    return bold(clean_content(text, max_length=32, max_lines=1))
+
+
+def str_permissions(permissions: list[str]) -> str:
+    return ', '.join(perm.replace('_', ' ') for perm in permissions)

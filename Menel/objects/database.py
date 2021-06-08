@@ -1,7 +1,11 @@
 from os import getenv
+from typing import Optional
 
 import discord
 import motor.motor_asyncio
+
+
+DEFAULT_PREFIXES = ['?']
 
 
 class Database:
@@ -26,7 +30,10 @@ class Database:
         self._db = self.client['bot']
         self.config = self._db['config']
 
-    async def get_prefixes(self, guild: discord.Guild) -> list[str]:
+    async def get_prefixes(self, guild: Optional[discord.Guild]) -> list[str]:
+        if guild is None:
+            return DEFAULT_PREFIXES
+
         if guild.id not in self._prefix_cache:
             document = await self.config.find_one(guild.id)
             if not document or 'prefixes' not in document:
@@ -34,7 +41,7 @@ class Database:
             else:
                 self._prefix_cache[guild.id] = document['prefixes']
 
-        return self._prefix_cache[guild.id] or ['.']
+        return self._prefix_cache[guild.id] or DEFAULT_PREFIXES
 
     async def set_prefixes(self, guild: discord.Guild, prefixes: list[str]) -> None:
         await self.config.update_one({'_id': guild.id}, {'$set': {'prefixes': prefixes}}, upsert=True)

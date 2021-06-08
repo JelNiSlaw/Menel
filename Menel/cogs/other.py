@@ -17,7 +17,7 @@ class PxseuFlags(commands.FlagConverter, case_insensitive=True):
     message: Optional[str]
 
 
-class Other(commands.Cog):
+class Other(commands.Cog, name='Inne'):
     @commands.command(aliases=['carpet'])
     async def dywan(self, ctx: Context, width: int = 15, length: int = 10):
         if width < 2 or length < 2:
@@ -36,9 +36,9 @@ class Other(commands.Cog):
         lines.insert(0, f'┏{line}┓')
         lines.append(f'┗{line}┛')
         lines = codeblock('\n'.join(lines), escape=False)
-        await ctx.success(f'Proszę, oto Twój darmowy dywan\n{lines}')
+        await ctx.info(f'Proszę, oto Twój darmowy dywan\n{lines}')
 
-    @commands.command(aliases=['px'], ignore_extra=False)
+    @commands.command(aliases=['px'], ignore_extra=False, hidden=True)
     async def pxseu(self, ctx: Context, *, flags: PxseuFlags):
         if flags.url:
             url = flags.url
@@ -63,7 +63,7 @@ class Other(commands.Cog):
         message = clean_content(json['message'])
 
         if r.status == 200:
-            await ctx.success(message)
+            await ctx.info(message)
         else:
             if 'retry_after' in json:
                 message += f'\nTry again in {json["retry_after"]}s'

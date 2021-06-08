@@ -8,7 +8,7 @@ from ..utils import embeds
 from ..utils.formatting import code
 
 
-class Bot(commands.Cog):
+class Bot(commands.Cog, name='Bot'):
     @commands.command()
     async def ping(self, ctx: Context):
         start = perf_counter()
@@ -17,28 +17,28 @@ class Bot(commands.Cog):
 
         embed = discord.Embed(
             description=f'Ogólne opóźnienie wiadomości: '
-                        f'{round((message.created_at.timestamp() - ctx.message.created_at.timestamp()) * 1000)} ms\n'
-                        f'Czas wysyłania wiadomości: {round((stop - start) * 1000)} ms\n'
-                        f'Opóźnienie WebSocket: {round(ctx.bot.latency * 1000)} ms',
-            colour=discord.Colour.blurple()
+                        f'{(message.created_at.timestamp() - ctx.message.created_at.timestamp()) * 1000:,.0f} ms\n'
+                        f'Czas wysyłania wiadomości: {(stop - start) * 1000:,.0f} ms\n'
+                        f'Opóźnienie WebSocket: {ctx.bot.latency * 1000:,.0f} ms',
+            colour=discord.Colour.green()
         )
 
         await message.edit(content=None, embed=embed)
 
     @commands.group(invoke_without_command=True)
+    @commands.guild_only()
     async def prefix(self, ctx: Context):
-        prefixes = await ctx.db.get_prefixes(ctx.guild)
-        description = '\n'.join([code('@' + ctx.bot.user.name)] + list(map(code, prefixes)))
         await ctx.send(
             embed=embeds.with_author(
                 ctx.author,
                 title='Prefixy na tym serwerze',
-                description=description,
-                colour=discord.Colour.blue()
+                description=await ctx.get_prefixes_str(join='\n'),
+                colour=discord.Colour.green()
             )
         )
 
     @prefix.command(name='set', aliases=['ser'])
+    @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     async def prefix_set(self, ctx: Context, *prefixes: str):
         prefixes = list(set(prefixes))
@@ -61,13 +61,14 @@ class Bot(commands.Cog):
                 return
 
         await ctx.db.set_prefixes(ctx.guild, prefixes)
-        await ctx.success(f"Ustawiono prefixy {' '.join(map(code, prefixes))}")
+        await ctx.info(f"Ustawiono prefixy: {' '.join(map(code, prefixes))}")
 
     @prefix.command(name='reset')
+    @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     async def prefix_reset(self, ctx: Context):
         await ctx.db.reset_prefixes(ctx.guild)
-        await ctx.success('Zresetowano prefixy')
+        await ctx.info('Zresetowano prefixy')
 
 
 def setup(bot):

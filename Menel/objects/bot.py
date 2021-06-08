@@ -9,6 +9,7 @@ import httpx
 from discord.ext import commands, tasks
 
 from .database import Database
+from .help_command import HelpCommand
 from ..objects.context import Context
 from ..utils import error_handlers
 from ..utils.text_tools import ctx_location, name_id, plural
@@ -26,7 +27,6 @@ class Menel(commands.AutoShardedBot):
             case_insensitive=True,
             owner_id=724674729977577643,
             help_command=HelpCommand(),
-            description='Cześć!',
             strip_after_prefix=True,
             max_messages=5 * 1024,
             intents=discord.Intents(messages=True, guilds=True, members=True, reactions=True),
@@ -50,7 +50,10 @@ class Menel(commands.AutoShardedBot):
         return [f'<@{self.user.id}>', f'<@!{self.user.id}>'] + await self.db.get_prefixes(m.guild)
 
     async def process_commands(self, m: discord.Message):
-        if m.author.bot or not m.channel.permissions_for(m.guild.me).send_messages:
+        if m.author.bot:
+            return
+
+        if m.guild and not m.channel.permissions_for(m.guild.me).send_messages:
             return
 
         ctx = await self.get_context(m, cls=Context)
@@ -114,9 +117,9 @@ class Menel(commands.AutoShardedBot):
 
     async def close(self):
         log.info('Stopping the bot')
+        await super().close()
         await self.client.aclose()
         self.db.client.close()
-        await super().close()
 
     @tasks.loop(seconds=20)
     async def status_loop(self):
@@ -140,7 +143,3 @@ class Menel(commands.AutoShardedBot):
     @status_loop.before_loop
     async def before_status_loop(self):
         await self.wait_until_ready()
-
-
-class HelpCommand(commands.MinimalHelpCommand):
-    pass
