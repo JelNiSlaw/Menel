@@ -1,5 +1,6 @@
 from os import getenv
 
+import discord
 import motor.motor_asyncio
 
 
@@ -20,7 +21,25 @@ class Database:
             tls=True
         )
 
-        self._database = self.client['bot']
+        self._prefix_cache = {}
 
+        self._db = self.client['bot']
+        self.config = self._db['config']
 
-db = Database()
+    async def get_prefixes(self, guild: discord.Guild) -> list[str]:
+        if guild.id not in self._prefix_cache:
+            document = await self.config.find_one(guild.id)
+            if not document or 'prefixes' not in document:
+                self._prefix_cache[guild.id] = []
+            else:
+                self._prefix_cache[guild.id] = document['prefixes']
+
+        return self._prefix_cache[guild.id] or ['.']
+
+    async def set_prefixes(self, guild: discord.Guild, prefixes: list[str]) -> None:
+        await self.config.update_one({'_id': guild.id}, {'$set': {'prefixes': prefixes}}, upsert=True)
+        self._prefix_cache[guild.id] = prefixes
+
+    async def reset_prefixes(self, guild: discord.Guild) -> None:
+        await self.config.update_one({'_id': guild.id}, {'$unset': {'prefixes': None}}, upsert=True)
+        self._prefix_cache[guild.id] = []
