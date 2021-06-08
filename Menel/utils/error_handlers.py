@@ -21,7 +21,6 @@ SEND_EXCEPTIONS = (
 )
 
 IGNORE_EXCEPTIONS = (
-    commands.CommandNotFound,
     commands.CheckFailure,
     commands.CheckAnyFailure
 )
