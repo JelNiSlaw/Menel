@@ -6,8 +6,9 @@ from .errors import BadAttachmentCount, BadAttachmentType
 from ..objects.context import Context
 
 
-def has_attachments(count: Optional[int] = None, allowed_types: Optional[tuple[str]] = None):
-    async def predicate(ctx: Context):
+def has_attachments(count: Optional[int] = None, allowed_types: Optional[tuple[str]] = None) -> callable:
+    @commands.check
+    async def predicate(ctx: Context) -> bool:
         attachments = ctx.message.attachments
         if count is None:
             if not attachments:
@@ -22,4 +23,4 @@ def has_attachments(count: Optional[int] = None, allowed_types: Optional[tuple[s
 
         return True
 
-    return commands.check(predicate)
+    return predicate

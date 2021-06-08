@@ -47,7 +47,7 @@ class Snipe(commands.Cog):
         time = message.edited_at or message.created_at
         color = message.author.colour
 
-        if ctx.time - time > timedelta(hours=2):
+        if ctx.command_time - time > timedelta(hours=2):
             raise SnipeNotFound()
 
         embed = embeds.with_author(

@@ -1,24 +1,32 @@
 import logging
-from typing import Iterable
+import sys
+import traceback
+from typing import Iterable, TYPE_CHECKING
 
 import discord
 from discord.ext import commands
 
-from .database import Database
 from ..utils import embeds
 from ..utils.text_tools import clean_content, location
 
+
+if TYPE_CHECKING:
+    from httpx import AsyncClient
+    from .bot import Menel
+    from .database import Database
 
 log = logging.getLogger(__name__)
 
 
 class Context(commands.Context):
     message: discord.Message
-    db = Database()
+    bot: 'Menel'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.time = self.message.edited_at or self.message.created_at
+        self.db: 'Database' = self.bot.db
+        self.client: 'AsyncClient' = self.bot.client
+        self.command_time = self.message.edited_at or self.message.created_at
 
     async def send(
         self,
@@ -33,27 +41,11 @@ class Context(commands.Context):
         if 'reference' not in kwargs and reply:
             kwargs['reference'] = self.message.to_reference(fail_if_not_exists=False)
 
-        try:
-            log.debug(f'Sending a message to {location(self.author, channel, self.guild)}')
-            return await channel.send(*args, **kwargs)
-
-        except discord.Forbidden as e:
-            log.error(e)
-
-        except discord.HTTPException as e:
-            try:
-                return await channel.send(
-                    embed=discord.Embed(
-                        description=clean_content(str(e), max_length=512, max_lines=4),
-                        colour=discord.Colour.red()
-                    )
-                )
-            except discord.HTTPException:
-                log.error(e)
+        log.debug(f'Sending a message to {location(self.author, channel, self.guild)}')
+        return await channel.send(*args, **kwargs)
 
     async def _send_embed(self, desc: str, color: discord.Colour, **kwargs) -> discord.Message:
-        embed = embeds.with_author(self.author, description=desc, colour=color)
-        return await self.send(embed=embed, **kwargs)
+        return await self.send(embed=embeds.with_author(self.author, description=desc, colour=color), **kwargs)
 
     async def info(self, text: str, **kwargs) -> discord.Message:
         return await self._send_embed(text, color=discord.Colour.blurple(), **kwargs)
@@ -73,9 +65,12 @@ class Context(commands.Context):
         if permissions.add_reactions and permissions.read_message_history:
             await self.message.add_reaction(emoji)
         else:
-            await self.channel.send(emoji)
+            await self.send(emoji)
 
-    async def report_exception(self, exception: Exception):
+    async def report_exception(self, exception: Exception) -> discord.Message:
+        log.error(exception)
+        traceback.print_exception(type(exception), exception, exception.__traceback__, file=sys.stderr)
+
         embed = embeds.with_author(
             self.author,
             title='Wystąpił błąd!',
@@ -92,7 +87,7 @@ class Context(commands.Context):
             text = None
             allowed_mentions = None
 
-        await self.send(text, embed=embed, allowed_mentions=allowed_mentions)
+        return await self.send(text, embed=embed, allowed_mentions=allowed_mentions)
 
     def my_permissions(self) -> discord.Permissions:
         return self.channel.permissions_for(self.me)

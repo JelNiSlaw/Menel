@@ -83,7 +83,3 @@ def ctx_location(ctx: commands.Context):
 
 def location(author: discord.Object, channel: discord.Object, guild: discord.Object) -> str:
     return f"@{author} in #{channel} in {guild or 'DM'}"
-
-
-def str_permissions(permissions: discord.Permissions) -> str:
-    return ', '.join(f'`{perm.replace("_", " ")}`' for perm, value in iter(permissions) if value)

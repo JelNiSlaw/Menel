@@ -1,16 +1,16 @@
-import asyncio
 import logging
 import pkgutil
-import sys
-import traceback
 from datetime import timedelta
 from types import ModuleType
+from typing import Union
 
 import discord
+import httpx
 from discord.ext import commands, tasks
 
+from .database import Database
 from ..objects.context import Context
-from ..utils import errors
+from ..utils import error_handlers
 from ..utils.text_tools import ctx_location, name_id, plural
 
 
@@ -18,66 +18,36 @@ log = logging.getLogger(__name__)
 
 
 class Menel(commands.AutoShardedBot):
+    on_command_error = staticmethod(error_handlers.command_error)
+
     def __init__(self):
         super().__init__(
-            command_prefix=commands.when_mentioned_or(','),
+            command_prefix=self.get_prefix,
             case_insensitive=True,
             owner_id=724674729977577643,
+            help_command=HelpCommand(),
             description='Cześć!',
             strip_after_prefix=True,
             max_messages=5 * 1024,
-            intents=discord.Intents(
-                guilds=True,
-                members=True,
-                bans=False,
-                emojis=False,
-                integrations=False,
-                webhooks=False,
-                invites=False,
-                voice_states=False,
-                presences=False,
-                messages=True,
-                reactions=True,
-                typing=False
-            ),
-            member_cache_flags=discord.MemberCacheFlags(voice=False, joined=True),
+            intents=discord.Intents(messages=True, guilds=True, members=True, reactions=True),
+            member_cache_flags=discord.MemberCacheFlags(joined=True, voice=False),
             chunk_guilds_at_startup=True,
             status=discord.Status.online,
             allowed_mentions=discord.AllowedMentions.none(),
             heartbeat_timeout=120
         )
 
+        self.db = Database()
+        self.client = httpx.AsyncClient()
+
         from .. import cogs
         self.load_extensions(cogs)
 
-        self.owners = []
-        self.cooldowns = {}
         self._last_status_data = None
         self.status_loop.start()
 
-    @staticmethod
-    def get_extensions(package: ModuleType) -> set:
-
-        def unqualify(name: str) -> str:
-            return name.rsplit('.', maxsplit=1)[-1]
-
-        exts = set()
-
-        for ext in pkgutil.walk_packages(package.__path__, package.__name__ + '.'):
-            if ext.ispkg or unqualify(ext.name).startswith('_'):
-                continue
-
-            exts.add(ext.name)
-        exts.add('jishaku')
-        return exts
-
-    def load_extensions(self, package: ModuleType):
-        for ext in self.get_extensions(package):
-            self.load_extension(ext)
-
-    def reload_extensions(self):
-        for ext in self.extensions.copy():
-            self.reload_extension(ext)
+    async def get_prefix(self, m: Union[discord.Message, Context]) -> list[str]:
+        return [f'<@{self.user.id}>', f'<@!{self.user.id}>'] + await self.db.get_prefixes(m.guild)
 
     async def process_commands(self, m: discord.Message):
         if m.author.bot or not m.channel.permissions_for(m.guild.me).send_messages:
@@ -85,7 +55,7 @@ class Menel(commands.AutoShardedBot):
 
         ctx = await self.get_context(m, cls=Context)
         if ctx.command:
-            log.info(f'Running command {ctx.command.name} for {ctx_location(ctx)}')
+            log.info(f'Running command {ctx.command.qualified_name} for {ctx_location(ctx)}')
         await self.invoke(ctx)
 
     async def on_connect(self):
@@ -109,7 +79,7 @@ class Menel(commands.AutoShardedBot):
         if not after.edited_at:
             return
 
-        if after.edited_at - after.created_at > timedelta(minutes=1):
+        if after.edited_at - after.created_at > timedelta(minutes=2):
             return
 
         await self.process_commands(after)
@@ -122,37 +92,31 @@ class Menel(commands.AutoShardedBot):
     async def on_guild_remove(guild: discord.Guild):
         log.info(f'Left server {guild}')
 
-    async def on_command_error(self, ctx: Context, error: Exception):
-        ignored_exceptions = (
-            commands.CommandNotFound,
-            commands.CheckFailure
-        )  # , commands.CommandError)
-        send_exceptions = (
-            commands.CommandInvokeError,
-                # commands.BadArgument,
-            commands.ArgumentParsingError,
-            errors.BadAttachmentCount,
-            errors.BadAttachmentType,
-            errors.ImgurUploadError
-        )
+    @staticmethod
+    def find_extensions(package: ModuleType) -> set:
+        def unqualify(name: str) -> str:
+            return name.rsplit('.', maxsplit=1)[-1]
 
-        try:
-            raise error
-        except send_exceptions:
-            await ctx.error(str(error))
-        except commands.NoPrivateMessage:
-            await ctx.error('Ta komenda nie może być użyta w wiadomościach prywatnych')
-        except commands.DisabledCommand:
-            await ctx.author.send('Ta komenda jest obecnie wyłączona')
-        except commands.NotOwner:
-            log.info(f'{name_id(ctx.author)} tried using {ctx.command.name} but is not the bot owner')
-        except asyncio.TimeoutError:
-            await ctx.error('Minął czas na połączenie z serwerem')
-        except ignored_exceptions:
-            print('IGNORED:', type(error).__name__, error)
-        except Exception:
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
-            await ctx.report_exception(error)
+        exts = {'jishaku'}
+        for ext in pkgutil.walk_packages(package.__path__, package.__name__ + '.'):
+            if ext.ispkg or unqualify(ext.name).startswith('_'):
+                continue
+            exts.add(ext.name)
+        return exts
+
+    def load_extensions(self, package: ModuleType):
+        for ext in self.find_extensions(package):
+            self.load_extension(ext)
+
+    def reload_extensions(self):
+        for ext in self.extensions.copy():
+            self.reload_extension(ext)
+
+    async def close(self):
+        log.info('Stopping the bot')
+        await self.client.aclose()
+        self.db.client.close()
+        await super().close()
 
     @tasks.loop(seconds=20)
     async def status_loop(self):
@@ -168,7 +132,7 @@ class Menel(commands.AutoShardedBot):
                 activity=discord.Activity(
                     name=f"{plural(users, 'użytkownik', 'użytkowników', 'użytkowników')} | "
                          f"{plural(guilds, 'serwer', 'serwery', 'serwerów')} | "
-                         f"{round(latency * 1000):,} ms",
+                         f"{latency * 1000:,.0f} ms",
                     type=discord.ActivityType.watching
                 )
             )
@@ -176,3 +140,7 @@ class Menel(commands.AutoShardedBot):
     @status_loop.before_loop
     async def before_status_loop(self):
         await self.wait_until_ready()
+
+
+class HelpCommand(commands.MinimalHelpCommand):
+    pass
