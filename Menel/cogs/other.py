@@ -90,6 +90,17 @@ class Other(commands.Cog, name='Inne'):
 
         await ctx.send(content)
 
+    @commands.command()
+    @commands.guild_only()
+    @commands.bot_has_permissions(ban_members=True)
+    async def selfkick(self, ctx: Context):
+        if ctx.author.top_role >= ctx.me.top_role or ctx.guild.owner_id == ctx.author.id:
+            await ctx.error('Nie mogę')
+            return
+
+        await ctx.author.kick(reason='Użycie komendy selfkick')
+        await ctx.ok_hand()
+
 
 def setup(bot):
     bot.add_cog(Other())
