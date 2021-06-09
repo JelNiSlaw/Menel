@@ -37,7 +37,8 @@ class Menel(commands.AutoShardedBot):
             heartbeat_timeout=120
         )
 
-        self.global_rate_limit = commands.CooldownMapping.from_cooldown(5, 12, commands.BucketType.user)
+        self.prefix_base = []
+        self.global_rate_limit = commands.CooldownMapping.from_cooldown(5, 15, commands.BucketType.user)
         self.db = Database()
         self.client = httpx.AsyncClient()
 
@@ -48,7 +49,7 @@ class Menel(commands.AutoShardedBot):
         self.status_loop.start()
 
     async def get_prefix(self, m: Union[discord.Message, Context]) -> list[str]:
-        return [f'<@{self.user.id}>', f'<@!{self.user.id}>'] + await self.db.get_prefixes(m.guild)
+        return self.prefix_base + await self.db.get_prefixes(m.guild)
 
     async def process_commands(self, m: discord.Message):
         if m.author.bot:
@@ -59,16 +60,19 @@ class Menel(commands.AutoShardedBot):
 
         ctx = await self.get_context(m, cls=Context)
 
-        if ctx.command:
-            if self.global_rate_limit.update_rate_limit(ctx.message, ctx.command_time.timestamp()):
-                log.warning(f'Rate limit exceeded by {ctx_location(ctx)}')
-                return
+        if not ctx.command:
+            return
 
-            log.info(f'Running command {ctx.command.qualified_name} for {ctx_location(ctx)}')
-            await self.invoke(ctx)
+        if self.global_rate_limit.update_rate_limit(ctx.message, ctx.command_time.timestamp()):
+            log.warning(f'Rate limit exceeded by {ctx_location(ctx)}')
+            return
+
+        log.info(f'Running command {ctx.command.qualified_name} for {ctx_location(ctx)}')
+        await self.invoke(ctx)
 
     async def on_connect(self):
         log.info(f'Connected as {name_id(self.user)}')
+        self.prefix_base = [f'<@{self.user.id}>', f'<@!{self.user.id}>']
 
     @staticmethod
     async def on_shard_connect(shard_id: int):

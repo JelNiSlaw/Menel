@@ -83,9 +83,9 @@ async def command_error(ctx: Context, error: commands.CommandError):
         await ctx.error(f'Nieoczekiwany znak {code(error.char)} po cudzysłowie zamykającym')
 
     elif isinstance(error, commands.MissingPermissions):
-        await ctx.error(f'Nie masz uprawnień {str_permissions(error.missing_perms)}')
+        await ctx.error(f'Nie posiadasz uprawnień: {str_permissions(error.missing_perms)}')
     elif isinstance(error, commands.BotMissingPermissions):
-        await ctx.error(f'Nie mam uprawnień {str_permissions(error.missing_perms)}')
+        await ctx.error(f'Nie posiadam uprawnień: {str_permissions(error.missing_perms)}')
     elif isinstance(error, commands.MissingRole):
         await ctx.error(f'Nie masz wymaganej roli {error.missing_role}')
     elif isinstance(error, commands.BotMissingRole):

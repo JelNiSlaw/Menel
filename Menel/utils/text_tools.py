@@ -83,8 +83,11 @@ def ctx_location(ctx: commands.Context):
     return location(ctx.author, ctx.channel, ctx.guild)
 
 
-def location(author: discord.Object, channel: discord.Object, guild: discord.Object) -> str:
-    return f"@{author} in #{channel} in {guild or 'DM'}"
+def location(author: discord.abc.User, channel: discord.abc.Messageable, guild: Optional[discord.Guild]) -> str:
+    text = f'@{author} in #{channel}'
+    if guild is not None:
+        text += f" in {guild}"
+    return text
 
 
 def user_input(text: str):

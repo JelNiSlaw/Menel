@@ -293,7 +293,8 @@ class Utilities(commands.Cog, name='Narzędzia'):
 
         for c in chars[:16]:
             output.append(
-                f"{c} – {'U+' + hex(ord(c))[2:].upper().zfill(4)} – {unicodedata.name(c, 'UNKNOWN CHARACTER')}"
+                f"{c} \N{EM DASH} {'U+' + hex(ord(c))[2:].upper().zfill(4)} "
+                f"\N{EM DASH} {unicodedata.name(c, 'UNKNOWN CHARACTER')}"
             )
 
         if len(chars) > 16:

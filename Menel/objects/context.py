@@ -1,7 +1,7 @@
 import logging
 import sys
 import traceback
-from typing import Iterable, TYPE_CHECKING
+from typing import Iterable, Optional, TYPE_CHECKING, Union
 
 import discord
 from discord.ext import commands
@@ -21,6 +21,8 @@ log = logging.getLogger(__name__)
 
 class Context(commands.Context):
     message: discord.Message
+    author: Union[discord.Member, discord.User]
+    guild: Optional[discord.Guild]
     bot: 'Menel'
 
     def __init__(self, **kwargs):
@@ -53,6 +55,9 @@ class Context(commands.Context):
 
     async def error(self, text: str, **kwargs) -> discord.Message:
         return await self._send_embed(text, color=discord.Colour.red(), **kwargs)
+
+    async def ok_hand(self):
+        await self.send('\N{OK HAND SIGN}')
 
     async def add_reactions(self, emojis: Iterable[str]) -> None:
         for e in emojis:
@@ -92,6 +97,12 @@ class Context(commands.Context):
 
     def author_permissions(self) -> discord.Permissions:
         return self.channel.permissions_for(self.author)
+
+    @property
+    def clean_prefix(self):
+        if self.prefix in self.bot.prefix_base:
+            return f'@{self.bot.user.name} '
+        return self.prefix
 
     async def get_prefixes_str(self, *, join: str = ' ') -> str:
         prefixes = await self.db.get_prefixes(self.guild)
