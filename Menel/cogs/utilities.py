@@ -26,7 +26,7 @@ from ..utils.checks import has_attachments
 from ..utils.converters import LanguageConverter, URL
 from ..utils.formatting import code, codeblock
 from ..utils.math import unique_id
-from ..utils.text_tools import clean_content
+from ..utils.text_tools import clean_content, escape_str
 
 
 AUTO = 'auto'
@@ -292,10 +292,17 @@ class Utilities(commands.Cog, name='Narzędzia'):
         output = []
 
         for c in chars[:16]:
-            output.append(
-                f"{c} \N{EM DASH} {'U+' + hex(ord(c))[2:].upper().zfill(4)} "
-                f"\N{EM DASH} {unicodedata.name(c, 'UNKNOWN CHARACTER')}"
-            )
+            if c == ' ':
+                output.append('')
+                continue
+
+            info = f"{escape_str(c)} \N{EM DASH} U+{ord(c):0>4X}"
+            try:
+                info += f' \N{EM DASH} {unicodedata.name(c)}'
+            except ValueError:
+                pass
+
+            output.append(info)
 
         if len(chars) > 16:
             output.append('...')

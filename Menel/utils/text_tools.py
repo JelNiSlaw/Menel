@@ -75,6 +75,10 @@ def human_size(num: int, suffix: str = 'B') -> str:
     return f'{num:,.1f} {unit}{suffix}'
 
 
+def escape_str(text: str) -> str:
+    return repr(text)[1:-1]
+
+
 def name_id(obj: discord.Object) -> str:
     return f'{obj} ({obj.id})'
 
