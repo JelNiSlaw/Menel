@@ -1,3 +1,5 @@
+from os import getenv
+
 import aiohttp
 
 from Menel.utils.errors import ImgurUploadError
@@ -9,14 +11,15 @@ async def _upload(field_name: str, file: bytes) -> str:
 
     async with aiohttp.request(
             'POST', 'https://api.imgur.com/3/upload', data=form,
+            headers={'Authorization': f"Client-ID {getenv('IMGUR_CLIENT_ID')}"},
             timeout=aiohttp.ClientTimeout(total=20)
     ) as r:
         json = await r.json()
 
-    if json['success']:
+    if r.status == 200:
         return json['data']['link']
     else:
-        raise ImgurUploadError(json['status'], json['data']['error'])
+        raise ImgurUploadError(json.get('status', 0), json['data'].get('error', 'Nieznany błąd serwera Imgur'))
 
 
 async def upload_image(image: bytes) -> str:

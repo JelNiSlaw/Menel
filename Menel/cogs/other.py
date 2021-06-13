@@ -43,7 +43,7 @@ class Other(commands.Cog, name='Inne'):
         lines = codeblock('\n'.join(lines), escape=False)
         await ctx.info(f'Proszę, oto Twój darmowy dywan\n{lines}')
 
-    @commands.command(aliases=['px'], ignore_extra=False, hidden=True)
+    @commands.command(aliases=['px', 'pikseu'], ignore_extra=False, hidden=True)
     @commands.cooldown(2, 30, commands.BucketType.user)
     async def pxseu(self, ctx: Context, *, flags: PxseuFlags):
         """
