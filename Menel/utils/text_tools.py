@@ -79,7 +79,7 @@ def escape_str(text: str) -> str:
     return repr(text)[1:-1]
 
 
-def name_id(obj: discord.Object) -> str:
+def name_id(obj: discord.abc.Snowflake) -> str:
     return f'{obj} ({obj.id})'
 
 

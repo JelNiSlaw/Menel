@@ -1,11 +1,75 @@
+import logging
 from os import getenv
-from typing import Optional
+from typing import Any, Hashable, Optional
 
-import discord
+import motor
 import motor.motor_asyncio
+import pymongo
 
 
-DEFAULT_PREFIXES = ['?']
+log = logging.getLogger(__name__)
+
+
+class DocumentCache:
+    def __init__(self, collection: pymongo.collection.Collection, default: Any = None):
+        self.collection = collection
+        self.default = default
+        self.cache = {}
+
+    async def get(self, document_id: Hashable, key: Optional[str]) -> Optional[Any]:
+        if key is None:
+            return self.default[key]
+
+        cache = self.cache.get(document_id)
+        if cache is not None:
+            if key in cache:
+                return cache[key]
+        else:
+            log.info(f'Getting {document_id} from the database')
+            document = await self.collection.find_one(document_id)
+            if document is None:
+                self.cache[document_id] = {}
+            else:
+                del document['_id']
+                self.cache[document_id] = document
+                if key in document:
+                    return document[key]
+
+        return self.default[key]
+
+    async def set(self, document_id: Hashable, key: str, value: Any) -> None:
+        await self.collection.update_one({'_id': document_id}, {'$set': {key: value}}, upsert=True)
+        self.prepare_document(document_id)
+        self.cache[document_id][key] = value
+
+    async def add_to_set(self, document_id: Hashable, key: str, *values: Any):
+        await self.collection.update_one({'_id': document_id}, {'$addToSet': {key: {'$each': values}}}, upsert=True)
+        self.prepare_list(document_id, key)
+        self.cache[document_id][key].extend(values)
+        self.cache[document_id][key] = list(set(self.cache[document_id][key]))
+
+    async def pull(self, document_id: Hashable, key: str, *values: Any):
+        await self.collection.update_one({'_id': document_id}, {'$pull': {key: {'$in': values}}}, upsert=True)
+        self.prepare_list(document_id, key)
+        cache = set(self.cache[document_id][key])
+        cache.difference_update(values)
+        self.cache[document_id][key] = list(cache)
+
+    async def unset(self, document_id: Hashable, key: str) -> None:
+        await self.collection.update_one({'_id': document_id}, {'$unset': {key: None}}, upsert=True)
+        try:
+            del self.cache[document_id][key]
+        except KeyError:
+            pass
+
+    def prepare_document(self, document_id: Hashable) -> None:
+        if document_id not in self.cache:
+            self.cache[document_id] = {}
+
+    def prepare_list(self, document_id: Hashable, key: str) -> None:
+        self.prepare_document(document_id)
+        if key not in self.cache[document_id]:
+            self.cache[document_id][key] = []
 
 
 class Database:
@@ -25,28 +89,28 @@ class Database:
             tls=True
         )
 
-        self._prefix_cache = {}
-
         self._db = self.client['bot']
-        self.config = self._db['config']
+        self.bot_config = DocumentCache(self._db['bot_config'], {'users': []})
+        self.guild_config = DocumentCache(self._db['guild_config'], {'prefixes': ['?']})
 
-    async def get_prefixes(self, guild: Optional[discord.Guild]) -> list[str]:
-        if guild is None:
-            return DEFAULT_PREFIXES
+    # prefixes
 
-        if guild.id not in self._prefix_cache:
-            document = await self.config.find_one(guild.id)
-            if not document or 'prefixes' not in document:
-                self._prefix_cache[guild.id] = []
-            else:
-                self._prefix_cache[guild.id] = document['prefixes']
+    async def get_prefixes(self, guild_id: Optional[int]) -> list[str]:
+        return await self.guild_config.get(guild_id, 'prefixes')
 
-        return self._prefix_cache[guild.id] or DEFAULT_PREFIXES
+    async def set_prefixes(self, guild_id: int, prefixes: list[str]) -> None:
+        await self.guild_config.set(guild_id, 'prefixes', prefixes)
 
-    async def set_prefixes(self, guild: discord.Guild, prefixes: list[str]) -> None:
-        await self.config.update_one({'_id': guild.id}, {'$set': {'prefixes': prefixes}}, upsert=True)
-        self._prefix_cache[guild.id] = prefixes
+    async def reset_prefixes(self, guild_id: int) -> None:
+        await self.guild_config.unset(guild_id, 'prefixes')
 
-    async def reset_prefixes(self, guild: discord.Guild) -> None:
-        await self.config.update_one({'_id': guild.id}, {'$unset': {'prefixes': None}}, upsert=True)
-        self._prefix_cache[guild.id] = []
+    # blacklist
+
+    async def get_blacklist(self) -> set[int]:
+        return set(await self.bot_config.get('blacklist', 'users'))
+
+    async def add_blacklist(self, *user_ids: int) -> None:
+        await self.bot_config.add_to_set('blacklist', 'users', *user_ids)
+
+    async def remove_blacklist(self, *user_ids: int) -> None:
+        await self.bot_config.pull('blacklist', 'users', *user_ids)

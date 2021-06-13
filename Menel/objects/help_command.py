@@ -9,6 +9,11 @@ from ..utils.formatting import code, codeblock
 from ..utils.text_tools import user_input
 
 
+# this is similar to Command.short_doc
+def short_help(command: dc_commands.Command) -> str:
+    return command.help.splitlines()[0]
+
+
 def command_category(command: dc_commands.Command) -> str:
     cog = command.cog
     return cog.qualified_name if cog is not None else 'Bot'
@@ -31,12 +36,7 @@ class HelpCommand(dc_commands.HelpCommand):
     remove_mentions = staticmethod(user_input)
 
     def __init__(self):
-        super().__init__(
-            command_attrs={
-                'description': 'Wyświetla pomoc',
-                'help': 'command - komenda której pomoc chcesz uzyskać'
-            }
-        )
+        super().__init__(command_attrs={'help': 'Pokazuje pomoc\n`command`: komenda której pomoc chcesz uzyskać'})
 
     async def send_bot_help(self, mapping: Mapping[Optional[dc_commands.Cog], list[dc_commands.Command]]) -> None:
         ctx = self.context
@@ -65,12 +65,12 @@ class HelpCommand(dc_commands.HelpCommand):
 
         commands_text = []
         for command in commands:
-            commands_text.append(f'`{command.qualified_name}` \N{EM DASH} {command.description}')
+            commands_text.append(f'`{command.qualified_name}` \N{EM DASH} {short_help(command)}')
 
         await ctx.send(
             embed=discord.Embed(
                 title=cog.qualified_name,
-                description=f'{cog.description}\n\n' + '\n'.join(commands_text),
+                description='\n'.join(commands_text),
                 colour=discord.Colour.green()
             )
         )
@@ -82,12 +82,12 @@ class HelpCommand(dc_commands.HelpCommand):
 
         commands_text = []
         for command in commands:
-            commands_text.append(f'`{command.name}` \N{EM DASH} {command.description}')
+            commands_text.append(f'`{command.name}` \N{EM DASH} {short_help(command)}')
 
         await ctx.send(
             embed=discord.Embed(
                 title=group.qualified_name,
-                description=f'{group.description}\n\n' + '\n'.join(commands_text),
+                description=f'{group.help}\n\n' + '\n'.join(commands_text),
                 colour=discord.Colour.green()
             )
         )
@@ -95,9 +95,15 @@ class HelpCommand(dc_commands.HelpCommand):
     async def send_command_help(self, command: dc_commands.Command) -> None:
         ctx = self.context
 
-        text = [command.description, codeblock(f'{ctx.clean_prefix}{command.qualified_name} {command.signature}')]
-        if command.help:
-            text.append(command.help)
+        try:
+            can_run = await command.can_run(ctx)
+        except dc_commands.CommandError:
+            can_run = False
+        text = [
+            command.help,
+            codeblock(f'{ctx.clean_prefix}{command.qualified_name} {command.signature}'),
+            'Posiadasz wymagane uprawnienia' if can_run else 'Nie posiadasz wymaganych uprawnień'
+        ]
 
         embed = discord.Embed(
             title=command.qualified_name,
@@ -106,11 +112,7 @@ class HelpCommand(dc_commands.HelpCommand):
         )
         if command.aliases:
             embed.add_field(name='Aliasy', value=' '.join(map(code, command.aliases)))
-        try:
-            can_run = await command.can_run(ctx)
-        except dc_commands.CommandError:
-            can_run = False
-        embed.add_field(name='Masz wystarczające uprawnienia', value='Tak' if can_run else 'Nie')
+
         await ctx.send(embed=embed)
 
     async def send_error_message(self, error: str) -> None:

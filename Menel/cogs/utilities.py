@@ -102,7 +102,8 @@ async def get_name_history(uuid: str) -> list:
 
 async def get_avatar(uuid: str) -> bytes:
     async with aiohttp.request(
-            'GET', f'https://crafatar.com/avatars/{parse.quote(uuid)}?size=256&overlay',
+            'GET', f'https://crafatar.com/avatars/{parse.quote(uuid)}',
+            params={'size': '256', 'overlay': None},
             timeout=aiohttp.ClientTimeout(total=10)
     ) as r:
         return await r.read()
@@ -110,7 +111,8 @@ async def get_avatar(uuid: str) -> bytes:
 
 async def get_head(uuid: str) -> bytes:
     async with aiohttp.request(
-            'GET', f'https://crafatar.com/renders/head/{parse.quote(uuid)}?scale=6&overlay',
+            'GET', f'https://crafatar.com/renders/head/{parse.quote(uuid)}',
+            params={'scale': '6', 'overlay': None},
             timeout=aiohttp.ClientTimeout(total=10)
     ) as r:
         return await r.read()
@@ -118,7 +120,8 @@ async def get_head(uuid: str) -> bytes:
 
 async def get_body(uuid: str) -> bytes:
     async with aiohttp.request(
-            'GET', f'https://crafatar.com/renders/body/{parse.quote(uuid)}?scale=10&overlay',
+            'GET', f'https://crafatar.com/renders/body/{parse.quote(uuid)}',
+            params={'scale': '10', 'overlay': None},
             timeout=aiohttp.ClientTimeout(total=10)
     ) as r:
         return await r.read()
@@ -127,6 +130,12 @@ async def get_body(uuid: str) -> bytes:
 class Utilities(commands.Cog, name='Narzędzia'):
     @commands.command(aliases=['trans', 'tr'])
     async def translate(self, ctx: Context, lang1: LanguageConverter, lang2: Optional[LanguageConverter], *, text: str):
+        """
+        Tłumaczy teskt Tłumaczem Google
+        `lang1`: język docelowy, lub źródłowy jeśli podany jest argument `lang2`
+        `lang2`: język docelowy jeśli podany jest argument `lang1`
+        `text`: tekst do przetłumaczenia
+        """
         if lang2 is not None:
             src = lang1
             dest = lang2
@@ -168,6 +177,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
 
     @commands.command(aliases=['urban-dictionary', 'urban', 'ud'])
     async def urbandictionary(self, ctx: Context, *, query: str):
+        """Wyszukuje podaną frazę w słowniku Urban Dictionary"""
         async with ctx.typing():
             async with aiohttp.request(
                     'HEAD', 'https://www.urbandictionary.com/define.php',
@@ -219,6 +229,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
 
     @commands.command(aliases=['m', 'calculate', 'calculator', 'calc', 'kalkulator', 'kalk'])
     async def math(self, ctx: Context, *, expression: str):
+        """Kalkulator Stanisław Jelnicki"""
         async with ctx.channel.typing():
             if re.sub(r'\s+', '', expression) == '2+2':
                 result = '5'
@@ -244,12 +255,12 @@ class Utilities(commands.Cog, name='Narzędzia'):
                 description=clean_content(result, max_length=2048, max_lines=8),
                 colour=color
             )
-            embed.set_footer(text='Kalkulator Stanisław Jelnicki')
 
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['run'])
     async def eval(self, ctx: Context, *, source: codeblock_converter):
+        """Bezpiecznie wykonuje podany kod w wybranym języku"""
         language, source = source
 
         if not language:
@@ -289,8 +300,8 @@ class Utilities(commands.Cog, name='Narzędzia'):
 
     @commands.command(aliases=['charinfo', 'utf', 'utf8', 'utf-8', 'u'])
     async def unicode(self, ctx: Context, *, chars: str):
+        """Pokazuje nazwy znaków standardu Unicode"""
         output = []
-
         for c in chars[:16]:
             if c == ' ':
                 output.append('')
@@ -311,6 +322,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
 
     @commands.command(aliases=['mc', 'skin'])
     async def minecraft(self, ctx: Context, *, player: str):
+        """Wysyła skin konta Minecraft Java Edition"""
         async with ctx.channel.typing():
             async with aiohttp.request(
                     'GET', f'https://api.mojang.com/users/profiles/minecraft/{parse.quote(player)}',
@@ -341,6 +353,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
 
     @commands.command(aliases=['webshot'])
     async def webimg(self, ctx: Context, fullpage: Optional[Literal['fullpage']], *, url: URL):
+        """Robi i wysyła zrzut ekranu strony internetowej"""
         async with ctx.typing():
             try:
                 browser = await pyppeteer.launch(
@@ -382,7 +395,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
                         await ctx.send(embed=embed)
                     else:
                         embed.description = f'Zdjęcie strony: {image}'
-                        embed.set_footer(text='Podgląd dostępny jest jedynie na kanałach NSFW')
+                        embed.set_footer(text='Podgląd dostępny jest wyłącznie na kanałach NSFW')
 
                         await ctx.send(embed=embed)
 
@@ -391,6 +404,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
 
     @commands.command('unshorten-url', aliases=['unshorten', 'unshort'])
     async def unshorten_url(self, ctx: Context, *, url: URL):
+        """Pokazuje przekierowania skróconego linku"""
         urls = []
         shortened = False
         async with ctx.typing():
@@ -424,6 +438,11 @@ class Utilities(commands.Cog, name='Narzędzia'):
 
     @commands.command('youtube-dl', aliases=['youtubedl', 'yt-dl', 'ytdl', 'download', 'dl'])
     async def youtube_dl(self, ctx: Context, audio: Optional[Literal['audio']], *, video: str):
+        """
+        Pobiera film ze strony
+        `audio`: pobiera jedynie dźwięk filmu
+        `video`: link do strony z filmem
+        """
         await ctx.channel.trigger_typing()
         downloader = YouTubeDownloader(only_audio=audio is not None)
 
@@ -472,6 +491,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
     @commands.command('imgur')
     @has_attachments(allowed_types=('image/',))
     async def _imgur(self, ctx: Context):
+        """Przesyła załączone zdjęcia na Imgur"""
         async with ctx.typing():
             images = []
             for a in ctx.message.attachments:

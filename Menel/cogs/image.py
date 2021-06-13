@@ -89,13 +89,18 @@ def render_page(text: str) -> BytesIO:
 
 class Image(commands.Cog, name='Obrazki'):
     @commands.command(aliases=['ascii-art', 'ascii'])
-    @has_attachments(1)
+    @has_attachments(1, ('image/',))
     async def asciiart(
         self,
         ctx: Context,
         style: Optional[Literal['blocks', 'standard', 'minimal']] = 'blocks',
         invert: Optional[Literal['invert', 'inv', 'inverted']] = False
     ):
+        """
+        Generuje ASCII art z załączonego zdjęcia
+        `style`: zestaw znaków
+        `invert`: zamiana ciemnych znaków z jasnymi
+        """
         try:
             image = Image.open(BytesIO(await ctx.message.attachments[0].read()))
         except discord.HTTPException:
@@ -112,6 +117,7 @@ class Image(commands.Cog, name='Obrazki'):
 
     @commands.command(aliases=['burning'])
     async def cooltext(self, ctx: Context, *, text: str):
+        """Generuje palący się tekst na stronie cooltext.com"""
         async with ctx.channel.typing():
             async with aiohttp.request(
                     'POST', 'https://cooltext.com/PostChange',
@@ -148,6 +154,7 @@ class Image(commands.Cog, name='Obrazki'):
 
     @commands.command(aliases=['jesus', 'jestsus'])
     async def jezus(self, ctx: Context):
+        """Wysyła losowe zdjęcie Jezusa"""
         async with ctx.channel.typing():
             async with aiohttp.request(
                     'GET', 'https://obrazium.com/v1/jesus',
@@ -162,8 +169,9 @@ class Image(commands.Cog, name='Obrazki'):
                     await ctx.error('Nie działa')
 
     @commands.command()
-    @has_attachments(1)
+    @has_attachments(1, ('text/',))
     async def onepager(self, ctx: Context):
+        """Renderuje cały załączony plik tesktowy na jednej stronie"""
         attachment = ctx.message.attachments[0]
 
         if not attachment.content_type or not attachment.content_type.startswith('text/'):
@@ -187,6 +195,7 @@ class Image(commands.Cog, name='Obrazki'):
 
     @commands.command('this-person-does-not-exist', aliases=['thispersondoesnotexist', 'tpdne', 'person'])
     async def this_person_does_not_exist(self, ctx: Context):
+        """Pobiera wygenerowaną twarz z thispersondoesnotexist.com"""
         async with ctx.channel.typing():
             async with aiohttp.request(
                     'GET', 'https://thispersondoesnotexist.com/image',

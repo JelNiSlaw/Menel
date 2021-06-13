@@ -48,10 +48,12 @@ async def command_error(ctx: Context, error: commands.CommandError):
         await ctx.error(f'Nie znaleziono wiadomości {user_input(error.argument)}')
     elif isinstance(error, (commands.EmojiNotFound, commands.PartialEmojiConversionFailure)):
         await ctx.error(f'Nie znaleziono emoji {user_input(error.argument)}')
+    elif isinstance(error, commands.BadInviteArgument):
+        await ctx.error(f'Zaproszenie {user_input(error.argument)} jest nieprawidłowe lub wygasło')
+    elif isinstance(error, commands.ObjectNotFound):
+        await ctx.error(f'{user_input(error.argument)} nie jest prawidłowym ID')
     elif isinstance(error, commands.BadColourArgument):
         await ctx.error(f'Nieprawidłowy kolor {user_input(error.argument)}')
-    elif isinstance(error, commands.BadInviteArgument):
-        await ctx.error('To zaproszenie jest nieprawidłowe lub wygasło')
 
     elif isinstance(error, commands.BadFlagArgument):
         await ctx.error('Nieudana konwersja flagi')
@@ -67,9 +69,7 @@ async def command_error(ctx: Context, error: commands.CommandError):
     elif isinstance(error, (commands.BadArgument, commands.BadUnionArgument)):
         await ctx.error(f'Argument {code(error.param.name)} jest nieprawidłowy')
     elif isinstance(error, commands.BadLiteralArgument):
-        await ctx.error(
-            f"Argument {code(error.param.name)} musi mieć wartość {' | '.join(map(code, error.literals))}"
-        )
+        await ctx.error(f"Argument {code(error.param.name)} musi mieć wartość {' | '.join(map(code, error.literals))}")
     elif isinstance(error, commands.BadBoolArgument):
         await ctx.error(f'{user_input(error.argument)} jest niepoprawnym argumentem true/false')
     elif isinstance(error, commands.TooManyArguments):
@@ -116,8 +116,7 @@ async def command_error(ctx: Context, error: commands.CommandError):
     elif isinstance(error, SEND_EXCEPTIONS):
         await ctx.error(clean_content(str(error), max_length=512, max_lines=4))
     elif isinstance(error, IGNORE_EXCEPTIONS):
-        # TODO: remove this later
-        print('IGNORED:', type(error).__name__, error)
+        pass
     elif isinstance(error, REPORT_ORIGINAL_EXCEPTIONS):
         original = error.original
         if isinstance(original, discord.HTTPException):

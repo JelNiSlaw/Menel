@@ -20,6 +20,11 @@ class PxseuFlags(commands.FlagConverter, case_insensitive=True):
 class Other(commands.Cog, name='Inne'):
     @commands.command(aliases=['carpet'])
     async def dywan(self, ctx: Context, width: int = 15, length: int = 10):
+        """
+        Zapraszam, darmowy dywan
+        `width`: szerokość dywanu
+        `length`: długość dywanu
+        """
         if width < 2 or length < 2:
             await ctx.error('Taki dywan byłby za mały, kasztanie')
             return
@@ -40,6 +45,13 @@ class Other(commands.Cog, name='Inne'):
 
     @commands.command(aliases=['px'], ignore_extra=False, hidden=True)
     async def pxseu(self, ctx: Context, *, flags: PxseuFlags):
+        """
+        Wysyła anonimową wiadomość do pxseu
+        `flags`: dane do wsyłania
+        `name`: wyświetlana nazwa
+        `url`: link do pliku w embedzie
+        `message`: treść wysłanej wiadomości
+        """
         if flags.url:
             url = flags.url
         elif ctx.message.attachments:
@@ -72,13 +84,14 @@ class Other(commands.Cog, name='Inne'):
 
     @commands.command('lengthen-url', aliases=['lengthen'])
     async def lengthen_url(self, ctx: Context, *, url: URL):
+        """Wydłuża zbyt krótki link"""
         if len(url) > 512:
             await ctx.error('Przekroczono maksymalną długość linku')
             return
 
         with ctx.channel.typing():
             async with aiohttp.request(
-                    'GET', 'https://api.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.com/a',
+                    'GET', f"https://api.{'a' * 56}.com/a",
                     params={'url': url},
                     timeout=aiohttp.ClientTimeout(total=10)
             ) as r:
@@ -90,10 +103,11 @@ class Other(commands.Cog, name='Inne'):
 
         await ctx.send(content)
 
-    @commands.command()
+    @commands.command(aliases=['leave'])
     @commands.guild_only()
-    @commands.bot_has_permissions(ban_members=True)
+    @commands.bot_has_permissions(kick_members=True)
     async def selfkick(self, ctx: Context):
+        """Pomaga wyjść z serwera"""
         if ctx.author.top_role >= ctx.me.top_role or ctx.guild.owner_id == ctx.author.id:
             await ctx.error('Nie mogę')
             return

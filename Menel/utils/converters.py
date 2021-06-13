@@ -1,19 +1,9 @@
-import discord
 import validators
 from discord.ext import commands
 from googletrans.constants import LANGCODES, LANGUAGES
 
 from ..objects.context import Context
 from ..utils.errors import BadLanguage
-
-
-class Bot(commands.UserConverter):
-    async def convert(self, ctx: Context, user: str) -> discord.User:
-        user = await super().convert(ctx, user)
-        if user.bot:
-            return user
-        else:
-            raise commands.BadArgument('wybrany użytkownik musi być botem')
 
 
 class URL(commands.Converter, str):

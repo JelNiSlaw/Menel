@@ -11,6 +11,7 @@ from ..utils.formatting import code
 class Bot(commands.Cog, name='Bot'):
     @commands.command()
     async def ping(self, ctx: Context):
+        """Mierzy czas wysyłania wiadomości"""
         start = perf_counter()
         message = await ctx.send('Pong!')
         stop = perf_counter()
@@ -28,6 +29,7 @@ class Bot(commands.Cog, name='Bot'):
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
     async def prefix(self, ctx: Context):
+        """Komendy służące do zarządzania prefixami"""
         await ctx.send(
             embed=embeds.with_author(
                 ctx.author,
@@ -41,6 +43,7 @@ class Bot(commands.Cog, name='Bot'):
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     async def prefix_set(self, ctx: Context, *prefixes: str):
+        """Ustawia prefixy bota"""
         prefixes = list(set(prefixes))
 
         if len(prefixes) > 50:
@@ -60,14 +63,15 @@ class Bot(commands.Cog, name='Bot'):
                 await ctx.error('Prefix nie może kończyć się znakiem **\\**')
                 return
 
-        await ctx.db.set_prefixes(ctx.guild, prefixes)
+        await ctx.db.set_prefixes(ctx.guild.id, prefixes)
         await ctx.info(f"Ustawiono prefixy: {' '.join(map(code, prefixes))}")
 
     @prefix.command(name='reset')
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
     async def prefix_reset(self, ctx: Context):
-        await ctx.db.reset_prefixes(ctx.guild)
+        """Resetuje prefixy bota"""
+        await ctx.db.reset_prefixes(ctx.guild.id)
         await ctx.info('Zresetowano prefixy')
 
 

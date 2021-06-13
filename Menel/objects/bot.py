@@ -37,10 +37,10 @@ class Menel(commands.AutoShardedBot):
             heartbeat_timeout=120
         )
 
-        self.prefix_base = []
-        self.global_rate_limit = commands.CooldownMapping.from_cooldown(5, 15, commands.BucketType.user)
+        self.global_rate_limit = commands.CooldownMapping.from_cooldown(5, 10, commands.BucketType.user)
         self.db = Database()
         self.client = httpx.AsyncClient()
+        self.prefix_base = []
 
         from .. import cogs
         self.load_extensions(cogs)
@@ -49,10 +49,13 @@ class Menel(commands.AutoShardedBot):
         self.status_loop.start()
 
     async def get_prefix(self, m: Union[discord.Message, Context]) -> list[str]:
-        return self.prefix_base + await self.db.get_prefixes(m.guild)
+        return self.prefix_base + await self.db.get_prefixes(m.guild.id)
 
     async def process_commands(self, m: discord.Message):
         if m.author.bot:
+            return
+
+        if m.author.id in await self.db.get_blacklist():
             return
 
         if m.guild and not m.channel.permissions_for(m.guild.me).send_messages:

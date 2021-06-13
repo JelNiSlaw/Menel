@@ -57,6 +57,9 @@ class Snipe(commands.Cog, name='Snipe'):
             timestamp=time
         )
 
+        if message.reference:
+            embed.add_field(name='Odpowiedź na', value=f'[link]({message.reference.jump_url})', inline=False)
+
         if message.attachments:
             attachment_count = len(message.attachments)
             embed.add_field(
@@ -71,18 +74,22 @@ class Snipe(commands.Cog, name='Snipe'):
 
     @commands.command()
     async def snipe(self, ctx: Context):
+        """Pokazuje ostatnią usuniętą wiadomość"""
         await ctx.send(embed=self.create_snipe_embed(ctx, self.delete_snipes))
 
     @commands.command('edit-snipe', aliases=['editsnipe'])
     async def edit_snipe(self, ctx: Context):
+        """Pokazuje ostatnią edytowaną wiadomość"""
         await ctx.send(embed=self.create_snipe_embed(ctx, self.edit_snipes))
 
     @commands.command('bot-snipe', aliases=['botsnipe'])
     async def _bot_snipe(self, ctx: Context):
+        """Pokazuje ostatnią usuniętą wiadomość bota lub webhooka"""
         await ctx.send(embed=self.create_snipe_embed(ctx, self.bot_delete_snipes))
 
     @commands.command('bot-edit-snipe', aliases=['boteditsnipe'])
     async def _bot_edit_snipe(self, ctx: Context):
+        """Pokazuje ostatnią edytowaną wiadomość bota lub webhooka"""
         await ctx.send(embed=self.create_snipe_embed(ctx, self.bot_edit_snipes))
 
     @commands.Cog.listener()

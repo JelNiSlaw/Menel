@@ -105,5 +105,5 @@ class Context(commands.Context):
         return self.prefix
 
     async def get_prefixes_str(self, *, join: str = ' ') -> str:
-        prefixes = await self.db.get_prefixes(self.guild)
+        prefixes = await self.db.get_prefixes(self.guild.id)
         return join.join([code('@' + self.bot.user.name)] + list(map(code, prefixes)))
