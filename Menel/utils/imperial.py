@@ -1,5 +1,5 @@
 from datetime import datetime
-from os import getenv
+from os import environ
 from typing import Optional
 
 import aiohttp
@@ -51,7 +51,7 @@ async def create_document(
                 'expiration': expiration,
                 'editorArray': editor_array
             },
-            headers={'Authorization': getenv('IMPERIAL_TOKEN')},
+            headers={'Authorization': environ['IMPERIAL_TOKEN']},
             timeout=aiohttp.ClientTimeout(total=20)
     ) as r:
         json = await r.json()

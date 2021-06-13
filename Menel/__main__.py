@@ -1,6 +1,6 @@
 import logging
 import platform
-from os import getenv
+from os import environ
 
 import discord
 from dotenv import load_dotenv
@@ -21,7 +21,7 @@ def main():
     log.info(f'discord.py {discord.__version__}')
 
     bot = Menel()
-    bot.run(getenv('DISCORD_TOKEN'))
+    bot.run(environ['DISCORD_TOKEN'])
 
 
 if __name__ == '__main__':

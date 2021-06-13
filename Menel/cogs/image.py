@@ -5,7 +5,7 @@ import re
 import textwrap
 from io import BytesIO
 from math import sqrt
-from os import getenv
+from os import environ
 from time import perf_counter
 from typing import Literal, Optional
 
@@ -162,7 +162,7 @@ class Image(commands.Cog, name='Obrazki'):
         async with ctx.channel.typing():
             async with aiohttp.request(
                     'GET', 'https://obrazium.com/v1/jesus',
-                    headers={'Authorization': getenv('OBRAZIUM_TOKEN')},
+                    headers={'Authorization': environ['OBRAZIUM_TOKEN']},
                     timeout=aiohttp.ClientTimeout(total=10)
             ) as r:
                 if r.status == 200:

@@ -1,4 +1,4 @@
-from os import getenv
+from os import environ
 
 import aiohttp
 
@@ -11,7 +11,7 @@ async def _upload(field_name: str, file: bytes) -> str:
 
     async with aiohttp.request(
             'POST', 'https://api.imgur.com/3/upload', data=form,
-            headers={'Authorization': f"Client-ID {getenv('IMGUR_CLIENT_ID')}"},
+            headers={'Authorization': f"Client-ID {environ['IMGUR_CLIENT_ID']}"},
             timeout=aiohttp.ClientTimeout(total=20)
     ) as r:
         json = await r.json()

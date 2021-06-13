@@ -1,5 +1,5 @@
 import logging
-from os import getenv
+from os import environ
 from typing import Any, Hashable, Optional
 
 import motor
@@ -75,7 +75,7 @@ class DocumentCache:
 class Database:
     def __init__(self):
         self.client = motor.motor_asyncio.AsyncIOMotorClient(
-            getenv('MONGODB_CONNECTION_STRING'),
+            environ['MONGODB_CONNECTION_STRING'],
             tz_aware=False,
             connect=True,
             directConnection=False,

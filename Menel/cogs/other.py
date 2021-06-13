@@ -1,5 +1,5 @@
 import random
-from os import getenv
+from os import environ
 from typing import Optional
 
 import aiohttp
@@ -68,7 +68,7 @@ class Other(commands.Cog, name='Inne'):
                     'attachment': url,
                     'user': ctx.author.id
                 },
-                headers={'Authorization': 'Bearer ' + getenv('PXSEU_MESSAGE_TOKEN')},
+                headers={'Authorization': 'Bearer ' + environ['PXSEU_MESSAGE_TOKEN']},
                 timeout=aiohttp.ClientTimeout(total=10)
         ) as r:
             json = await r.json()
