@@ -48,7 +48,7 @@ class Other(commands.Cog, name='Inne'):
     async def pxseu(self, ctx: Context, *, flags: PxseuFlags):
         """
         Wysyła anonimową wiadomość do pxseu
-        `flags`: dane do wsyłania
+        `flags`: dane do wysłania
         `name`: wyświetlana nazwa
         `url`: link do pliku w embedzie
         `message`: treść wysłanej wiadomości
