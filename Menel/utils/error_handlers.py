@@ -98,7 +98,7 @@ async def command_error(ctx: Context, error: commands.CommandError):
         await ctx.error('Ta komenda może być użyta tylko na kanale NSFW')
 
     elif isinstance(error, commands.CommandOnCooldown):
-        await ctx.error(f'Poczekaj jeszcze {error.retry_after:,.0f} sekund')
+        await ctx.error(f'Poczekaj jeszcze {error.retry_after:,.0f} sekund', delete_after=10)
     elif isinstance(error, commands.MaxConcurrencyReached):
         await ctx.error(
             f'Ta komenda jest obecnie używana zbyt dużo ({error.number}/{error.per}). Spróbuj ponownie za chwilę'

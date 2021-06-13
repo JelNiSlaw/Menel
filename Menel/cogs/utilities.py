@@ -129,6 +129,7 @@ async def get_body(uuid: str) -> bytes:
 
 class Utilities(commands.Cog, name='Narzędzia'):
     @commands.command(aliases=['trans', 'tr'])
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def translate(self, ctx: Context, lang1: LanguageConverter, lang2: Optional[LanguageConverter], *, text: str):
         """
         Tłumaczy teskt Tłumaczem Google
@@ -259,6 +260,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['run'])
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def eval(self, ctx: Context, *, source: codeblock_converter):
         """Bezpiecznie wykonuje podany kod w wybranym języku"""
         language, source = source
@@ -321,6 +323,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
         await ctx.send(codeblock('\n'.join(output)))
 
     @commands.command(aliases=['mc', 'skin'])
+    @commands.cooldown(3, 10, commands.BucketType.user)
     async def minecraft(self, ctx: Context, *, player: str):
         """Wysyła skin konta Minecraft Java Edition"""
         async with ctx.channel.typing():
@@ -352,6 +355,8 @@ class Utilities(commands.Cog, name='Narzędzia'):
         await ctx.send(embed=embed, files=[avatar, head, body])
 
     @commands.command(aliases=['webshot'])
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    @commands.max_concurrency(3, wait=True)
     async def webimg(self, ctx: Context, fullpage: Optional[Literal['fullpage']], *, url: URL):
         """Robi i wysyła zrzut ekranu strony internetowej"""
         async with ctx.typing():
@@ -437,6 +442,8 @@ class Utilities(commands.Cog, name='Narzędzia'):
         await ctx.info('\n'.join(text))
 
     @commands.command('youtube-dl', aliases=['youtubedl', 'yt-dl', 'ytdl', 'download', 'dl'])
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    @commands.max_concurrency(2)
     async def youtube_dl(self, ctx: Context, audio: Optional[Literal['audio']], *, video: str):
         """
         Pobiera film ze strony
@@ -490,6 +497,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
 
     @commands.command('imgur')
     @has_attachments(allowed_types=('image/',))
+    @commands.cooldown(2, 10, commands.BucketType.user)
     async def _imgur(self, ctx: Context):
         """Przesyła załączone zdjęcia na Imgur"""
         async with ctx.typing():

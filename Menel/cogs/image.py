@@ -90,6 +90,9 @@ def render_page(text: str) -> BytesIO:
 class Image(commands.Cog, name='Obrazki'):
     @commands.command(aliases=['ascii-art', 'ascii'])
     @has_attachments(1, ('image/',))
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    @commands.max_concurrency(1, commands.BucketType.user)
+    @commands.max_concurrency(3)
     async def asciiart(
         self,
         ctx: Context,
@@ -153,6 +156,7 @@ class Image(commands.Cog, name='Obrazki'):
         await ctx.send(embed=embed, file=discord.File(BytesIO(file), 'burning.gif'))
 
     @commands.command(aliases=['jesus', 'jestsus'])
+    @commands.cooldown(2, 10, commands.BucketType.user)
     async def jezus(self, ctx: Context):
         """Wysyła losowe zdjęcie Jezusa"""
         async with ctx.channel.typing():
@@ -170,6 +174,9 @@ class Image(commands.Cog, name='Obrazki'):
 
     @commands.command()
     @has_attachments(1, ('text/',))
+    @commands.cooldown(2, 10, commands.BucketType.user)
+    @commands.max_concurrency(1, commands.BucketType.user)
+    @commands.max_concurrency(2)
     async def onepager(self, ctx: Context):
         """Renderuje cały załączony plik tesktowy na jednej stronie"""
         attachment = ctx.message.attachments[0]
@@ -194,6 +201,7 @@ class Image(commands.Cog, name='Obrazki'):
             )
 
     @commands.command('this-person-does-not-exist', aliases=['thispersondoesnotexist', 'tpdne', 'person'])
+    @commands.cooldown(1, 5, commands.BucketType.user)
     async def this_person_does_not_exist(self, ctx: Context):
         """Pobiera wygenerowaną twarz z thispersondoesnotexist.com"""
         async with ctx.channel.typing():

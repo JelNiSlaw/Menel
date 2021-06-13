@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands as dc_commands
 
 from ..objects.context import Context
+from ..utils import embeds
 from ..utils.formatting import code, codeblock
 from ..utils.text_tools import user_input
 
@@ -41,7 +42,8 @@ class HelpCommand(dc_commands.HelpCommand):
     async def send_bot_help(self, mapping: Mapping[Optional[dc_commands.Cog], list[dc_commands.Command]]) -> None:
         ctx = self.context
 
-        embed = discord.Embed(
+        embed = embeds.with_author(
+            ctx.author,
             title='Lista komend',
             description=f'Użyj `{ctx.clean_prefix}help [command]`, '
                         f'aby otrzymać więcej informacji o komendzie lub kategorii\n'
@@ -68,7 +70,8 @@ class HelpCommand(dc_commands.HelpCommand):
             commands_text.append(f'`{command.qualified_name}` \N{EM DASH} {short_help(command)}')
 
         await ctx.send(
-            embed=discord.Embed(
+            embed=embeds.with_author(
+                ctx.author,
                 title=cog.qualified_name,
                 description='\n'.join(commands_text),
                 colour=discord.Colour.green()
@@ -85,7 +88,8 @@ class HelpCommand(dc_commands.HelpCommand):
             commands_text.append(f'`{command.name}` \N{EM DASH} {short_help(command)}')
 
         await ctx.send(
-            embed=discord.Embed(
+            embed=embeds.with_author(
+                ctx.author,
                 title=group.qualified_name,
                 description=f'{group.help}\n\n' + '\n'.join(commands_text),
                 colour=discord.Colour.green()
@@ -99,15 +103,17 @@ class HelpCommand(dc_commands.HelpCommand):
             can_run = await command.can_run(ctx)
         except dc_commands.CommandError:
             can_run = False
-        text = [
-            command.help,
-            codeblock(f'{ctx.clean_prefix}{command.qualified_name} {command.signature}'),
-            'Posiadasz wymagane uprawnienia' if can_run else 'Nie posiadasz wymaganych uprawnień'
-        ]
 
-        embed = discord.Embed(
+        embed = embeds.with_author(
+            ctx.author,
             title=command.qualified_name,
-            description='\n'.join(text),
+            description='\n'.join(
+                (
+                    command.help,
+                    codeblock(f'{ctx.clean_prefix}{command.qualified_name} {command.signature}'),
+                    'Posiadasz wymagane uprawnienia' if can_run else 'Nie posiadasz wymaganych uprawnień'
+                )
+            ),
             colour=discord.Colour.green()
         )
         if command.aliases:

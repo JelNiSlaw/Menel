@@ -10,6 +10,7 @@ from ..utils.formatting import code
 
 class Bot(commands.Cog, name='Bot'):
     @commands.command()
+    @commands.cooldown(2, 5, commands.BucketType.user)
     async def ping(self, ctx: Context):
         """Mierzy czas wysyłania wiadomości"""
         start = perf_counter()
@@ -42,6 +43,7 @@ class Bot(commands.Cog, name='Bot'):
     @prefix.command(name='set', aliases=['ser'])
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def prefix_set(self, ctx: Context, *prefixes: str):
         """Ustawia prefixy bota"""
         prefixes = list(set(prefixes))
@@ -69,6 +71,7 @@ class Bot(commands.Cog, name='Bot'):
     @prefix.command(name='reset')
     @commands.guild_only()
     @commands.has_permissions(manage_guild=True)
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def prefix_reset(self, ctx: Context):
         """Resetuje prefixy bota"""
         await ctx.db.reset_prefixes(ctx.guild.id)
