@@ -305,7 +305,7 @@ class Utilities(commands.Cog, name='Narzędzia'):
         """Pokazuje nazwy znaków standardu Unicode"""
         output = []
         for c in chars[:16]:
-            if c == ' ':
+            if c == '\u0020':  # space
                 output.append('')
                 continue
 

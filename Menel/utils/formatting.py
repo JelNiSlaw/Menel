@@ -1,26 +1,29 @@
-def bold(text: str) -> str:
+from typing import Any
+
+
+def bold(text: Any) -> str:
     return f'**{text}**'
 
 
-def italic(text: str) -> str:
+def italic(text: Any) -> str:
     return f'*{text}*'
 
 
-def underlined(text: str) -> str:
+def underlined(text: Any) -> str:
     return f'__{text}__'
 
 
-def strikethrough(text: str) -> str:
+def strikethrough(text: Any) -> str:
     return f'~~{text}~~'
 
 
-def code(text: str) -> str:
+def spoiler(text: Any) -> str:
+    return f'||{text}||'
+
+
+def code(text: Any) -> str:
     return f'`{text}`'
 
 
 def codeblock(text: str, language: str = '', escape: bool = True) -> str:
     return f'```{language}\n{text.replace("`", "​`") if escape else text}\n```'
-
-
-def spoiler(text: str) -> str:
-    return f'||{text}||'
