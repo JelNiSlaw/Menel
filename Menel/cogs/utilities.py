@@ -13,6 +13,7 @@ import dateutil.parser
 import discord
 import pyppeteer
 import pyppeteer.errors
+import unidecode
 import youtube_dl
 from discord.ext import commands
 from googletrans.constants import LANGUAGES
@@ -321,6 +322,11 @@ class Utilities(commands.Cog, name='Narzędzia'):
             output.append('...')
 
         await ctx.send(codeblock('\n'.join(output)))
+
+    @commands.command()
+    async def unidecode(self, ctx: Context, *, text: str):
+        """Zamienia znaki Unicode na ASCII używając [unidecode](https://github.com/avian2/unidecode)"""
+        await ctx.send(clean_content(unidecode.unidecode(text), False, max_length=1024, max_lines=16))
 
     @commands.command(aliases=['mc', 'skin'])
     @commands.cooldown(3, 10, commands.BucketType.user)
