@@ -87,7 +87,7 @@ def render_page(text: str) -> BytesIO:
     return file
 
 
-class Image(commands.Cog, name='Obrazki'):
+class Images(commands.Cog):
     @commands.command(aliases=['ascii-art', 'ascii'])
     @has_attachments(1, ('image/',))
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -214,4 +214,4 @@ class Image(commands.Cog, name='Obrazki'):
 
 
 def setup(bot):
-    bot.add_cog(Image())
+    bot.add_cog(Images())

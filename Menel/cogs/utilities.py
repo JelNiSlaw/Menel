@@ -66,7 +66,7 @@ class YouTubeDownloader:
         await asyncio.to_thread(self.ydl.extract_info, video)
 
     async def extract_info(self, video: str) -> dict:
-        return await asyncio.to_thread(self.ydl.extract_info, video, False)
+        return await asyncio.to_thread(self.ydl.extract_info, video, download=False)
 
     def _hook(self, info: dict) -> None:
         self.status = info
@@ -128,7 +128,7 @@ async def get_body(uuid: str) -> bytes:
         return await r.read()
 
 
-class Utilities(commands.Cog, name='Narzędzia'):
+class Utilities(commands.Cog):
     @commands.command(aliases=['trans', 'tr'])
     @commands.cooldown(2, 5, commands.BucketType.user)
     async def translate(self, ctx: Context, lang1: LanguageConverter, lang2: Optional[LanguageConverter], *, text: str):

@@ -17,7 +17,7 @@ def oauth2_link(client_id: int, permissions: int) -> str:
     )
 
 
-class DiscordUtilities(commands.Cog, name='Narzędzia Discord'):
+class DiscordUtilities(commands.Cog, name='Discord Utilities'):
     @commands.command(aliases=['av'])
     async def avatar(self, ctx: Context, user: Optional[discord.User]):
         """Wysyła avatar użytkownika"""

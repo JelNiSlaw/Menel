@@ -8,7 +8,7 @@ from Menel.utils.logs import LOGPATH
 from ..objects.context import Context
 
 
-class BotManagement(commands.Cog, name='Zarządzanie Botem', command_attrs={'hidden': True}):
+class BotManagement(commands.Cog, name='Bot Management', command_attrs={'hidden': True}):
     def __init__(self, bot):
         self.bot = bot
 

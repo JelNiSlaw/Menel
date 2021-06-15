@@ -8,7 +8,7 @@ from ..utils import embeds
 from ..utils.formatting import code
 
 
-class Bot(commands.Cog, name='Bot'):
+class Bot(commands.Cog):
     @commands.command()
     @commands.cooldown(2, 5, commands.BucketType.user)
     async def ping(self, ctx: Context):

@@ -22,7 +22,7 @@ class SnipeNotFound(commands.CommandError):
     pass
 
 
-class Snipe(commands.Cog, name='Snipe'):
+class Snipe(commands.Cog):
     def __init__(self):
         self.delete_snipes: _SNIPES_TYPE = {}
         self.edit_snipes: _SNIPES_TYPE = {}
@@ -56,6 +56,7 @@ class Snipe(commands.Cog, name='Snipe'):
             colour=color if color != discord.Colour.default() else discord.Colour.green(),
             timestamp=time
         )
+        embed.set_footer(text=str(message.id))
 
         if message.reference:
             embed.add_field(name='Odpowiedź na', value=f'[link]({message.reference.jump_url})', inline=False)

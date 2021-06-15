@@ -17,7 +17,7 @@ class PxseuFlags(commands.FlagConverter, case_insensitive=True):
     message: Optional[str]
 
 
-class Other(commands.Cog, name='Inne'):
+class Other(commands.Cog):
     @commands.command(aliases=['carpet'])
     async def dywan(self, ctx: Context, width: int = 15, length: int = 10):
         """
