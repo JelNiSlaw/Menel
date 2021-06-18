@@ -1,6 +1,6 @@
+import datetime
 import logging
 import pkgutil
-from datetime import timedelta
 from types import ModuleType
 from typing import Union
 
@@ -8,10 +8,10 @@ import discord
 import httpx
 from discord.ext import commands, tasks
 
-from .database import Database
-from .help_command import HelpCommand
-from ..objects.context import Context
 from ..utils import error_handlers
+from ..utils.context import Context
+from ..utils.database import Database
+from ..utils.help_command import HelpCommand
 from ..utils.text_tools import ctx_location, name_id, plural
 
 
@@ -42,7 +42,7 @@ class Menel(commands.AutoShardedBot):
         self.client = httpx.AsyncClient()
         self.prefix_base = []
 
-        from .. import cogs
+        from . import cogs
         self.load_extensions(cogs)
 
         self._last_status_data = None
@@ -95,7 +95,7 @@ class Menel(commands.AutoShardedBot):
         if not after.edited_at:
             return
 
-        if after.edited_at - after.created_at > timedelta(minutes=2):
+        if after.edited_at - after.created_at > datetime.timedelta(minutes=2):
             return
 
         await self.process_commands(after)

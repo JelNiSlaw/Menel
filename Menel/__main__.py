@@ -5,9 +5,9 @@ from os import environ
 import discord
 from dotenv import load_dotenv
 
-from Menel.utils import logs
 from . import PATH
-from .objects.bot import Menel
+from .bot import Menel
+from ..utils import logs
 
 
 def main():

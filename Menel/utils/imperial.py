@@ -1,10 +1,10 @@
-from datetime import datetime
+import datetime
 from os import environ
 from typing import Optional
 
 import aiohttp
 
-from Menel.utils.text_tools import clean_content
+from ..utils.text_tools import clean_content
 
 
 class ImperialDocument:
@@ -15,8 +15,8 @@ class ImperialDocument:
         self.language: str = data['document']['language']
         self.image_embed: bool = data['document']['imageEmbed']
         self.instant_delete: bool = data['document']['instantDelete']
-        self.creation_date: datetime = datetime.utcfromtimestamp(data['document']['creationDate'] / 1000)
-        self.expiration_date: datetime = datetime.utcfromtimestamp(data['document']['expirationDate'] / 1000)
+        self.creation_date: datetime = datetime.datetime.utcfromtimestamp(data['document']['creationDate'] / 1000)
+        self.expiration_date: datetime = datetime.datetime.utcfromtimestamp(data['document']['expirationDate'] / 1000)
         self.allowed_editors: list[str] = data['document']['allowedEditors']
         self.encrypted: bool = data['document']['encrypted']
         self.password: Optional[str] = data['document']['password']

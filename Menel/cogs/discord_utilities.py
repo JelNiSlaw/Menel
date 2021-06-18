@@ -3,8 +3,8 @@ from typing import Optional, Union
 import discord
 from discord.ext import commands
 
-from ..objects.context import Context
 from ..utils import embeds
+from ..utils.context import Context
 from ..utils.formatting import bold
 from ..utils.text_tools import clean_content, user_input
 
@@ -40,7 +40,7 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
         bots = discord.utils._unique(bots)
 
         if not bots or len(bots) == 1 and bots[0] == ctx.bot.user:
-            await ctx.info(
+            await ctx.embed(
                 f'[Zaproś mnie na swój serwer]({oauth2_link(ctx.bot.user.id, 686947414)})\n'
                 f'[Zaproś mnie na swój serwer z uprawnieniami administratora]({oauth2_link(ctx.bot.user.id, 8)})\n'
                 f'[Zaproś mnie na swój serwer bez dodatkowych uprawnień]({oauth2_link(ctx.bot.user.id, 0)})'
@@ -60,7 +60,7 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
         if len(bots) > 16:
             links.append('…')
 
-        await ctx.info('\n'.join(links))
+        await ctx.embed('\n'.join(links))
 
 
 def setup(bot):

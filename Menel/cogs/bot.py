@@ -3,8 +3,8 @@ from time import perf_counter
 import discord
 from discord.ext import commands
 
-from ..objects.context import Context
 from ..utils import embeds
+from ..utils.context import Context
 from ..utils.formatting import code
 
 
@@ -66,7 +66,7 @@ class Bot(commands.Cog):
                 return
 
         await ctx.db.set_prefixes(ctx.guild.id, prefixes)
-        await ctx.info(f"Ustawiono prefixy: {' '.join(map(code, prefixes))}")
+        await ctx.embed(f"Ustawiono prefixy: {' '.join(map(code, prefixes))}")
 
     @prefix.command(name='reset')
     @commands.guild_only()
@@ -75,7 +75,7 @@ class Bot(commands.Cog):
     async def prefix_reset(self, ctx: Context):
         """Resetuje prefixy bota"""
         await ctx.db.reset_prefixes(ctx.guild.id)
-        await ctx.info('Zresetowano prefixy')
+        await ctx.embed('Zresetowano prefixy')
 
 
 def setup(bot):

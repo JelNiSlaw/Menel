@@ -4,8 +4,8 @@ from typing import Literal
 import discord
 from discord.ext import commands
 
-from Menel.utils.logs import LOGPATH
-from ..objects.context import Context
+from ..utils.context import Context
+from ..utils.logs import LOGPATH
 
 
 class BotManagement(commands.Cog, name='Bot Management', command_attrs={'hidden': True}):

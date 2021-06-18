@@ -3,7 +3,7 @@ from typing import Optional
 from discord.ext import commands
 
 from .errors import BadAttachmentCount, BadAttachmentType
-from ..objects.context import Context
+from ..utils.context import Context
 
 
 def has_attachments(count: Optional[int] = None, allowed_types: Optional[tuple[str]] = None) -> callable:

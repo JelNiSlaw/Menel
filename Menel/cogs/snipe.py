@@ -1,10 +1,10 @@
-from datetime import datetime, timedelta
+import datetime
 
 import discord
 from discord.ext import commands
 
-from ..objects.context import Context
 from ..utils import embeds
+from ..utils.context import Context
 from ..utils.text_tools import clean_content, human_size, plural
 
 
@@ -47,7 +47,7 @@ class Snipe(commands.Cog):
         time = message.edited_at or message.created_at
         color = message.author.colour
 
-        if ctx.command_time - time > timedelta(hours=2):
+        if ctx.command_time - time > datetime.timedelta(hours=2):
             raise SnipeNotFound()
 
         embed = embeds.with_author(

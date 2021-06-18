@@ -4,6 +4,7 @@ import traceback
 from typing import Iterable, Optional, TYPE_CHECKING, Union
 
 import discord
+import httpx
 from discord.ext import commands
 
 from ..utils import embeds
@@ -12,8 +13,7 @@ from ..utils.text_tools import clean_content, location
 
 
 if TYPE_CHECKING:
-    from httpx import AsyncClient
-    from .bot import Menel
+    from ..bot import Menel
     from .database import Database
 
 log = logging.getLogger(__name__)
@@ -28,33 +28,46 @@ class Context(commands.Context):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.db: 'Database' = self.bot.db
-        self.client: 'AsyncClient' = self.bot.client
+        self.client: httpx.AsyncClient = self.bot.client
         self.command_time = self.message.edited_at or self.message.created_at
 
     async def send(
         self,
         *args,
         channel: discord.abc.Messageable = None,
-        reply: bool = True,
+        no_reply: bool = False,
         **kwargs
     ) -> discord.Message:
         if not channel:
             channel = self.channel
 
-        if 'reference' not in kwargs and reply:
+        if 'reference' not in kwargs and not no_reply:
             kwargs['reference'] = self.message.to_reference(fail_if_not_exists=False)
 
         log.debug(f'Sending a message to {location(self.author, channel, self.guild)}')
         return await channel.send(*args, **kwargs)
 
-    async def _send_embed(self, desc: str, color: discord.Colour, **kwargs) -> discord.Message:
-        return await self.send(embed=embeds.with_author(self.author, description=desc, colour=color), **kwargs)
+    async def embed(self, content: str, *, embed_kwargs: dict = None, **message_kwargs) -> discord.Message:
+        return await self.send(
+            embed=embeds.with_author(
+                self.author,
+                description=content,
+                colour=discord.Colour.green(),
+                **(embed_kwargs or {})
+            ),
+            **message_kwargs
+        )
 
-    async def info(self, text: str, **kwargs) -> discord.Message:
-        return await self._send_embed(text, color=discord.Colour.green(), **kwargs)
-
-    async def error(self, text: str, **kwargs) -> discord.Message:
-        return await self._send_embed(text, color=discord.Colour.red(), **kwargs)
+    async def error(self, content: str, *, embed_kwargs: dict = None, **message_kwargs) -> discord.Message:
+        return await self.send(
+            embed=embeds.with_author(
+                self.author,
+                description=content,
+                colour=discord.Colour.red(),
+                **(embed_kwargs or {})
+            ),
+            **message_kwargs
+        )
 
     async def ok_hand(self):
         await self.send('\N{OK HAND SIGN}')

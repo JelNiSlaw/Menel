@@ -4,8 +4,8 @@ from typing import Mapping, Optional
 import discord
 from discord.ext import commands as dc_commands
 
-from ..objects.context import Context
 from ..utils import embeds
+from ..utils.context import Context
 from ..utils.formatting import code, codeblock
 from ..utils.text_tools import user_input
 

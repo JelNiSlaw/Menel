@@ -1,29 +1,50 @@
+from dataclasses import dataclass
+
 import validators
 from discord.ext import commands
 from googletrans.constants import LANGCODES, LANGUAGES
 
-from ..objects.context import Context
-from ..utils.errors import BadLanguage
+from ..utils.context import Context
+from ..utils.errors import BadLanguage, BadNumber
+
+
+@dataclass
+class ClampedNumber(commands.Converter):
+    min_value: int
+    max_value: int
+
+    async def convert(self, ctx: Context, argument: str) -> int:
+        try:
+            argument = int(argument)
+        except ValueError:
+            raise commands.BadArgument()
+
+        if argument < self.min_value:
+            raise BadNumber('Liczba', 'mniejsza', self.min_value)
+        if argument > self.max_value:
+            raise BadNumber('Liczba', 'większa', self.max_value)
+
+        return argument
 
 
 class URL(commands.Converter, str):
-    async def convert(self, ctx: Context, url: str) -> str:
-        if url.startswith('<') and url.endswith('>'):
-            url = url[1:-1]
+    async def convert(self, ctx: Context, argument: str) -> str:
+        if argument.startswith('<') and argument.endswith('>'):
+            argument = argument[1:-1]
 
-        if not validators.url(url):
+        if not validators.url(argument):
             raise commands.BadArgument('nieprawidłowy adres URL')
         else:
-            return url
+            return argument
 
 
 class LanguageConverter(commands.Converter, str):
-    async def convert(self, ctx: Context, language: str) -> str:
-        language = language.lower()
-        if language != 'auto' and language not in LANGUAGES:
-            if language in LANGCODES:
-                language = LANGCODES[language]
+    async def convert(self, ctx: Context, argument: str) -> str:
+        argument = argument.lower()
+        if argument != 'auto' and argument not in LANGUAGES:
+            if argument in LANGCODES:
+                argument = LANGCODES[argument]
             else:
                 raise BadLanguage()
 
-        return language
+        return argument

@@ -4,22 +4,16 @@ import math
 
 import discord
 from discord.ext import commands
+from discord.ext.commands import BucketType
 
 from .formatting import code
+from .misc import clamp
 from .text_tools import clean_content, name_id, plural_time, str_permissions, user_input
-from ..objects.context import Context
 from ..utils import errors
+from ..utils.context import Context
 
 
 log = logging.getLogger(__name__)
-
-SEND_EXCEPTIONS = (
-    commands.ArgumentParsingError,
-    commands.UserInputError,
-    errors.BadAttachmentCount,
-    errors.BadAttachmentType,
-    errors.ImgurUploadError
-)
 
 IGNORE_EXCEPTIONS = (
     commands.CheckFailure,
@@ -65,16 +59,27 @@ async def command_error(ctx: Context, error: commands.CommandError):
     elif isinstance(error, commands.MissingRequiredFlag):
         await ctx.error(f'Brakująca flaga {code(error.flag.name)}')
 
+    elif isinstance(error, errors.BadNumber):
+        await ctx.error(f'{error.name} nie może być {error.problem} niż {error.value}')
+    elif isinstance(error, errors.BadAttachmentCount):
+        await ctx.error(str(error))
+    elif isinstance(error, errors.BadAttachmentType):
+        await ctx.error('Nieprawidłowy typ załącznika')
+    elif isinstance(error, errors.BadLanguage):
+        await ctx.error('Podano nieprawiłowy język')
+    elif isinstance(error, errors.ImgurUploadError):
+        await ctx.error(f'{error.code}: {clean_content(error.message, max_length=1024, max_lines=4)}')
+
+    elif isinstance(error, commands.TooManyArguments):
+        await ctx.error('Zbyt wiele argumentów')
     elif isinstance(error, commands.MissingRequiredArgument):
         await ctx.error(f'Argument {code(error.param.name)} jest wymagany')
-    elif isinstance(error, (commands.BadArgument, commands.BadUnionArgument)):
-        await ctx.error(f'Argument {code(error.param.name)} jest nieprawidłowy')
     elif isinstance(error, commands.BadLiteralArgument):
         await ctx.error(f"Argument {code(error.param.name)} musi mieć wartość {' | '.join(map(code, error.literals))}")
     elif isinstance(error, commands.BadBoolArgument):
         await ctx.error(f'{user_input(error.argument)} jest niepoprawnym argumentem true/false')
-    elif isinstance(error, commands.TooManyArguments):
-        await ctx.error('Zbyt wiele argumentów')
+    elif isinstance(error, (commands.BadArgument, commands.BadUnionArgument)):
+        await ctx.error(f'Argument {code(error.param.name)} jest nieprawidłowy')
 
     elif isinstance(error, commands.UnexpectedQuoteError):
         await ctx.error(f'Nieoczekiwany cudzysłów {code(error.quote)}')
@@ -99,11 +104,21 @@ async def command_error(ctx: Context, error: commands.CommandError):
         await ctx.error('Ta komenda może być użyta tylko na kanale NSFW')
 
     elif isinstance(error, commands.CommandOnCooldown):
-        await ctx.error(f'Poczekaj jeszcze {plural_time(math.ceil(error.retry_after))}', delete_after=10)
-    elif isinstance(error, commands.MaxConcurrencyReached):
         await ctx.error(
-            f'Ta komenda jest obecnie używana zbyt dużo ({error.number}/{error.per}). Spróbuj ponownie za chwilę'
+            f'Poczekaj jeszcze {plural_time(math.ceil(error.retry_after))}',
+            delete_after=clamp(error.retry_after, 5, 30)
         )
+    elif isinstance(error, commands.MaxConcurrencyReached):
+        per = {
+            BucketType.default: 'globalnie',
+            BucketType.user: 'użytkownika',
+            BucketType.member: 'członka serwera',
+            BucketType.guild: 'serwer',
+            BucketType.channel: 'kanał',
+            BucketType.category: 'kategorię',
+            BucketType.role: 'rolę'
+        }[error.per]
+        await ctx.error(f'Ta komenda jest obecnie używana zbyt dużo ({error.number}/{per}). Spróbuj ponownie za chwilę')
 
     elif isinstance(error, commands.DisabledCommand):
         await ctx.error('Ta komenda jest obecnie wyłączona')
@@ -114,8 +129,6 @@ async def command_error(ctx: Context, error: commands.CommandError):
     elif isinstance(error, commands.NotOwner):
         log.info(f'{name_id(ctx.author)} tried using {ctx.command.qualified_name} but is not the bot owner')
 
-    elif isinstance(error, SEND_EXCEPTIONS):
-        await ctx.error(clean_content(str(error), max_length=512, max_lines=4))
     elif isinstance(error, IGNORE_EXCEPTIONS):
         pass
     elif isinstance(error, REPORT_ORIGINAL_EXCEPTIONS):

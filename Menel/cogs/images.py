@@ -15,9 +15,9 @@ from PIL import Image, ImageDraw, ImageFont
 from discord.ext import commands
 
 from .. import PATH
-from ..objects.context import Context
 from ..utils import embeds, imperial
 from ..utils.checks import has_attachments
+from ..utils.context import Context
 
 
 ASCII_IMG_SIZE = 128

@@ -3,7 +3,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from Menel.utils.formatting import bold
+from ..utils.formatting import bold
 
 
 def clean_content(

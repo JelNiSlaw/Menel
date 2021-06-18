@@ -20,14 +20,14 @@ from googletrans.constants import LANGUAGES
 from jishaku.codeblocks import codeblock_converter
 
 from .. import PATH
-from ..objects.context import Context
 from ..resources import filesizes
 from ..utils import embeds, imgur
 from ..utils.checks import has_attachments
+from ..utils.context import Context
 from ..utils.converters import LanguageConverter, URL
 from ..utils.formatting import code, codeblock
-from ..utils.math import unique_id
-from ..utils.text_tools import clean_content, escape_str
+from ..utils.misc import unique_id
+from ..utils.text_tools import clean_content, escape_str, plural
 
 
 AUTO = 'auto'

@@ -2,7 +2,7 @@ from os import environ
 
 import aiohttp
 
-from Menel.utils.errors import ImgurUploadError
+from ..utils.errors import ImgurUploadError
 
 
 async def _upload(field_name: str, file: bytes) -> str:

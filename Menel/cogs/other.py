@@ -5,7 +5,7 @@ from typing import Optional
 import aiohttp
 from discord.ext import commands
 
-from ..objects.context import Context
+from ..utils.context import Context
 from ..utils.converters import URL
 from ..utils.formatting import codeblock
 from ..utils.text_tools import clean_content
@@ -41,7 +41,7 @@ class Other(commands.Cog):
         lines.insert(0, f'┏{line}┓')
         lines.append(f'┗{line}┛')
         lines = codeblock('\n'.join(lines), escape=False)
-        await ctx.info(f'Proszę, oto Twój darmowy dywan\n{lines}')
+        await ctx.embed(f'Proszę, oto Twój darmowy dywan\n{lines}')
 
     @commands.command(aliases=['px', 'pikseu'], ignore_extra=False, hidden=True)
     @commands.cooldown(2, 30, commands.BucketType.user)
@@ -76,7 +76,7 @@ class Other(commands.Cog):
         message = clean_content(json['message'])
 
         if r.status == 200:
-            await ctx.info(message)
+            await ctx.embed(message)
         else:
             if 'retry_after' in json:
                 message += f'\nTry again in {json["retry_after"]}s'

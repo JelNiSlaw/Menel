@@ -1,8 +1,16 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from discord.ext import commands
 
 from ..utils.text_tools import plural
+
+
+@dataclass
+class BadNumber(commands.BadArgument):
+    name: str
+    problem: str
+    value: int
 
 
 class BadAttachmentCount(commands.CheckFailure):
@@ -17,15 +25,14 @@ class BadAttachmentCount(commands.CheckFailure):
 
 
 class BadAttachmentType(commands.CheckFailure):
-    def __init__(self):
-        super().__init__(f'Nieprawidłowy typ załącznika')
-
-
-class ImgurUploadError(Exception):
-    def __init__(self, code: int, message: str):
-        super().__init__(f'{code}: {message}')
+    pass
 
 
 class BadLanguage(commands.BadArgument):
-    def __init__(self):
-        super().__init__('Podano nieprawiłowy język')
+    pass
+
+
+@dataclass
+class ImgurUploadError(Exception):
+    code: int
+    message: str
