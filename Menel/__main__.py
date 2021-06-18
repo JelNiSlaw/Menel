@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 from . import PATH
 from .bot import Menel
-from ..utils import logs
+from .utils import logs
 
 
 def main():

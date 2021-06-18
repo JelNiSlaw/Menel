@@ -33,6 +33,6 @@ class DiscordTime:
             return f'<t:{self._time.timestamp()}>'
 
         if flag not in {'t', 'T', 'd', 'D', 'f', 'F', 'R'}:
-            raise ValueError(f'Invalid timestamp flag {flag:r}')
+            raise ValueError(f'Invalid timestamp flag {flag!r}')
 
         return f'<t:{self._time.timestamp()}:{flag}>'
