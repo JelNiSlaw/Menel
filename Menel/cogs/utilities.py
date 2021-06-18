@@ -445,7 +445,39 @@ class Utilities(commands.Cog):
 
         text = [code(clean_content(url, False, False, max_length=64)) for url in urls]
         text.append(clean_content(last, False, False, max_length=512) if not shortened else '…')
-        await ctx.info('\n'.join(text))
+        await ctx.embed('\n'.join(text))
+
+    @commands.command(aliases=['rtfm'])
+    @commands.cooldown(3, 10, commands.BucketType.user)
+    @commands.cooldown(3, 5)  # API rate limit
+    async def docs(self, ctx: Context, *, query: str):
+        r = await ctx.client.get(
+            'https://idevision.net/api/public/rtfm',
+            params={
+                'show-labels': True,
+                'label-labels': False,
+                'location': 'https://discordpy.readthedocs.io/en/master/',
+                'query': query
+            }
+        )
+
+        json = r.json()
+        nodes = json['nodes']
+
+        if not nodes:
+            await ctx.error('Nie znaleziono żadnych pasujących wyników')
+            return
+
+        text = [f'[{code(name)}]({url})' for name, url in nodes.items()]
+
+        embed = embeds.with_author(
+            ctx.author,
+            title=plural(len(nodes), 'wynik', 'wyniki', 'wyników'),
+            description='\n'.join(text),
+            colour=discord.Colour.green()
+        )
+        embed.set_footer(text=f"Czas wyszukiwania: {float(json['query_time']) * 1000:.0f} ms")
+        await ctx.send(embed=embed)
 
     @commands.command('youtube-dl', aliases=['youtubedl', 'yt-dl', 'ytdl', 'download', 'dl'])
     @commands.cooldown(2, 20, commands.BucketType.user)
