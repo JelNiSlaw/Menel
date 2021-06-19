@@ -24,9 +24,24 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
         if not user:
             user = ctx.author
 
-        embed = embeds.with_author(user, colour=discord.Colour.green())
+        embed = embeds.with_author(user)
         embed.description = ' '.join(f'[{fmt}]({user.avatar.replace(4096, fmt)})' for fmt in ('png', 'webp', 'jpeg'))
         embed.set_image(url=str(user.avatar.replace(4096)))
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['ban-reason', 'baninfo', 'ban-info'])
+    @commands.bot_has_permissions(ban_members=True)
+    @commands.cooldown(2, 5, commands.BucketType.user)
+    async def banreason(self, ctx: Context, *, user: discord.User):
+        """Wyświetla powód bana"""
+        try:
+            ban = await ctx.guild.fetch_ban(user)
+        except discord.NotFound:
+            await ctx.error(f'{clean_content(str(user))} nie jest zbanowany na tym serwerze')
+            return
+
+        embed = embeds.with_author(ban.user)
+        embed.add_field(name='Powód bana', value=clean_content(ban.reason), inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['oauth2', 'oauth'])
@@ -35,7 +50,6 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
         Tworzy link autoryzacji bota
         `bots`: wzmianki lub ID botów
         """
-
         # noinspection PyProtectedMember
         bots = discord.utils._unique(bots)
 

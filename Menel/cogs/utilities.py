@@ -167,7 +167,7 @@ class Utilities(commands.Cog):
             if src == AUTO:
                 src = json.get('src', AUTO)
 
-            embed = embeds.with_author(ctx.author, colour=discord.Colour.green())
+            embed = embeds.with_author(ctx.author)
             embed.title = LANGUAGES.get(src, src).title() + ' ➜ ' + LANGUAGES.get(dest, dest).title()
             embed.description = clean_content(
                 ' '.join(s['trans'] for s in json['sentences']),
@@ -397,7 +397,7 @@ class Utilities(commands.Cog):
                 except pyppeteer.errors.NetworkError as e:
                     await ctx.error(str(e))
                 else:
-                    embed = embeds.with_author(ctx.author, colour=discord.Colour.green())
+                    embed = embeds.with_author(ctx.author)
 
                     image = await imgur.upload_image(screenshot)
 
@@ -451,6 +451,7 @@ class Utilities(commands.Cog):
     @commands.cooldown(3, 10, commands.BucketType.user)
     @commands.cooldown(3, 5)  # API rate limit
     async def docs(self, ctx: Context, *, query: str):
+        """Przeszukuje dokumentację biblioteki discord.py (gałęzi master)"""
         r = await ctx.client.get(
             'https://idevision.net/api/public/rtfm',
             params={
