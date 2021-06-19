@@ -214,7 +214,7 @@ class Utilities(commands.Cog):
                 title=clean_content(json['word'], False, False, max_length=256),
                 url=json['permalink'],
                 description=clean_content(remove_brackets(json['definition']), max_length=1024, max_lines=16),
-                colour=discord.Colour.green()
+                color=discord.Color.green()
             )
 
             if json['example'].strip():
@@ -247,15 +247,15 @@ class Utilities(commands.Cog):
 
                 if not json['error']:
                     result = json['result']
-                    color = discord.Colour.green()
+                    color = discord.Color.green()
                 else:
                     result = json['error']
-                    color = discord.Colour.red()
+                    color = discord.Color.red()
 
             embed = embeds.with_author(
                 ctx.author,
                 description=clean_content(result, max_length=2048, max_lines=8),
-                colour=color
+                color=color
             )
 
         await ctx.send(embed=embed)
@@ -296,7 +296,7 @@ class Utilities(commands.Cog):
                              'Twój kod nic nie wypisał.') +
                             f'\n{json["language"]} {json["version"]}\n'
                             f'Powered by [Piston](https://github.com/engineer-man/piston).',
-                colour=discord.Colour.green() if not json['stderr'].strip() else discord.Colour.red()
+                color=discord.Color.green() if not json['stderr'].strip() else discord.Color.red()
             )
 
         await ctx.send(embed=embed)
@@ -475,7 +475,7 @@ class Utilities(commands.Cog):
             ctx.author,
             title=plural(len(nodes), 'wynik', 'wyniki', 'wyników'),
             description='\n'.join(text),
-            colour=discord.Colour.green()
+            color=discord.Color.green()
         )
         embed.set_footer(text=f"Czas wyszukiwania: {float(json['query_time']) * 1000:.0f} ms")
         await ctx.send(embed=embed)

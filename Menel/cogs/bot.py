@@ -22,7 +22,7 @@ class Bot(commands.Cog):
                         f'{(message.created_at.timestamp() - ctx.message.created_at.timestamp()) * 1000:,.0f} ms\n'
                         f'Czas wysyłania wiadomości: {(stop - start) * 1000:,.0f} ms\n'
                         f'Opóźnienie WebSocket: {ctx.bot.latency * 1000:,.0f} ms',
-            colour=discord.Colour.green()
+            color=discord.Color.green()
         )
 
         await message.edit(content=None, embed=embed)
@@ -36,7 +36,7 @@ class Bot(commands.Cog):
                 ctx.author,
                 title='Prefixy na tym serwerze',
                 description=await ctx.get_prefixes_str(join='\n'),
-                colour=discord.Colour.green()
+                color=discord.Color.green()
             )
         )
 

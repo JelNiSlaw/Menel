@@ -47,7 +47,7 @@ async def command_error(ctx: Context, error: commands.CommandError):
         await ctx.error(f'Zaproszenie {user_input(error.argument)} jest nieprawidłowe lub wygasło')
     elif isinstance(error, commands.ObjectNotFound):
         await ctx.error(f'{user_input(error.argument)} nie jest prawidłowym ID')
-    elif isinstance(error, commands.BadColourArgument):
+    elif isinstance(error, commands.BadColorArgument):
         await ctx.error(f'Nieprawidłowy kolor {user_input(error.argument)}')
 
     elif isinstance(error, commands.BadFlagArgument):

@@ -150,7 +150,7 @@ class Images(commands.Cog):
 
             await connector.close()
 
-            embed = embeds.with_author(ctx.author, colour=discord.Colour.orange())
+            embed = embeds.with_author(ctx.author, color=discord.Color.orange())
             embed.set_image(url='attachment://burning.gif')
 
         await ctx.send(embed=embed, file=discord.File(BytesIO(file), 'burning.gif'))

@@ -52,7 +52,7 @@ class Context(commands.Context):
             embed=embeds.with_author(
                 self.author,
                 description=content,
-                colour=discord.Colour.green(),
+                color=discord.Color.green(),
                 **(embed_kwargs or {})
             ),
             **message_kwargs
@@ -63,7 +63,7 @@ class Context(commands.Context):
             embed=embeds.with_author(
                 self.author,
                 description=content,
-                colour=discord.Colour.red(),
+                color=discord.Color.red(),
                 **(embed_kwargs or {})
             ),
             **message_kwargs
@@ -90,7 +90,7 @@ class Context(commands.Context):
         embed = embeds.with_author(
             self.author,
             title='Wystąpił błąd!',
-            colour=discord.Colour.red()
+            color=discord.Color.red()
         )
 
         embed.add_field(name=type(exception).__name__, value=clean_content(str(exception)), inline=False)

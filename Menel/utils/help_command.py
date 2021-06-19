@@ -48,7 +48,7 @@ class HelpCommand(dc_commands.HelpCommand):
             description=f'Użyj `{ctx.clean_prefix}help [command]`, '
                         f'aby otrzymać więcej informacji o komendzie lub kategorii\n'
                         f'Ustawione prefixy: {await ctx.get_prefixes_str()}',
-            colour=discord.Colour.green()
+            color=discord.Color.green()
         )
         embed.set_thumbnail(url=ctx.bot.user.avatar.replace(4096))
 
@@ -74,7 +74,7 @@ class HelpCommand(dc_commands.HelpCommand):
                 ctx.author,
                 title=cog.qualified_name,
                 description='\n'.join(commands_text),
-                colour=discord.Colour.green()
+                color=discord.Color.green()
             )
         )
 
@@ -92,7 +92,7 @@ class HelpCommand(dc_commands.HelpCommand):
                 ctx.author,
                 title=group.qualified_name,
                 description=f'{group.help}\n\n' + '\n'.join(commands_text),
-                colour=discord.Colour.green()
+                color=discord.Color.green()
             )
         )
 
@@ -114,7 +114,7 @@ class HelpCommand(dc_commands.HelpCommand):
                     'Posiadasz wymagane uprawnienia' if can_run else 'Nie posiadasz wymaganych uprawnień'
                 )
             ),
-            colour=discord.Colour.green()
+            color=discord.Color.green()
         )
         if command.aliases:
             embed.add_field(name='Aliasy', value=' '.join(map(code, command.aliases)))

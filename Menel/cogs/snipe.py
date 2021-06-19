@@ -45,7 +45,7 @@ class Snipe(commands.Cog):
 
         message = snipes[ctx.channel.id]
         time = message.edited_at or message.created_at
-        color = message.author.colour
+        color = message.author.color
 
         if ctx.command_time - time > datetime.timedelta(hours=2):
             raise SnipeNotFound()
@@ -53,7 +53,7 @@ class Snipe(commands.Cog):
         embed = embeds.with_author(
             message.author,
             description=message.content,
-            colour=color if color != discord.Colour.default() else discord.Colour.green(),
+            color=color if color != discord.Color.default() else discord.Color.green(),
             timestamp=time
         )
         embed.set_footer(text=str(message.id))
