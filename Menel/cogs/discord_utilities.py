@@ -93,7 +93,7 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
         if (before.name, before.discriminator) == (after.name, after.discriminator):
             return
 
-        await self.bot.db.add_name_history(after.id, str(after))
+        await self.bot.db.add_name_history(after.id, str(before))
 
 
 def setup(bot):
