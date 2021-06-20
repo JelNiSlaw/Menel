@@ -123,4 +123,4 @@ class Database:
         return document['names'] if document else []
 
     async def add_name_history(self, user_id: int, name: str) -> None:
-        await self.name_history.update_one({'_id': user_id}, {'push': {'names': name}}, upsert=True)
+        await self.name_history.update_one({'_id': user_id}, {'$push': {'names': name}}, upsert=True)
