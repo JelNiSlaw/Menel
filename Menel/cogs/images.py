@@ -200,9 +200,9 @@ class Images(commands.Cog):
                 file=discord.File(image, attachment.filename.rsplit('.', 1)[0] + '.png')
             )
 
-    @commands.command('this-person-does-not-exist', aliases=['thispersondoesnotexist', 'tpdne', 'person'])
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def this_person_does_not_exist(self, ctx: Context):
+    @commands.command(aliases=['this-person-does-not-exist', 'thispersondoesnotexist', 'person'])
+    @commands.cooldown(2, 5, commands.BucketType.user)
+    async def tpdne(self, ctx: Context):
         """Pobiera wygenerowaną twarz z thispersondoesnotexist.com"""
         async with ctx.channel.typing():
             async with aiohttp.request(

@@ -37,9 +37,9 @@ class Menel(commands.AutoShardedBot):
             heartbeat_timeout=120
         )
 
-        self.global_rate_limit = commands.CooldownMapping.from_cooldown(5, 15, commands.BucketType.user)
+        self.global_rate_limit = commands.CooldownMapping.from_cooldown(5, 12, commands.BucketType.user)
         self.db = Database()
-        self.client = httpx.AsyncClient()
+        self.client = httpx.AsyncClient(timeout=httpx.Timeout(10))
         self.prefix_base = []
 
         from . import cogs

@@ -92,6 +92,7 @@ class Database:
         self._db = self.client['bot']
         self.bot_config = DocumentCache(self._db['bot_config'], {'users': []})
         self.guild_config = DocumentCache(self._db['guild_config'], {'prefixes': ['?']})
+        self.name_history = self._db['name_history']
 
     # prefixes
 
@@ -114,3 +115,12 @@ class Database:
 
     async def remove_blacklist(self, *user_ids: int) -> None:
         await self.bot_config.pull('blacklist', 'users', *user_ids)
+
+    # name history
+
+    async def get_name_history(self, user_id: int) -> list[str]:
+        document = await self.name_history.find_one(user_id)
+        return document['names'] if document else []
+
+    async def add_name_history(self, user_id: int, name: str) -> None:
+        await self.name_history.update_one({'_id': user_id}, {'push': {'names': name}}, upsert=True)

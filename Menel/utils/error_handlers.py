@@ -106,7 +106,7 @@ async def command_error(ctx: Context, error: commands.CommandError):
     elif isinstance(error, commands.CommandOnCooldown):
         await ctx.error(
             f'Poczekaj jeszcze {plural_time(math.ceil(error.retry_after))}',
-            delete_after=clamp(error.retry_after, 5, 30)
+            delete_after=clamp(error.retry_after, 2, 30)
         )
     elif isinstance(error, commands.MaxConcurrencyReached):
         per = {
