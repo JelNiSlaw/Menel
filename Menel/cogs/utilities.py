@@ -229,36 +229,27 @@ class Utilities(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['m', 'calculate', 'calculator', 'calc', 'kalkulator', 'kalk'])
+    @commands.command(aliases=['m', 'calculate', 'calculator', 'calc', 'kalkulator'])
     async def math(self, ctx: Context, *, expression: str):
         """Kalkulator Stanisław Jelnicki"""
         async with ctx.channel.typing():
             if re.sub(r'\s+', '', expression) == '2+2':
-                result = '5'
-                color = discord.Color.green()
-                await asyncio.sleep(1)
-            else:
-                async with aiohttp.request(
-                        'POST', 'https://api.mathjs.org/v4/',
-                        json={'expr': expression},
-                        timeout=aiohttp.ClientTimeout(total=10)
-                ) as r:
-                    json = await r.json()
+                await asyncio.sleep(0.5)
+                await ctx.send('5')
+                return
 
-                if not json['error']:
-                    result = json['result']
-                    color = discord.Color.green()
-                else:
-                    result = json['error']
-                    color = discord.Color.red()
+            async with aiohttp.request(
+                    'POST', 'https://api.mathjs.org/v4/',
+                    json={'expr': expression},
+                    timeout=aiohttp.ClientTimeout(total=10)
+            ) as r:
+                json = await r.json()
 
-            embed = embeds.with_author(
-                ctx.author,
-                description=clean_content(result, max_length=2048, max_lines=8),
-                color=color
-            )
+            if json['error']:
+                await ctx.error(clean_content(json['error'], max_length=1024, max_lines=4))
+                return
 
-        await ctx.send(embed=embed)
+            await ctx.send(clean_content(json['result'], max_length=2048, max_lines=8))
 
     @commands.command(aliases=['run'])
     @commands.cooldown(2, 5, commands.BucketType.user)
