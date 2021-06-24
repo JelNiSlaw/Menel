@@ -1,5 +1,6 @@
 import asyncio
 import http.client
+import os
 import re
 import unicodedata
 from io import BytesIO
@@ -26,7 +27,6 @@ from ..utils.checks import has_attachments
 from ..utils.context import Context
 from ..utils.converters import LanguageConverter, URL
 from ..utils.formatting import code, codeblock
-from ..utils.misc import unique_id
 from ..utils.text_tools import clean_content, escape_str, plural
 
 
@@ -39,7 +39,7 @@ class YouTubeDownloader:
 
         self.OPTIONS = {
             'format': 'best',
-            'outtmpl': str(PATH / 'temp' / (unique_id() + '.%(ext)s')),
+            'outtmpl': str(PATH / 'temp' / (os.urandom(16).hex() + '.%(ext)s')),
             'merge_output_format': 'mp4',
             'default_search': 'auto',
             'progress_hooks': [self._hook],
@@ -280,7 +280,7 @@ class Utilities(commands.Cog):
                 return
 
             output = [codeblock(clean_content(json[out], False, False, max_length=512, max_lines=16))
-                for out in ('stdout', 'stderr') if json[out].strip()]
+                      for out in ('stdout', 'stderr') if json[out].strip()]
 
             embed = discord.Embed(
                 description=('\n'.join(output) if output else
@@ -389,18 +389,15 @@ class Utilities(commands.Cog):
                     await ctx.error(str(e))
                 else:
                     embed = embeds.with_author(ctx.author)
-
                     image = await imgur.upload_image(screenshot)
 
                     if ctx.channel.nsfw:
                         embed.set_image(url=image)
-                        await ctx.send(embed=embed)
                     else:
                         embed.description = f'Zdjęcie strony: {image}'
                         embed.set_footer(text='Podgląd dostępny jest wyłącznie na kanałach NSFW')
 
-                        await ctx.send(embed=embed)
-
+                    await ctx.send(embed=embed)
             finally:
                 await browser.close()
 
@@ -531,10 +528,7 @@ class Utilities(commands.Cog):
     async def _imgur(self, ctx: Context):
         """Przesyła załączone zdjęcia na Imgur"""
         async with ctx.typing():
-            images = []
-            for a in ctx.message.attachments:
-                images.append(await imgur.upload_image(await a.read()))
-
+            images = [await imgur.upload_image(await a.read()) for a in ctx.message.attachments]
             await ctx.send('\n'.join(f'<{image}>' for image in images))
 
 

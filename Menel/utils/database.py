@@ -75,7 +75,7 @@ class DocumentCache:
 class Database:
     def __init__(self):
         self.client = motor.motor_asyncio.AsyncIOMotorClient(
-            environ['MONGODB_CONNECTION_STRING'],
+            host=environ['DB_HOST'],
             tz_aware=False,
             connect=True,
             directConnection=False,
@@ -85,8 +85,7 @@ class Database:
             compressors='zlib',
             zlibCompressionLevel=5,
             w=1,
-            readPreference='primaryPreferred',
-            tls=True
+            readPreference='primaryPreferred'
         )
 
         self._db = self.client['bot']

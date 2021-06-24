@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 import discord
 from discord.ext import commands
@@ -7,16 +7,16 @@ from ..utils.formatting import bold
 
 
 def clean_content(
-    content: str,
-    markdown: bool = True,
-    mentions: bool = True,
-    /, *,
-    max_length: Optional[int] = None,
-    max_lines: Optional[int] = None,
-    end: str = '…'
+        content: str,
+        markdown: bool = True,
+        mentions: bool = True,
+        /, *,
+        max_length: Optional[int] = None,
+        max_lines: Optional[int] = None,
+        end: str = '…'
 ) -> str:
     if markdown:
-        content = discord.utils.escape_markdown(content)
+        content = discord.utils.escape_markdown(content, ignore_links=False)
     if mentions:
         content = discord.utils.escape_mentions(content)
 
@@ -42,13 +42,7 @@ def plural(count: int, one: str, few: str, many: str) -> str:
     elif 10 <= count < 20:
         word = many
     else:
-        last = count % 10
-
-        if 1 < last < 5:
-            word = few
-        else:
-            word = many
-
+        word = few if 1 < count % 10 < 5 else many
     return f'{count:,} {word}'
 
 
@@ -83,7 +77,7 @@ def name_id(obj: discord.abc.Snowflake) -> str:
     return f'{obj} ({obj.id})'
 
 
-def ctx_location(ctx: commands.Context):
+def ctx_location(ctx: commands.Context) -> str:
     return location(ctx.author, ctx.channel, ctx.guild)
 
 
@@ -94,8 +88,8 @@ def location(author: discord.abc.User, channel: discord.abc.Messageable, guild: 
     return text
 
 
-def user_input(text: str):
-    return bold(clean_content(text, max_length=32, max_lines=1))
+def user_input(text: Any) -> str:
+    return bold(clean_content(str(text), max_length=32, max_lines=1))
 
 
 def str_permissions(permissions: list[str]) -> str:

@@ -1,7 +1,4 @@
 import datetime
-import random
-import string
-import time
 from typing import Literal
 
 
@@ -12,14 +9,6 @@ def clamp(val: int, minval: int, maxval: int):
 def chunk(iterator: list, max_size: int) -> list:
     for i in range(0, len(iterator), max_size):
         yield iterator[i:i + max_size]
-
-
-def random_string(length: int = 16) -> str:
-    return ''.join(random.choices(string.ascii_letters, k=length))
-
-
-def unique_id() -> str:
-    return hex(time.time_ns() + random.randrange(0, 100))[2:]
 
 
 class DiscordTime:

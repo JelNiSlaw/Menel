@@ -32,11 +32,11 @@ class Context(commands.Context):
         self.command_time = self.message.edited_at or self.message.created_at
 
     async def send(
-        self,
-        *args,
-        channel: discord.abc.Messageable = None,
-        no_reply: bool = False,
-        **kwargs
+            self,
+            *args,
+            channel: discord.abc.Messageable = None,
+            no_reply: bool = False,
+            **kwargs
     ) -> discord.Message:
         if not channel:
             channel = self.channel
