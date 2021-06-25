@@ -40,7 +40,7 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
             elif isinstance(error, commands.BadInviteArgument):
                 await ctx.error(f'Zaproszenie {user_input(error.argument)} jest nieprawidłowe lub wygasło')
             elif isinstance(error, (commands.EmojiNotFound, commands.PartialEmojiConversionFailure)):
-                await ctx.error(f'Nie znaleziono emoji {user_input(error.argument)}')
+                await ctx.error(f'Nie znaleziono niestandardowego emoji {user_input(error.argument)}')
             elif isinstance(error, commands.ObjectNotFound):
                 await ctx.error(f'{user_input(error.argument)} nie jest prawidłowym ID')
             elif isinstance(error, commands.BadBoolArgument):

@@ -2,6 +2,7 @@ import logging
 from os import environ
 from typing import Any, Hashable, Optional
 
+import discord
 import motor
 import motor.motor_asyncio
 import pymongo
@@ -17,7 +18,7 @@ class DocumentCache:
         self.cache = {}
 
     async def get(self, document_id: Hashable, key: Optional[str]) -> Optional[Any]:
-        if key is None:
+        if document_id is None or key is None:
             return self.default[key]
 
         cache = self.cache.get(document_id)
@@ -95,8 +96,8 @@ class Database:
 
     # prefixes
 
-    async def get_prefixes(self, guild_id: Optional[int]) -> list[str]:
-        return await self.guild_config.get(guild_id, 'prefixes')
+    async def get_prefixes(self, guild: Optional[discord.Guild]) -> list[str]:
+        return await self.guild_config.get(guild.id if guild else None, 'prefixes')
 
     async def set_prefixes(self, guild_id: int, prefixes: list[str]) -> None:
         await self.guild_config.set(guild_id, 'prefixes', prefixes)

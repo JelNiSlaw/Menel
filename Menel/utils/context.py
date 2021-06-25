@@ -95,8 +95,8 @@ class Context(commands.Context):
 
         embed.add_field(name=type(exception).__name__, value=clean_content(str(exception)), inline=False)
 
-        owner = self.guild.get_member(self.bot.owner_id)
-        if self.guild and owner:
+        owner = self.guild.get_member(self.bot.owner_id) if self.guild else None
+        if owner:
             text = owner.mention
             allowed_mentions = discord.AllowedMentions(users=True)
         else:
@@ -118,5 +118,5 @@ class Context(commands.Context):
         return self.prefix
 
     async def get_prefixes_str(self, *, join: str = ' ') -> str:
-        prefixes = await self.db.get_prefixes(self.guild.id)
+        prefixes = await self.db.get_prefixes(self.guild)
         return join.join([code('@' + self.bot.user.name)] + list(map(code, prefixes)))

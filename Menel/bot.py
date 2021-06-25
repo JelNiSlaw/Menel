@@ -49,7 +49,7 @@ class Menel(commands.AutoShardedBot):
         self.status_loop.start()
 
     async def get_prefix(self, m: Union[discord.Message, Context]) -> list[str]:
-        return self.prefix_base + await self.db.get_prefixes(m.guild.id)
+        return self.prefix_base + await self.db.get_prefixes(m.guild)
 
     async def process_commands(self, m: discord.Message):
         if m.author.bot:

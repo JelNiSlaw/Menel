@@ -111,63 +111,75 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
 
     @commands.group(aliases=['json'], invoke_without_command=True)
     async def raw(self, ctx: Context):
-        """Wysyła różne obiekty"""
+        """Wysyła różne obiekty jako JSON"""
         await ctx.send_help(ctx.command)
 
     @raw.command('message')
-    async def raw_message(self, ctx: Context, *, message: discord.Message):
-        """Wysyła wybraną wiadomość"""
+    async def raw_message(self, ctx: Context, *, message: discord.PartialMessage):
+        """Wysyła informacje o wybranej wiadomości"""
+        if ctx.guild:
+            if message.guild != ctx.guild:
+                await ctx.error('Możesz wybrać jedynie wiadomość na tym serwerze')
+                return
+        elif message.channel != ctx.channel:
+            await ctx.error('Możesz wybrać jedynie wiadomość na tym DM')
+            return
+
         if not message.channel.permissions_for(ctx.author).read_message_history:
             raise commands.MissingPermissions(['read_message_history'])
 
-        data = await ctx.bot.http.get_message(message.channel.id, message.id)
+        try:
+            data = await ctx.bot.http.get_message(message.channel.id, message.id)
+        except discord.NotFound:
+            raise commands.MessageNotFound(message.id)
+
         await send_json(ctx, data, message.id)
 
     @raw.command('member')
     async def raw_member(self, ctx: Context, *, member: discord.Member):
-        """Wysyła wybranego członka"""
+        """Wysyła informacje o wybranym członku"""
         data = await ctx.bot.http.get_member(ctx.guild.id, member.id)
         await send_json(ctx, data, member.id)
 
     @raw.command('user')
     async def raw_user(self, ctx: Context, *, user: discord.User):
-        """Wysyła wybranego użytkownika"""
+        """Wysyła informacje o wybranym użytkowniku"""
         data = await ctx.bot.http.get_user(user.id)
         await send_json(ctx, data, user.id)
 
     @raw.command('channel')
     async def raw_channel(self, ctx: Context, *, channel: discord.abc.GuildChannel):
-        """Wysyła wybrany kanał"""
+        """Wysyła informacje o wybranym kanale"""
         data = await ctx.bot.http.get_channel(channel.id)
         await send_json(ctx, data, channel.id)
 
     @raw.command('guild')
     async def raw_guild(self, ctx: Context):
-        """Wysyła wybrany serwer"""
+        """Wysyła informacje o serwerze"""
         data = await ctx.bot.http.get_guild(ctx.guild.id)
         await send_json(ctx, data, ctx.guild.id)
 
     @raw.command('roles')
     async def raw_roles(self, ctx: Context):
-        """Wysyła wszystkie role"""
+        """Wysyła informacje o wszystkich rolach"""
         data = await ctx.bot.http.get_roles(ctx.guild.id)
         await send_json(ctx, data, ctx.guild.id)
 
     @raw.command('emoji')
     async def raw_emoji(self, ctx: Context, *, emoji: discord.Emoji):
-        """Wysyła wybrane emoji"""
+        """Wysyła informacje o wybranym emoji"""
         data = await ctx.bot.http.get_custom_emoji(emoji.guild_id, emoji.id)
         await send_json(ctx, data, emoji.id)
 
     @raw.command('emojis')
     async def raw_emojis(self, ctx: Context):
-        """Wysyła wszystkie emoji"""
+        """Wysyła informacje o wszystkich emoji"""
         data = await ctx.bot.http.get_all_custom_emojis(ctx.guild.id)
         await send_json(ctx, data, ctx.guild.id)
 
     @raw.command('invite')
     async def raw_invite(self, ctx: Context, *, invite: discord.Invite):
-        """Wysyła wybrane zaproszenie"""
+        """Wysyła informacje o wybranym zaproszeniu"""
         data = await ctx.bot.http.get_invite(invite.code)
         await send_json(ctx, data, invite.id)
 

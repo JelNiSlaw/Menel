@@ -65,9 +65,7 @@ class HelpCommand(dc_commands.HelpCommand):
             await ctx.error(self.category_has_no_commands())
             return
 
-        commands_text = []
-        for command in commands:
-            commands_text.append(f'`{command.qualified_name}` \N{EM DASH} {short_help(command)}')
+        commands_text = [f'`{command.qualified_name}` \N{EM DASH} {short_help(command)}' for command in commands]
 
         await ctx.send(
             embed=embeds.with_author(
@@ -83,9 +81,7 @@ class HelpCommand(dc_commands.HelpCommand):
 
         commands = sort_and_filter_commands(group.commands)
 
-        commands_text = []
-        for command in commands:
-            commands_text.append(f'`{command.name}` \N{EM DASH} {short_help(command)}')
+        commands_text = [f'`{command.name}` \N{EM DASH} {short_help(command)}' for command in commands]
 
         await ctx.send(
             embed=embeds.with_author(

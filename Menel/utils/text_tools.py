@@ -89,7 +89,7 @@ def location(author: discord.abc.User, channel: discord.abc.Messageable, guild: 
 
 
 def user_input(text: Any) -> str:
-    return bold(clean_content(str(text), max_length=32, max_lines=1))
+    return bold(clean_content(str(text), max_length=64, max_lines=1))
 
 
 def str_permissions(permissions: list[str]) -> str:
