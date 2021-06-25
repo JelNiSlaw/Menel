@@ -38,9 +38,9 @@ class Menel(commands.AutoShardedBot):
         )
 
         self.global_rate_limit = commands.CooldownMapping.from_cooldown(5, 12, commands.BucketType.user)
+        self.prefix_base = []
         self.db = Database()
         self.client = httpx.AsyncClient(timeout=httpx.Timeout(10))
-        self.prefix_base = []
 
         from . import cogs
         self.load_extensions(cogs)

@@ -1,6 +1,9 @@
+import asyncio
 import io
 import json
 import math
+import zipfile
+from collections import Counter
 from typing import Optional, Union
 
 import discord
@@ -9,6 +12,7 @@ from discord.ext import commands
 from ..utils import embeds
 from ..utils.context import Context
 from ..utils.formatting import bold, codeblock
+from ..utils.misc import Timer
 from ..utils.text_tools import clean_content, user_input
 
 
@@ -43,6 +47,7 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
 
     @commands.command(aliases=['name-history', 'namehistory', 'names', 'nick-history', 'nickhistory', 'nicks'])
     async def name_history(self, ctx: Context, page: Optional[int] = 1, *, user: discord.User):
+        """Pokazuje historię nazw wybranego użytkownika"""
         if page <= 0:
             await ctx.error('Numer strony musi być dodatni')
             return
@@ -52,7 +57,7 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
             await ctx.error('Nie znam historii nazw tego użytkownika')
             return
 
-        pages = math.ceil(len(names) / 1)
+        pages = math.ceil(len(names) / 16)
         if page > pages:
             await ctx.error(f'Maksymalny numer strony to {pages}')
             return
@@ -109,6 +114,32 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
 
         await ctx.embed('\n'.join(links))
 
+    @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def zipemojis(self, ctx: Context):
+        """Wysyła serwerowe emoji w formacie pliku zip"""
+        emojis = await ctx.guild.fetch_emojis()
+        if not emojis:
+            await ctx.error('Na tym serwerze nie ma żadnych emoji')
+            return
+
+        async with ctx.channel.typing():
+            with Timer() as download_timer:
+                emoji_data = await asyncio.gather(*(e.read() for e in emojis))
+            file = io.BytesIO()
+            name_counter = Counter()
+            with Timer() as zip_timer:
+                with zipfile.ZipFile(file, 'w') as zip_file:
+                    for emoji, data in zip(emojis, emoji_data):
+                        count = name_counter[(emoji.name, emoji.animated)]
+                        name = f'{emoji.name}_{count + 1}' if count > 0 else emoji.name
+                        name += '.gif' if emoji.animated else '.png'
+                        name_counter[(emoji.name, emoji.animated)] += 1
+                        zip_file.writestr(name, data)
+            file.seek(0)
+        await ctx.send(f'Pobrano w {download_timer.time * 1000:.0f} ms, spakowano w {zip_timer.time * 1000:.0f} ms',
+            file=discord.File(file, f'emojis_{ctx.guild.id}.zip'))
+
     @commands.group(aliases=['json'], invoke_without_command=True)
     async def raw(self, ctx: Context):
         """Wysyła różne obiekty jako JSON"""
@@ -133,55 +164,55 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
         except discord.NotFound:
             raise commands.MessageNotFound(message.id)
 
-        await send_json(ctx, data, message.id)
+        await send_json(ctx, data, f'message_{message.id}')
 
     @raw.command('member')
     async def raw_member(self, ctx: Context, *, member: discord.Member):
         """Wysyła informacje o wybranym członku"""
         data = await ctx.bot.http.get_member(ctx.guild.id, member.id)
-        await send_json(ctx, data, member.id)
+        await send_json(ctx, data, f'member_{member.id}')
 
     @raw.command('user')
     async def raw_user(self, ctx: Context, *, user: discord.User):
         """Wysyła informacje o wybranym użytkowniku"""
         data = await ctx.bot.http.get_user(user.id)
-        await send_json(ctx, data, user.id)
+        await send_json(ctx, data, f'user_{user.id}')
 
     @raw.command('channel')
     async def raw_channel(self, ctx: Context, *, channel: discord.abc.GuildChannel):
         """Wysyła informacje o wybranym kanale"""
         data = await ctx.bot.http.get_channel(channel.id)
-        await send_json(ctx, data, channel.id)
+        await send_json(ctx, data, f'channel_{channel.id}')
 
     @raw.command('guild')
     async def raw_guild(self, ctx: Context):
         """Wysyła informacje o serwerze"""
         data = await ctx.bot.http.get_guild(ctx.guild.id)
-        await send_json(ctx, data, ctx.guild.id)
+        await send_json(ctx, data, f'guild_{ctx.guild.id}')
 
     @raw.command('roles')
     async def raw_roles(self, ctx: Context):
         """Wysyła informacje o wszystkich rolach"""
         data = await ctx.bot.http.get_roles(ctx.guild.id)
-        await send_json(ctx, data, ctx.guild.id)
+        await send_json(ctx, data, f'roles_{ctx.guild.id}')
 
     @raw.command('emoji')
     async def raw_emoji(self, ctx: Context, *, emoji: discord.Emoji):
         """Wysyła informacje o wybranym emoji"""
         data = await ctx.bot.http.get_custom_emoji(emoji.guild_id, emoji.id)
-        await send_json(ctx, data, emoji.id)
+        await send_json(ctx, data, f'emoji_{emoji.id}')
 
     @raw.command('emojis')
     async def raw_emojis(self, ctx: Context):
         """Wysyła informacje o wszystkich emoji"""
         data = await ctx.bot.http.get_all_custom_emojis(ctx.guild.id)
-        await send_json(ctx, data, ctx.guild.id)
+        await send_json(ctx, data, f'emojis_{ctx.guild.id}')
 
     @raw.command('invite')
     async def raw_invite(self, ctx: Context, *, invite: discord.Invite):
         """Wysyła informacje o wybranym zaproszeniu"""
         data = await ctx.bot.http.get_invite(invite.code)
-        await send_json(ctx, data, invite.id)
+        await send_json(ctx, data, f'invite_{invite.id}')
 
     @commands.Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User):
