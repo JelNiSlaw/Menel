@@ -45,6 +45,6 @@ class LanguageConverter(commands.Converter, str):
             if argument in LANGCODES:
                 argument = LANGCODES[argument]
             else:
-                raise BadLanguage()
+                raise BadLanguage(argument)
 
         return argument

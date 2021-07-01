@@ -1,5 +1,5 @@
-from typing import Optional
-from typing import Callable
+from typing import Callable, Optional
+
 from discord.ext import commands
 
 from .errors import BadAttachmentCount, BadAttachmentType
@@ -19,7 +19,7 @@ def has_attachments(count: Optional[int] = None, allowed_types: Optional[tuple[s
         if allowed_types is not None:
             for a in attachments:
                 if a.content_type is None or not a.content_type.startswith(allowed_types):
-                    raise BadAttachmentType()
+                    raise BadAttachmentType(str(a.content_type))
 
         return True
 
