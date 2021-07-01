@@ -57,8 +57,13 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
                     await ctx.error(f'Brakująca flaga {code(error.flag.name)}')
                 else:
                     await ctx.error('Nieudana konwersja flagi')
+
+            elif isinstance(error, errors.BadNumber):
+                await ctx.error(f'{error.name} nie może być {error.problem} niż {error.value}')
+            elif isinstance(error, errors.BadLanguage):
+                await ctx.error(f'Podano nieprawiłowy język {user_input(error.argument)}')
             else:
-                await ctx.error('Nieprawidłowy argument')
+                await ctx.error(f'Nieprawidłowy argument ({clean_content(repr(error))})')
 
     elif isinstance(error, commands.BadUnionArgument):
         await ctx.error(f'Argument {code(error.param.name)} jest nieprawidłowy')
@@ -101,6 +106,11 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
         elif isinstance(error, commands.BotMissingAnyRole):
             await ctx.error(f"Nie mam jednej z wymaganych ról {', '.join(error.missing_roles)}")
 
+        elif isinstance(error, errors.BadAttachmentCount):
+            await ctx.error(str(error))
+        elif isinstance(error, errors.BadAttachmentType):
+            await ctx.error(f'Nieprawidłowy typ załącznika {code(error.type)}')
+
     elif isinstance(error, commands.DisabledCommand):
         await ctx.error('Ta komenda jest obecnie wyłączona')
     elif isinstance(error, commands.CommandOnCooldown):
@@ -125,14 +135,6 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
         elif isinstance(original, httpx.TimeoutException):
             await ctx.error('Timeout (minął czas na połączenie z serwerem)')
 
-        elif isinstance(original, errors.BadNumber):
-            await ctx.error(f'{original.name} nie może być {original.problem} niż {original.value}')
-        elif isinstance(original, errors.BadAttachmentCount):
-            await ctx.error(str(original))
-        elif isinstance(original, errors.BadAttachmentType):
-            await ctx.error('Nieprawidłowy typ załącznika')
-        elif isinstance(original, errors.BadLanguage):
-            await ctx.error('Podano nieprawiłowy język')
         elif isinstance(original, errors.ImgurUploadError):
             await ctx.error(f'{original.code}: {clean_content(original.message, max_length=1024, max_lines=4)}')
         else:

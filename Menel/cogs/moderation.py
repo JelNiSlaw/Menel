@@ -7,7 +7,7 @@ from discord.ext import commands
 from ..utils.context import Context
 from ..utils.converters import ClampedNumber
 from ..utils.misc import chunk
-from ..utils.text_tools import plural
+from ..utils.text_tools import plural, plural_time
 from ..utils.views import Confirm
 
 
@@ -100,6 +100,30 @@ class Moderation(commands.Cog):
                 await asyncio.sleep(1)
 
         await ctx.embed(f'Usunięto {count_str}', no_reply=True, delete_after=5)
+
+    @commands.command('toggle-nsfw', aliases=['mark_nsfw', 'nsfw'])
+    @commands.has_permissions(manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True)
+    @commands.cooldown(1, 3, commands.BucketType.channel)
+    async def toggle_nsfw(self, ctx: Context, *, channel: Optional[discord.TextChannel] = None):
+        """Oznacza lub odznacza wybrany kanał jako NSFW"""
+        channel = channel or ctx.channel
+        before = channel.nsfw
+        await channel.edit(nsfw=not before)
+        await ctx.embed(f"Oznaczono {channel.mention} jako {'SFW' if before else 'NSFW'}")
+
+    @commands.command()
+    @commands.has_permissions(manage_channels=True)
+    @commands.bot_has_permissions(manage_channels=True)
+    @commands.cooldown(2, 5, commands.BucketType.channel)
+    async def slowmode(self, ctx: Context, channel: Optional[discord.TextChannel], *, time: ClampedNumber(0, 21600)):
+        """Ustawia czas slowmode kanału (wpisz 0, aby wyłączyć)"""
+        channel = channel or ctx.channel
+        await channel.edit(slowmode_delay=time)
+        if time > 0:
+            await ctx.embed(f'Ustawiono czas slowmode na {channel.mention} na {plural_time(time)}')
+        else:
+            await ctx.embed(f'Wyłączono slowmode na {channel.mention}')
 
 
 def setup(bot):

@@ -13,6 +13,11 @@ class BadNumber(commands.BadArgument):
     value: int
 
 
+@dataclass
+class BadLanguage(commands.BadArgument):
+    argument: str
+
+
 class BadAttachmentCount(commands.CheckFailure):
     def __init__(self, expected: Optional[int]):
         text = 'Ta komenda wymaga załączenia '
@@ -24,12 +29,9 @@ class BadAttachmentCount(commands.CheckFailure):
         super().__init__(text)
 
 
+@dataclass
 class BadAttachmentType(commands.CheckFailure):
-    pass
-
-
-class BadLanguage(commands.BadArgument):
-    pass
+    type: str
 
 
 @dataclass
