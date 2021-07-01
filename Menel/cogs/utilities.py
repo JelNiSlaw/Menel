@@ -171,7 +171,7 @@ class Utilities(commands.Cog):
             embed.title = LANGUAGES.get(src, src).title() + ' ➜ ' + LANGUAGES.get(dest, dest).title()
             embed.description = clean_content(
                 ' '.join(s['trans'] for s in json['sentences']),
-                max_length=2048,
+                max_length=4096,
                 max_lines=32
             )
 
@@ -213,7 +213,7 @@ class Utilities(commands.Cog):
             embed = discord.Embed(
                 title=clean_content(json['word'], False, False, max_length=256),
                 url=json['permalink'],
-                description=clean_content(remove_brackets(json['definition']), max_length=1024, max_lines=16),
+                description=clean_content(remove_brackets(json['definition']), max_length=2048, max_lines=16),
                 color=discord.Color.green()
             )
 
@@ -246,10 +246,10 @@ class Utilities(commands.Cog):
                 json = await r.json()
 
             if json['error']:
-                await ctx.error(clean_content(json['error'], max_length=1024, max_lines=4))
+                await ctx.error(clean_content(json['error'], max_length=2048, max_lines=4))
                 return
 
-            await ctx.send(clean_content(json['result'], max_length=2048, max_lines=8))
+            await ctx.send(clean_content(json['result'], max_length=4096, max_lines=8))
 
     @commands.command(aliases=['run'])
     @commands.cooldown(2, 5, commands.BucketType.user)

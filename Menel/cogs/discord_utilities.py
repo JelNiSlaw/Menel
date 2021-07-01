@@ -22,10 +22,10 @@ def oauth2_link(client_id: int, permissions: int) -> str:
     )
 
 
-async def send_json(ctx: Context, data: dict, filename_id: Union[int, str]) -> None:
+async def send_json(ctx: Context, data: dict, filename_id: str) -> None:
     text = json.dumps(data, ensure_ascii=False, indent=2)
-    if len(text) <= 1024:
-        await ctx.send(codeblock(text, 'json', escape=False))
+    if len(text) <= 4000:
+        await ctx.embed(codeblock(text, 'json', escape=False))
     else:
         await ctx.send(file=discord.File(io.BytesIO(text.encode()), f"{filename_id}.json"))
 

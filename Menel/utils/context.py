@@ -1,7 +1,7 @@
 import logging
 import sys
 import traceback
-from typing import Iterable, Optional, TYPE_CHECKING, Union
+from typing import Iterable, Optional, TYPE_CHECKING
 
 import discord
 import httpx
@@ -21,7 +21,6 @@ log = logging.getLogger(__name__)
 
 class Context(commands.Context):
     message: discord.Message
-    author: Union[discord.Member, discord.User]
     guild: Optional[discord.Guild]
     bot: 'Menel'
 

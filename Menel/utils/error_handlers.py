@@ -5,7 +5,7 @@ import httpx
 from discord.ext import commands
 from discord.ext.commands import BucketType
 
-from . import errors
+from . import embeds, errors
 from .context import Context
 from .formatting import code
 from .misc import clamp
@@ -75,7 +75,11 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
 
     elif isinstance(error, commands.CheckFailure):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.error(f'Nie posiadasz uprawnień: {str_permissions(error.missing_perms)}')
+            await ctx.send(embed=embeds.with_author(
+                ctx.author,
+                description=f'Nie posiadasz uprawnień: {str_permissions(error.missing_perms)}',
+                color=discord.Color.red(),
+            ).set_footer(text=f'{ctx.author.name} is not in the sudoers file. This incident will be reported.'))
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.error(f'Nie posiadam uprawnień: {str_permissions(error.missing_perms)}')
         elif isinstance(error, commands.NotOwner):
