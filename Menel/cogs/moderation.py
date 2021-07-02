@@ -4,6 +4,7 @@ from typing import Callable, Literal, Optional
 import discord
 from discord.ext import commands
 
+from ..bot import Menel
 from ..utils.context import Context
 from ..utils.converters import ClampedNumber
 from ..utils.misc import chunk
@@ -126,5 +127,5 @@ class Moderation(commands.Cog):
             await ctx.embed(f'Wyłączono slowmode na {channel.mention}')
 
 
-def setup(bot):
+def setup(bot: Menel):
     bot.add_cog(Moderation())

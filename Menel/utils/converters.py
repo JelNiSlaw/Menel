@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 import validators
 from discord.ext import commands
-from googletrans.constants import LANGCODES, LANGUAGES
 
+from ..resources.languages import LANGCODES, LANGUAGES
 from ..utils.context import Context
 from ..utils.errors import BadLanguage, BadNumber
 

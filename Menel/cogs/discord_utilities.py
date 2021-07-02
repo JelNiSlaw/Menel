@@ -9,6 +9,7 @@ from typing import Optional, Union
 import discord
 from discord.ext import commands
 
+from ..bot import Menel
 from ..utils import embeds
 from ..utils.context import Context
 from ..utils.formatting import bold, codeblock
@@ -31,7 +32,7 @@ async def send_json(ctx: Context, data: dict, filename_id: str) -> None:
 
 
 class DiscordUtilities(commands.Cog, name='Discord Utilities'):
-    def __init__(self, bot):
+    def __init__(self, bot: Menel):
         self.bot = bot
 
     @commands.command(aliases=['av'])
@@ -220,5 +221,5 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
             await self.bot.db.add_name_history(after.id, str(before))
 
 
-def setup(bot):
+def setup(bot: Menel):
     bot.add_cog(DiscordUtilities(bot))

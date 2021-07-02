@@ -16,6 +16,7 @@ from discord.ext import commands
 
 from .. import PATH
 from ..utils import embeds, imperial
+from ..bot import Menel
 from ..utils.checks import has_attachments
 from ..utils.context import Context
 
@@ -213,5 +214,5 @@ class Images(commands.Cog):
                 await ctx.send(file=discord.File(BytesIO(await r.read()), filename='image' + ext))
 
 
-def setup(bot):
+def setup(bot: Menel):
     bot.add_cog(Images())

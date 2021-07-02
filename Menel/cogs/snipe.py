@@ -3,6 +3,7 @@ import datetime
 import discord
 from discord.ext import commands
 
+from ..bot import Menel
 from ..utils import embeds
 from ..utils.context import Context
 from ..utils.text_tools import clean_content, human_size, plural
@@ -118,5 +119,5 @@ class Snipe(commands.Cog):
         snipes[message.channel.id] = message
 
 
-def setup(bot):
+def setup(bot: Menel):
     bot.add_cog(Snipe())

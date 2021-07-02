@@ -17,11 +17,12 @@ import pyppeteer.errors
 import unidecode
 import youtube_dl
 from discord.ext import commands
-from googletrans.constants import LANGUAGES
 from jishaku.codeblocks import codeblock_converter
 
 from .. import PATH
+from ..bot import Menel
 from ..resources import filesizes
+from ..resources.languages import LANGUAGES
 from ..utils import embeds, imgur
 from ..utils.checks import has_attachments
 from ..utils.context import Context
@@ -354,7 +355,7 @@ class Utilities(commands.Cog):
     @commands.command(aliases=['webshot'])
     @commands.cooldown(2, 20, commands.BucketType.user)
     @commands.max_concurrency(3, wait=True)
-    async def webimg(self, ctx: Context, fullpage: Optional[Literal['fullpage']], *, url: URL):
+    async def webimg(self, ctx: Context, fullpage: Optional[Literal['fullpage', 'full']], *, url: URL):
         """Robi i wysyła zrzut ekranu strony internetowej"""
         async with ctx.typing():
             try:
@@ -532,5 +533,5 @@ class Utilities(commands.Cog):
             await ctx.send('\n'.join(f'<{image}>' for image in images))
 
 
-def setup(bot):
+def setup(bot: Menel):
     bot.add_cog(Utilities())

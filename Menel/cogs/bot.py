@@ -3,6 +3,7 @@ from time import perf_counter
 import discord
 from discord.ext import commands
 
+from ..bot import Menel
 from ..utils import embeds
 from ..utils.context import Context
 from ..utils.formatting import code
@@ -78,5 +79,5 @@ class Bot(commands.Cog):
         await ctx.embed('Zresetowano prefixy')
 
 
-def setup(bot):
+def setup(bot: Menel):
     bot.add_cog(Bot())

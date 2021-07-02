@@ -6,19 +6,20 @@ from typing import Union
 
 import discord
 import httpx
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 from .utils import error_handlers
 from .utils.context import Context
 from .utils.database import Database
 from .utils.help_command import HelpCommand
-from .utils.text_tools import ctx_location, name_id, plural
+from .utils.text_tools import ctx_location, name_id
 
 
 log = logging.getLogger(__name__)
 
 
 class Menel(commands.AutoShardedBot):
+    db: Database
     on_command_error = staticmethod(error_handlers.command_error)
 
     def __init__(self):
@@ -44,9 +45,6 @@ class Menel(commands.AutoShardedBot):
 
         from . import cogs
         self.load_extensions(cogs)
-
-        self._last_status_data = None
-        self.status_loop.start()
 
     async def get_prefix(self, m: Union[discord.Message, Context]) -> list[str]:
         return self.prefix_base + await self.db.get_prefixes(m.guild)
@@ -133,26 +131,3 @@ class Menel(commands.AutoShardedBot):
         await super().close()
         await self.client.aclose()
         self.db.client.close()
-
-    @tasks.loop(seconds=20)
-    async def status_loop(self):
-        users = sum(g.member_count for g in self.guilds)
-        guilds = len(self.guilds)
-        latency = self.latency
-
-        status_data = users, guilds, latency
-
-        if status_data != self._last_status_data:
-            self._last_status_data = status_data
-            await self.change_presence(
-                activity=discord.Activity(
-                    name=f"{plural(users, 'użytkownik', 'użytkowników', 'użytkowników')} | "
-                         f"{plural(guilds, 'serwer', 'serwery', 'serwerów')} | "
-                         f"{latency * 1000:,.0f} ms",
-                    type=discord.ActivityType.watching
-                )
-            )
-
-    @status_loop.before_loop
-    async def before_status_loop(self):
-        await self.wait_until_ready()

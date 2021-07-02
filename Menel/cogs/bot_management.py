@@ -4,12 +4,13 @@ from typing import Literal
 import discord
 from discord.ext import commands
 
+from ..bot import Menel
 from ..utils.context import Context
 from ..utils.logs import LOGPATH
 
 
 class BotManagement(commands.Cog, name='Bot Management', command_attrs={'hidden': True}):
-    def __init__(self, bot):
+    def __init__(self, bot: Menel):
         self.bot = bot
 
     async def cog_check(self, ctx):
@@ -63,5 +64,5 @@ class BotManagement(commands.Cog, name='Bot Management', command_attrs={'hidden'
             await self.bot.http.delete_message(payload.channel_id, payload.message_id)
 
 
-def setup(bot):
+def setup(bot: Menel):
     bot.add_cog(BotManagement(bot))

@@ -63,7 +63,7 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
             elif isinstance(error, errors.BadLanguage):
                 await ctx.error(f'Podano nieprawiłowy język {user_input(error.argument)}')
             else:
-                await ctx.error(f'Nieprawidłowy argument ({clean_content(repr(error))})')
+                await ctx.error(f'Nieprawidłowy argument: {error}')
 
     elif isinstance(error, commands.BadUnionArgument):
         await ctx.error(f'Argument {code(error.param.name)} jest nieprawidłowy')
@@ -82,11 +82,11 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(embed=embeds.with_author(
                 ctx.author,
-                description=f'Nie posiadasz uprawnień: {str_permissions(error.missing_perms)}',
+                description=f'Nie posiadasz uprawnień: {str_permissions(error.missing_permissions)}',
                 color=discord.Color.red(),
             ).set_footer(text=f'{ctx.author.name} is not in the sudoers file. This incident will be reported.'))
         elif isinstance(error, commands.BotMissingPermissions):
-            await ctx.error(f'Nie posiadam uprawnień: {str_permissions(error.missing_perms)}')
+            await ctx.error(f'Nie posiadam uprawnień: {str_permissions(error.missing_permissions)}')
         elif isinstance(error, commands.NotOwner):
             return
         if isinstance(error, commands.NoPrivateMessage):

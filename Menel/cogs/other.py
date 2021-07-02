@@ -5,6 +5,7 @@ from typing import Optional
 import aiohttp
 from discord.ext import commands
 
+from ..bot import Menel
 from ..utils.context import Context
 from ..utils.converters import URL
 from ..utils.formatting import codeblock
@@ -117,5 +118,5 @@ class Other(commands.Cog):
         await ctx.ok_hand()
 
 
-def setup(bot):
+def setup(bot: Menel):
     bot.add_cog(Other())
