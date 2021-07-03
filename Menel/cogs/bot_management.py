@@ -44,7 +44,7 @@ class BotManagement(commands.Cog, name='Bot Management', command_attrs={'hidden'
         `here`: wysyła logi na obecnym kanale zamiast w wiadomości prywatnej
         """
         destination = ctx.channel if here is not None else ctx.author
-        await ctx.send(file=discord.File(LOGPATH, f'{time.time_ns()}.log'), channel=destination, reply=False)
+        await ctx.send(file=discord.File(LOGPATH, f'{time.time_ns()}.log'), channel=destination, no_reply=True)
 
     @commands.command(aliases=['block'])
     async def blacklist(self, ctx: Context, *users: discord.Object):

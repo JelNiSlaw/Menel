@@ -42,8 +42,9 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
             user = ctx.author
 
         embed = embeds.with_author(user)
-        embed.description = ' '.join(f'[{fmt}]({user.avatar.replace(4096, fmt)})' for fmt in ('png', 'webp', 'jpeg'))
-        embed.set_image(url=str(user.avatar.replace(4096)))
+        embed.description = ' '.join(
+            f'[{fmt}]({user.avatar.replace(size=4096, format=fmt)})' for fmt in ('png', 'webp', 'jpeg'))
+        embed.set_image(url=str(user.avatar.with_size(4096)))
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['name-history', 'namehistory', 'names', 'nick-history', 'nickhistory', 'nicks'])

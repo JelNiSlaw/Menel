@@ -50,7 +50,7 @@ class HelpCommand(dc_commands.HelpCommand):
                         f'Ustawione prefixy: {await ctx.get_prefixes_str()}',
             color=discord.Color.green()
         )
-        embed.set_thumbnail(url=ctx.bot.user.avatar.replace(4096))
+        embed.set_thumbnail(url=ctx.bot.user.avatar.with_size(4096))
 
         for category, commands in group_categories(sort_and_filter_commands(ctx.bot.commands)):
             embed.add_field(name=category, value=' '.join(code(c.name) for c in commands), inline=False)
