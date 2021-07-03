@@ -47,16 +47,15 @@ def plural(count: int, one: str, few: str, many: str) -> str:
 
 
 def plural_time(seconds: int, /) -> str:
+    assert seconds > 0
     output = []
-    while True:
+    while seconds > 0:
         if seconds >= 3600:
-            value = seconds // 3600
-            seconds -= value * 3600
-            output.append(plural(value, one='godzinę', few='godziny', many='godzin'))
+            output.append(plural(seconds // 3600, one='godzinę', few='godziny', many='godzin'))
+            seconds %= 3600
         elif seconds >= 60:
-            value = seconds // 60
-            seconds -= value * 60
-            output.append(plural(value, one='minutę', few='minuty', many='minut'))
+            output.append(plural(seconds // 60, one='minutę', few='minuty', many='minut'))
+            seconds %= 60
         else:
             output.append(plural(seconds, one='sekundę', few='sekundy', many='sekund'))
             break

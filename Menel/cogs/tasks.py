@@ -41,7 +41,7 @@ class Tasks(commands.Cog):
             )
         )
 
-    @tasks.loop(seconds=30)
+    @tasks.loop(minutes=5)
     async def message_count_loop(self):
         if self._message_count > 0:
             self._db_message_count = await self.bot.db.increase_message_count(self._message_count)
