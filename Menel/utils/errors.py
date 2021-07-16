@@ -24,11 +24,11 @@ class BadLanguage(commands.BadArgument):
 
 class BadAttachmentCount(commands.CheckFailure):
     def __init__(self, expected: Optional[int]):
-        text = 'Ta komenda wymaga załączenia '
+        text = "Ta komenda wymaga załączenia "
         if expected is not None:
-            text += plural(expected, 'pliku', 'plików', 'plików')
+            text += plural(expected, "pliku", "plików", "plików")
         else:
-            text += 'przynajmniej jednego pliku'
+            text += "przynajmniej jednego pliku"
 
         super().__init__(text)
 

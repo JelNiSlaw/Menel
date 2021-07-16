@@ -37,7 +37,7 @@ class Snipe(commands.Cog):
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, SnipeNotFound):
-            await ctx.error('Nie wykryłem żadnej wiadomości')
+            await ctx.error("Nie wykryłem żadnej wiadomości")
 
     @staticmethod
     def create_snipe_embed(ctx: Context, snipes: _SNIPES_TYPE) -> discord.Embed:
@@ -55,19 +55,19 @@ class Snipe(commands.Cog):
             message.author,
             description=message.content,
             color=color if color != discord.Color.default() else discord.Color.green(),
-            timestamp=time
+            timestamp=time,
         )
         embed.set_footer(text=str(message.id))
 
         if message.reference:
-            embed.add_field(name='Odpowiedź na', value=f'[link]({message.reference.jump_url})', inline=False)
+            embed.add_field(name="Odpowiedź na", value=f"[link]({message.reference.jump_url})", inline=False)
 
         if message.attachments:
             attachment_count = len(message.attachments)
             embed.add_field(
                 name=f"{plural(attachment_count, 'plik', 'pliki', 'plików')}",
-                value='\n'.join(f'[{escape(a.filename)}]({a.url}) {human_size(a.size)}' for a in message.attachments),
-                inline=False
+                value="\n".join(f"[{escape(a.filename)}]({a.url}) {human_size(a.size)}" for a in message.attachments),
+                inline=False,
             )
 
         return embed
@@ -77,17 +77,17 @@ class Snipe(commands.Cog):
         """Pokazuje ostatnią usuniętą wiadomość"""
         await ctx.send(embed=self.create_snipe_embed(ctx, self.delete_snipes))
 
-    @commands.command('edit-snipe', aliases=['editsnipe'])
+    @commands.command("edit-snipe", aliases=["editsnipe"])
     async def edit_snipe(self, ctx: Context):
         """Pokazuje ostatnią edytowaną wiadomość"""
         await ctx.send(embed=self.create_snipe_embed(ctx, self.edit_snipes))
 
-    @commands.command('bot-snipe', aliases=['botsnipe'])
+    @commands.command("bot-snipe", aliases=["botsnipe"])
     async def _bot_snipe(self, ctx: Context):
         """Pokazuje ostatnią usuniętą wiadomość bota lub webhooka"""
         await ctx.send(embed=self.create_snipe_embed(ctx, self.bot_delete_snipes))
 
-    @commands.command('bot-edit-snipe', aliases=['boteditsnipe'])
+    @commands.command("bot-edit-snipe", aliases=["boteditsnipe"])
     async def _bot_edit_snipe(self, ctx: Context):
         """Pokazuje ostatnią edytowaną wiadomość bota lub webhooka"""
         await ctx.send(embed=self.create_snipe_embed(ctx, self.bot_edit_snipes))

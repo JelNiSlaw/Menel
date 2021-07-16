@@ -14,7 +14,6 @@ from .utils.database import Database
 from .utils.help_command import HelpCommand
 from .utils.text_tools import ctx_location, name_id
 
-
 log = logging.getLogger(__name__)
 
 
@@ -35,7 +34,7 @@ class Menel(commands.AutoShardedBot):
             chunk_guilds_at_startup=True,
             status=discord.Status.online,
             allowed_mentions=discord.AllowedMentions.none(),
-            heartbeat_timeout=120
+            heartbeat_timeout=120,
         )
 
         self.global_rate_limit = commands.CooldownMapping.from_cooldown(5, 12, commands.BucketType.user)
@@ -44,6 +43,7 @@ class Menel(commands.AutoShardedBot):
         self.client = httpx.AsyncClient(timeout=httpx.Timeout(10))
 
         from . import cogs
+
         self.load_extensions(cogs)
 
     async def get_prefix(self, m: Union[discord.Message, Context]) -> list[str]:
@@ -65,23 +65,23 @@ class Menel(commands.AutoShardedBot):
             return
 
         if self.global_rate_limit.update_rate_limit(ctx.message, ctx.command_time.timestamp()):
-            log.warning(f'Rate limit exceeded by {ctx_location(ctx)}')
+            log.warning(f"Rate limit exceeded by {ctx_location(ctx)}")
             return
 
-        log.info(f'Running command {ctx.command.qualified_name} for {ctx_location(ctx)}')
+        log.info(f"Running command {ctx.command.qualified_name} for {ctx_location(ctx)}")
         await self.invoke(ctx)
 
     async def on_connect(self):
-        log.info(f'Connected as {name_id(self.user)}')
-        self.prefix_base = [f'<@{self.user.id}>', f'<@!{self.user.id}>']
+        log.info(f"Connected as {name_id(self.user)}")
+        self.prefix_base = [f"<@{self.user.id}>", f"<@!{self.user.id}>"]
 
     @staticmethod
     async def on_shard_connect(shard_id: int):
-        log.debug(f'Connected on shard {shard_id}')
+        log.debug(f"Connected on shard {shard_id}")
 
     @staticmethod
     async def on_ready():
-        log.info('Cache ready')
+        log.info("Cache ready")
 
     async def on_message(self, m: discord.Message):
         await self.process_commands(m)
@@ -100,20 +100,20 @@ class Menel(commands.AutoShardedBot):
 
     @staticmethod
     async def on_guild_join(guild: discord.Guild):
-        log.info(f'Joined server {guild}')
+        log.info(f"Joined server {guild}")
 
     @staticmethod
     async def on_guild_remove(guild: discord.Guild):
-        log.info(f'Left server {guild}')
+        log.info(f"Left server {guild}")
 
     @staticmethod
     def find_extensions(package: ModuleType) -> set:
         def unqualify(name: str) -> str:
-            return name.rsplit('.', maxsplit=1)[-1]
+            return name.rsplit(".", maxsplit=1)[-1]
 
-        exts = {'jishaku'}
-        for ext in pkgutil.walk_packages(package.__path__, package.__name__ + '.'):
-            if ext.ispkg or unqualify(ext.name).startswith('_'):
+        exts = {"jishaku"}
+        for ext in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
+            if ext.ispkg or unqualify(ext.name).startswith("_"):
                 continue
             exts.add(ext.name)
         return exts
@@ -127,7 +127,7 @@ class Menel(commands.AutoShardedBot):
             self.reload_extension(ext)
 
     async def close(self):
-        log.info('Stopping the bot')
+        log.info("Stopping the bot")
         await super().close()
         await self.client.aclose()
         self.db.client.close()

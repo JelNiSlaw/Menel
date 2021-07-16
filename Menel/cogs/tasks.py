@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 
 from Menel.utils.text_tools import plural
+
 from ..bot import Menel
 
 
@@ -28,15 +29,15 @@ class Tasks(commands.Cog):
         if status_data == self._last_status_data:
             return
 
-        users = plural(users, 'użytkownik', 'użytkowników', 'użytkowników')
-        guilds = plural(guilds, 'serwer', 'serwery', 'serwerów')
-        message_count = plural(message_count, 'wiadomość', 'wiadomości', 'wiadomości')
-        latency = f'{latency * 1000:,.0f} ms'
+        users = plural(users, "użytkownik", "użytkowników", "użytkowników")
+        guilds = plural(guilds, "serwer", "serwery", "serwerów")
+        message_count = plural(message_count, "wiadomość", "wiadomości", "wiadomości")
+        latency = f"{latency * 1000:,.0f} ms"
 
         self._last_status_data = status_data
         await self.bot.change_presence(
             activity=discord.Activity(
-                name=' | '.join((users, guilds, message_count, latency)), type=discord.ActivityType.watching
+                name=" | ".join((users, guilds, message_count, latency)), type=discord.ActivityType.watching
             )
         )
 

@@ -8,7 +8,7 @@ def clamp(val: int, minval: int, maxval: int):
 
 def chunk(iterator: Union[list, str], max_size: int) -> Iterable:
     for i in range(0, len(iterator), max_size):
-        yield iterator[i:i + max_size]
+        yield iterator[i : i + max_size]
 
 
 class Timer:

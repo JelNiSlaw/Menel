@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import sys
 import traceback
-from typing import Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import discord
 import httpx
@@ -12,7 +12,6 @@ from discord.ext import commands
 from ..utils import embeds
 from ..utils.markdown import code
 from ..utils.text_tools import escape, location
-
 
 if TYPE_CHECKING:
     from ..bot import Menel
@@ -34,45 +33,35 @@ class Context(commands.Context):
         self.command_time = self.message.edited_at or self.message.created_at
 
     async def send(
-            self,
-            *args,
-            channel: discord.abc.Messageable = None,
-            no_reply: bool = False,
-            **kwargs
+        self, *args, channel: discord.abc.Messageable = None, no_reply: bool = False, **kwargs
     ) -> discord.Message:
         if not channel:
             channel = self.channel
 
-        if 'reference' not in kwargs and not no_reply:
-            kwargs['reference'] = self.message.to_reference(fail_if_not_exists=False)
+        if "reference" not in kwargs and not no_reply:
+            kwargs["reference"] = self.message.to_reference(fail_if_not_exists=False)
 
-        log.debug(f'Sending a message to {location(self.author, channel, self.guild)}')
+        log.debug(f"Sending a message to {location(self.author, channel, self.guild)}")
         return await channel.send(*args, **kwargs)
 
     async def embed(self, content: str, *, embed_kwargs: dict = None, **message_kwargs) -> discord.Message:
         return await self.send(
             embed=embeds.with_author(
-                self.author,
-                description=content,
-                color=discord.Color.green(),
-                **(embed_kwargs or {})
+                self.author, description=content, color=discord.Color.green(), **(embed_kwargs or {})
             ),
-            **message_kwargs
+            **message_kwargs,
         )
 
     async def error(self, content: str, *, embed_kwargs: dict = None, **message_kwargs) -> discord.Message:
         return await self.send(
             embed=embeds.with_author(
-                self.author,
-                description=content,
-                color=discord.Color.red(),
-                **(embed_kwargs or {})
+                self.author, description=content, color=discord.Color.red(), **(embed_kwargs or {})
             ),
-            **message_kwargs
+            **message_kwargs,
         )
 
     async def ok_hand(self):
-        await self.send('\N{OK HAND SIGN}')
+        await self.send("\N{OK HAND SIGN}")
 
     async def react_or_send(self, emoji: str):
         permissions = self.my_permissions()
@@ -88,9 +77,7 @@ class Context(commands.Context):
         log.error(exception)
         traceback.print_exception(type(exception), exception, exception.__traceback__, file=sys.stderr)
 
-        embed = embeds.with_author(
-            self.author, title='Wystąpił błąd!', color=discord.Color.red()
-        )
+        embed = embeds.with_author(self.author, title="Wystąpił błąd!", color=discord.Color.red())
 
         embed.add_field(name=type(exception).__name__, value=escape(str(exception)), inline=False)
 
@@ -113,9 +100,9 @@ class Context(commands.Context):
     @property
     def clean_prefix(self):
         if self.prefix in self.bot.prefix_base:
-            return f'@{self.bot.user.name} '
+            return f"@{self.bot.user.name} "
         return self.prefix
 
-    async def get_prefixes_str(self, *, join: str = ' ') -> str:
+    async def get_prefixes_str(self, *, join: str = " ") -> str:
         prefixes = await self.db.get_prefixes(self.guild)
-        return join.join([code('@' + self.bot.user.name)] + list(map(code, prefixes)))
+        return join.join([code("@" + self.bot.user.name)] + list(map(code, prefixes)))

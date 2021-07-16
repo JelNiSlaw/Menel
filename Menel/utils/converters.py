@@ -20,9 +20,9 @@ class ClampedNumber(commands.Converter):
             raise commands.BadArgument()
 
         if argument < self.min_value:
-            raise BadNumber('Liczba', 'mniejsza', self.min_value)
+            raise BadNumber("Liczba", "mniejsza", self.min_value)
         if argument > self.max_value:
-            raise BadNumber('Liczba', 'większa', self.max_value)
+            raise BadNumber("Liczba", "większa", self.max_value)
 
         return argument
 
@@ -35,11 +35,11 @@ class ClampedNumber(commands.Converter):
 
 class URL(commands.Converter, str):
     async def convert(self, ctx: Context, argument: str) -> str:
-        if argument.startswith('<') and argument.endswith('>'):
+        if argument.startswith("<") and argument.endswith(">"):
             argument = argument[1:-1]
 
         if not validators.url(argument):
-            raise commands.BadArgument('nieprawidłowy adres URL')
+            raise commands.BadArgument("nieprawidłowy adres URL")
         else:
             return argument
 
@@ -47,7 +47,7 @@ class URL(commands.Converter, str):
 class LanguageConverter(commands.Converter, str):
     async def convert(self, ctx: Context, argument: str) -> str:
         argument = argument.lower()
-        if argument != 'auto' and argument not in LANGUAGES:
+        if argument != "auto" and argument not in LANGUAGES:
             if argument in LANGCODES:
                 argument = LANGCODES[argument]
             else:
