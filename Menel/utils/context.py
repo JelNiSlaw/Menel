@@ -1,15 +1,17 @@
+from __future__ import annotations
+
 import logging
 import sys
 import traceback
-from typing import Iterable, Optional, TYPE_CHECKING, Union
+from typing import Optional, TYPE_CHECKING, Union
 
 import discord
 import httpx
 from discord.ext import commands
 
 from ..utils import embeds
-from ..utils.formatting import code
-from ..utils.text_tools import clean_content, location
+from ..utils.markdown import code
+from ..utils.text_tools import escape, location
 
 
 if TYPE_CHECKING:
@@ -23,11 +25,11 @@ class Context(commands.Context):
     message: discord.Message
     guild: Optional[discord.Guild]
     author: Union[discord.Member, discord.abc.User]
-    bot: 'Menel'
+    bot: Menel
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.db: 'Database' = self.bot.db
+        self.db: Database = self.bot.db
         self.client: httpx.AsyncClient = self.bot.client
         self.command_time = self.message.edited_at or self.message.created_at
 
@@ -72,10 +74,6 @@ class Context(commands.Context):
     async def ok_hand(self):
         await self.send('\N{OK HAND SIGN}')
 
-    async def add_reactions(self, emojis: Iterable[str]) -> None:
-        for e in emojis:
-            await self.message.add_reaction(e)
-
     async def react_or_send(self, emoji: str):
         permissions = self.my_permissions()
         if permissions.add_reactions and permissions.read_message_history:
@@ -83,17 +81,18 @@ class Context(commands.Context):
         else:
             await self.send(emoji)
 
+    async def clean_mentions(self, text: str, /) -> str:
+        return await commands.clean_content(fix_channel_mentions=True, use_nicknames=False).convert(self, text)
+
     async def report_exception(self, exception: Exception) -> discord.Message:
         log.error(exception)
         traceback.print_exception(type(exception), exception, exception.__traceback__, file=sys.stderr)
 
         embed = embeds.with_author(
-            self.author,
-            title='Wystąpił błąd!',
-            color=discord.Color.red()
+            self.author, title='Wystąpił błąd!', color=discord.Color.red()
         )
 
-        embed.add_field(name=type(exception).__name__, value=clean_content(str(exception)), inline=False)
+        embed.add_field(name=type(exception).__name__, value=escape(str(exception)), inline=False)
 
         owner = self.guild.get_member(self.bot.owner_id) if self.guild else None
         if owner:

@@ -26,4 +26,7 @@ def code(text: Any) -> str:
 
 
 def codeblock(text: str, language: str = '', escape: bool = True) -> str:
-    return f'```{language}\n{text.replace("`", "​`") if escape else text}\n```'
+    if escape:
+        zwsp = '\N{ZERO WIDTH SPACE}'
+        text = text.replace('```', f'`{zwsp}`{zwsp}`')
+    return f'```{language}\n{text}\n```'

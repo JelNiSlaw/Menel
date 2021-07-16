@@ -2,9 +2,9 @@ import datetime
 from os import environ
 from typing import Optional
 
-import aiohttp
+import httpx
 
-from ..utils.text_tools import clean_content
+from ..utils.text_tools import limit_length
 
 
 class ImperialDocument:
@@ -28,20 +28,23 @@ class ImperialException(Exception):
 
 
 async def create_document(
-    text: str,
-    *,
-    longer_urls: bool = True,
-    language: str = 'plain_text',
-    image_embed: bool = False,
-    instant_delete: bool = False,
-    password: Optional[str] = None,
-    expiration: int = 1,
-    editor_array: Optional[list[str]] = None
+        text: str,
+        *,
+        short_urls: bool = False,
+        longer_urls: bool = False,
+        language: str = 'plain_text',
+        image_embed: bool = False,
+        instant_delete: bool = False,
+        password: str = None,
+        expiration: int = 1,
+        editor_array: list[str] = None
 ) -> ImperialDocument:
-    async with aiohttp.request(
-            'POST', 'https://imperialb.in/api/document',
+    async with httpx.AsyncClient() as client:
+        r = await client.post(
+            'https://imperialb.in/api/document',
             json={
-                'code': clean_content(text, False, False, max_length=128 * 1024),
+                'code': limit_length(text, max_length=128 * 1024),
+                'shortUrls': short_urls,
                 'longerUrls': longer_urls,
                 'language': language,
                 'imageEmbed': image_embed,
@@ -51,10 +54,9 @@ async def create_document(
                 'expiration': expiration,
                 'editorArray': editor_array
             },
-            headers={'Authorization': environ['IMPERIAL_TOKEN']},
-            timeout=aiohttp.ClientTimeout(total=20)
-    ) as r:
-        json = await r.json()
+            headers={'Authorization': environ['IMPERIAL_TOKEN']}, timeout=httpx.Timeout(20)
+        )
+        json = r.json()
 
     if not json['success']:
         raise ImperialException(json['message'])

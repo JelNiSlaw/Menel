@@ -119,8 +119,13 @@ class Database:
         return document['message_count']
 
     async def increase_message_count(self, amount: int) -> int:
-        document = await self.bot_config.find_one_and_update({'_id': 'stats'}, {'$inc': {'message_count': amount}},
-            projection={'message_count': True, '_id': False}, upsert=True, return_document=pymongo.ReturnDocument.AFTER)
+        document = await self.bot_config.find_one_and_update(
+            {'_id': 'stats'},
+            {'$inc': {'message_count': amount}},
+            projection={'message_count': True, '_id': False},
+            upsert=True,
+            return_document=pymongo.ReturnDocument.AFTER
+        )
         return document['message_count']
 
     # name history

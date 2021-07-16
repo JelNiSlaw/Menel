@@ -36,8 +36,7 @@ class Tasks(commands.Cog):
         self._last_status_data = status_data
         await self.bot.change_presence(
             activity=discord.Activity(
-                name=' | '.join((users, guilds, message_count, latency)),
-                type=discord.ActivityType.watching
+                name=' | '.join((users, guilds, message_count, latency)), type=discord.ActivityType.watching
             )
         )
 

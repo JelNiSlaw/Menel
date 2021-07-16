@@ -1,7 +1,7 @@
 import discord
 
-from .formatting import bold
-from .text_tools import clean_content
+from .markdown import bold
+from .text_tools import escape
 
 
 class Confirm(discord.ui.View):
@@ -13,7 +13,7 @@ class Confirm(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if interaction.user != self.user:
             await interaction.response.send_message(
-                f'Tylko {bold(clean_content(str(self.user)))} może używać tych przycisków', ephemeral=True
+                f'Tylko {bold(escape(str(self.user)))} może używać tych przycisków', ephemeral=True
             )
             return False
         return True

@@ -7,9 +7,9 @@ from discord.ext.commands import BucketType
 
 from . import embeds, errors
 from .context import Context
-from .formatting import code
+from .markdown import code
 from .misc import clamp
-from .text_tools import clean_content, plural_time, str_permissions, user_input
+from .text_tools import escape, limit_length, plural_time, str_permissions, user_input
 
 
 async def command_error(ctx: Context, error: commands.CommandError) -> None:
@@ -63,28 +63,32 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
             elif isinstance(error, errors.BadLanguage):
                 await ctx.error(f'Podano nieprawiłowy język {user_input(error.argument)}')
             else:
-                await ctx.error(f'Nieprawidłowy argument: {error}')
+                await ctx.error(f'Nie udało się przekonwertować argumentu ({escape(str(error))})')
 
-    elif isinstance(error, commands.BadUnionArgument):
-        await ctx.error(f'Argument {code(error.param.name)} jest nieprawidłowy')
-    elif isinstance(error, commands.BadLiteralArgument):
-        await ctx.error(f"Argument {code(error.param.name)} musi mieć wartość {' | '.join(map(code, error.literals))}")
+        elif isinstance(error, commands.BadUnionArgument):
+            await ctx.error(f'Argument {code(error.param.name)} jest nieprawidłowy')
+        elif isinstance(error, commands.BadLiteralArgument):
+            await ctx.error(
+                f"Argument {code(error.param.name)} musi mieć wartość {' | '.join(map(code, error.literals))}"
+            )
 
-    elif isinstance(error, commands.ArgumentParsingError):
-        if isinstance(error, commands.UnexpectedQuoteError):
-            await ctx.error(f'Nieoczekiwany cudzysłów {code(error.quote)}')
-        elif isinstance(error, commands.ExpectedClosingQuoteError):
-            await ctx.error(f'Brak cudzysłowu zamykającego {code(error.close_quote)}')
-        elif isinstance(error, commands.InvalidEndOfQuotedStringError):
-            await ctx.error(f'Nieoczekiwany znak {code(error.char)} po cudzysłowie zamykającym')
+        elif isinstance(error, commands.ArgumentParsingError):
+            if isinstance(error, commands.UnexpectedQuoteError):
+                await ctx.error(f'Nieoczekiwany cudzysłów {code(error.quote)}')
+            elif isinstance(error, commands.ExpectedClosingQuoteError):
+                await ctx.error(f'Brak cudzysłowu zamykającego {code(error.close_quote)}')
+            elif isinstance(error, commands.InvalidEndOfQuotedStringError):
+                await ctx.error(f'Nieoczekiwany znak {code(error.char)} po cudzysłowie zamykającym')
 
     elif isinstance(error, commands.CheckFailure):
         if isinstance(error, commands.MissingPermissions):
-            await ctx.send(embed=embeds.with_author(
-                ctx.author,
-                description=f'Nie posiadasz uprawnień: {str_permissions(error.missing_permissions)}',
-                color=discord.Color.red(),
-            ).set_footer(text=f'{ctx.author.name} is not in the sudoers file. This incident will be reported.'))
+            await ctx.send(
+                embed=embeds.with_author(
+                    ctx.author,
+                    description=f'Nie posiadasz uprawnień: {str_permissions(error.missing_permissions)}',
+                    color=discord.Color.red()
+                ).set_footer(text=f'{ctx.author.name} is not in the sudoers file. This incident will be reported.')
+            )
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.error(f'Nie posiadam uprawnień: {str_permissions(error.missing_permissions)}')
         elif isinstance(error, commands.NotOwner):
@@ -114,8 +118,10 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
     elif isinstance(error, commands.DisabledCommand):
         await ctx.error('Ta komenda jest obecnie wyłączona')
     elif isinstance(error, commands.CommandOnCooldown):
-        await ctx.error(f'Poczekaj jeszcze {plural_time(math.ceil(error.retry_after))}',
-            delete_after=clamp(error.retry_after, 2, 30))
+        await ctx.error(
+            f'Poczekaj jeszcze {plural_time(math.ceil(error.retry_after))}',
+            delete_after=clamp(error.retry_after, 2, 30)
+        )
     elif isinstance(error, commands.MaxConcurrencyReached):
         per = {
             BucketType.default: 'globalnie',
@@ -136,9 +142,7 @@ async def command_error(ctx: Context, error: commands.CommandError) -> None:
             await ctx.error('Timeout (minął czas na połączenie z serwerem)')
 
         elif isinstance(original, errors.ImgurUploadError):
-            await ctx.error(f'{original.code}: {clean_content(original.message, max_length=1024, max_lines=4)}')
+            message = escape(limit_length(original.message, max_length=1024, max_lines=4))
+            await ctx.error(f'{original.code}: {message}')
         else:
             await ctx.report_exception(original)
-
-    else:
-        await ctx.report_exception(error)

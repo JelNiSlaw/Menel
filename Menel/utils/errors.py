@@ -13,6 +13,10 @@ class BadNumber(commands.BadArgument):
     value: int
 
 
+class BadURL(commands.BadArgument):
+    pass
+
+
 @dataclass
 class BadLanguage(commands.BadArgument):
     argument: str

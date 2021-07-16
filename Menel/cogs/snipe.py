@@ -6,7 +6,7 @@ from discord.ext import commands
 from ..bot import Menel
 from ..utils import embeds
 from ..utils.context import Context
-from ..utils.text_tools import clean_content, human_size, plural
+from ..utils.text_tools import escape, human_size, plural
 
 
 class SnipeMessage:
@@ -66,9 +66,7 @@ class Snipe(commands.Cog):
             attachment_count = len(message.attachments)
             embed.add_field(
                 name=f"{plural(attachment_count, 'plik', 'pliki', 'plików')}",
-                value='\n'.join(
-                    f'[{clean_content(a.filename)}]({a.url}) {human_size(a.size)}' for a in message.attachments
-                ),
+                value='\n'.join(f'[{escape(a.filename)}]({a.url}) {human_size(a.size)}' for a in message.attachments),
                 inline=False
             )
 

@@ -1,22 +1,20 @@
 from os import environ
 
-import aiohttp
+import httpx
 
 from ..utils.errors import ImgurUploadError
 
 
-async def _upload(field_name: str, file: bytes) -> str:
-    form = aiohttp.FormData()
-    form.add_field(field_name, file)
+async def _upload(filename: str, file: bytes) -> str:
+    async with httpx.AsyncClient() as client:
+        r = await client.post(
+            'https://api.imgur.com/3/upload',
+            files={filename: file},
+            headers={'Authorization': f"Client-ID {environ['IMGUR_CLIENT_ID']}"}
+        )
+        json = r.json()
 
-    async with aiohttp.request(
-            'POST', 'https://api.imgur.com/3/upload', data=form,
-            headers={'Authorization': f"Client-ID {environ['IMGUR_CLIENT_ID']}"},
-            timeout=aiohttp.ClientTimeout(total=20)
-    ) as r:
-        json = await r.json()
-
-    if r.status == 200:
+    if r.status_code == 200:
         return json['data']['link']
     else:
         raise ImgurUploadError(json.get('status', 0), json['data'].get('error', 'Nieznany błąd serwera Imgur'))

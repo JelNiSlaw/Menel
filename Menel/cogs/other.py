@@ -1,15 +1,17 @@
+import io
 import random
 from os import environ
 from typing import Optional
 
-import aiohttp
+import discord
 from discord.ext import commands
 
 from ..bot import Menel
+from ..utils import markdown
 from ..utils.context import Context
 from ..utils.converters import URL
-from ..utils.formatting import codeblock
-from ..utils.text_tools import clean_content
+from ..utils.misc import chunk
+from ..utils.text_tools import escape
 
 
 class PxseuFlags(commands.FlagConverter, case_insensitive=True):
@@ -34,14 +36,12 @@ class Other(commands.Cog):
             await ctx.error('Taki dywan byłby za szeroki, kasztanie!')
             return
 
-        lines = []
-        for _ in range(length):
-            lines.append(f"┃{''.join(random.choice('╱╲') for _ in range(width))}┃")
+        lines = [f"┃{''.join(random.choice('╱╲') for _ in range(width))}┃" for _ in range(length)]
 
         line = '━' * width
         lines.insert(0, f'┏{line}┓')
         lines.append(f'┗{line}┛')
-        lines = codeblock('\n'.join(lines), escape=False)
+        lines = markdown.codeblock('\n'.join(lines), escape=False)
         await ctx.embed(f'Proszę, oto Twój darmowy dywan\n{lines}')
 
     @commands.command(aliases=['px', 'pikseu'], ignore_extra=False, hidden=True)
@@ -61,28 +61,18 @@ class Other(commands.Cog):
         else:
             url = None
 
-        async with aiohttp.request(
-                'POST', 'https://www.pxseu.com/api/v2/sendMessage',
-                json={
-                    'message': flags.message,
-                    'name': flags.name,
-                    'attachment': url,
-                    'user': ctx.author.id
-                },
-                headers={'Authorization': 'Bearer ' + environ['PXSEU_MESSAGE_TOKEN']},
-                timeout=aiohttp.ClientTimeout(total=10)
-        ) as r:
-            json = await r.json()
+        r = await ctx.client.post(
+            'https://api.pxseu.com/v2/sendMessage',
+            json={'message': flags.message, 'name': flags.name, 'attachment': url, 'user': ctx.author.id},
+            headers={'Authorization': 'Bearer ' + environ['PXSEU_MESSAGE_TOKEN']}
+        )
+        json = r.json()
+        message = escape(json['message'])
 
-        message = clean_content(json['message'])
-
-        if r.status == 200:
+        if r.status_code == 200:
             await ctx.embed(message)
         else:
-            if 'retry_after' in json:
-                message += f'\nTry again in {json["retry_after"]}s'
-
-            await ctx.error(f'{r.status}: {message}')
+            await ctx.error(f'{r.status_code}: {message}')
 
     @commands.command('lengthen-url', aliases=['lengthen'])
     async def lengthen_url(self, ctx: Context, *, url: URL):
@@ -92,18 +82,27 @@ class Other(commands.Cog):
             return
 
         with ctx.channel.typing():
-            async with aiohttp.request(
-                    'GET', f"https://api.{'a' * 56}.com/a",
-                    params={'url': url},
-                    timeout=aiohttp.ClientTimeout(total=10)
-            ) as r:
-                content = await r.text()
+            r = await ctx.client.get(f"https://api.{'a' * 56}.com/a", params={'url': url})
+            text = r.text
 
-            if content == 'INVALID_URL':
+            if text == 'INVALID_URL':
                 await ctx.error('Podano nieprawidłowy adres URL')
                 return
 
-        await ctx.send(content)
+        await ctx.send(text)
+
+    @commands.command(aliases=['str-rot', 'rot-str', 'rot'])
+    async def rotate(self, ctx: Context, n: Optional[int] = 1, *, text: str):
+        """Obraca bity w podanym tekście"""
+        bytes_ = ''.join(format(char, '0>8b') for char in bytearray(text, 'utf-8'))
+        # n %= int(math.copysign(len(bytes_), n))
+        bytes_ = bytes_[n:] + bytes_[:n]
+        text = ''.join(chr(int(c, 2)) for c in chunk(bytes_, 8))
+
+        if len(text) < 1024:
+            await ctx.send(escape(text))
+        else:
+            await ctx.send(file=discord.File(io.BytesIO(text.encode()), 'text.json'))
 
     @commands.command(aliases=['leave'])
     @commands.guild_only()

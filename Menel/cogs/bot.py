@@ -1,12 +1,17 @@
+from __future__ import annotations
+
 from time import perf_counter
+from typing import Optional, TYPE_CHECKING
 
 import discord
 from discord.ext import commands
 
-from ..bot import Menel
-from ..utils import embeds
+from ..utils import embeds, markdown
 from ..utils.context import Context
-from ..utils.formatting import code
+
+
+if TYPE_CHECKING:
+    from ..bot import Menel
 
 
 class Bot(commands.Cog):
@@ -20,10 +25,9 @@ class Bot(commands.Cog):
 
         embed = discord.Embed(
             description=f'Ogólne opóźnienie wiadomości: '
-                        f'{(message.created_at.timestamp() - ctx.message.created_at.timestamp()) * 1000:,.0f} ms\n'
+                        f'{(message.created_at.timestamp() - ctx.command_time.timestamp()) * 1000:,.0f} ms\n'
                         f'Czas wysyłania wiadomości: {(stop - start) * 1000:,.0f} ms\n'
-                        f'Opóźnienie WebSocket: {ctx.bot.latency * 1000:,.0f} ms',
-            color=discord.Color.green()
+                        f'Opóźnienie WebSocket: {ctx.bot.latency * 1000:,.0f} ms', color=discord.Color.green()
         )
 
         await message.edit(content=None, embed=embed)
@@ -36,7 +40,7 @@ class Bot(commands.Cog):
             embed=embeds.with_author(
                 ctx.author,
                 title='Prefixy na tym serwerze',
-                description=await ctx.get_prefixes_str(join='\n'),
+                description=await ctx.get_prefixes_str(),
                 color=discord.Color.green()
             )
         )
@@ -67,7 +71,7 @@ class Bot(commands.Cog):
                 return
 
         await ctx.db.set_prefixes(ctx.guild.id, prefixes)
-        await ctx.embed(f"Ustawiono prefixy: {' '.join(map(code, prefixes))}")
+        await ctx.embed(f"Ustawiono prefixy: {' '.join(map(markdown.code, prefixes))}")
 
     @prefix.command(name='reset')
     @commands.guild_only()

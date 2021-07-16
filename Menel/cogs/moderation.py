@@ -1,5 +1,5 @@
 import asyncio
-from typing import Callable, Literal, Optional
+from typing import Callable, Literal, Optional, Union
 
 import discord
 from discord.ext import commands
@@ -62,18 +62,19 @@ class Moderation(commands.Cog):
     @commands.max_concurrency(1, commands.BucketType.channel, wait=True)
     async def purge(self, ctx: Context, limit: ClampedNumber(1, 1000), *, filters: PurgeFilters):
         """Usuwa określoną ilość wiadomośi spełniających wszystkie filtry"""
-        checks = checks_from_filters(filters)
-        to_delete = []
-        async for m in ctx.channel.history(
-                limit=limit * 5,
-                before=filters.before,
-                after=filters.after,
-                oldest_first=False
-        ):
-            if all(check(m) for check in checks):
-                to_delete.append(m)
-                if len(to_delete) > limit:
-                    break
+        async with ctx.typing():
+            checks = checks_from_filters(filters)
+            to_delete = []
+            async for m in ctx.channel.history(
+                    limit=limit * 5,
+                    before=filters.before,
+                    after=filters.after,
+                    oldest_first=False
+            ):
+                if all(check(m) for check in checks):
+                    to_delete.append(m)
+                    if len(to_delete) > limit:
+                        break
 
         if not to_delete:
             await ctx.error('Nie znaleziono żadnych wiadomości pasującej do filtrów')
@@ -85,15 +86,13 @@ class Moderation(commands.Cog):
 
         count_str = plural(len(to_delete) - 1, 'wiadomość', 'wiadomości', 'wiadomości')
 
-        if len(to_delete) > 25:
-            view = Confirm(ctx.author)
-            m = await ctx.embed(f'Na pewno chcesz usunąć {count_str}?', view=view)
-            await view.wait()
-            await m.delete()
-
-            if view.result is not True:
-                await ctx.embed('Anulowano usuwanie wiadomości', no_reply=True)
-                return
+        view = Confirm(ctx.author)
+        m = await ctx.embed(f'Na pewno chcesz usunąć {count_str}?', view=view)
+        await view.wait()
+        await m.delete()
+        if view.result is not True:
+            await ctx.embed('Anulowano usuwanie wiadomości', no_reply=True)
+            return
 
         for messages in chunk(to_delete, 100):
             await ctx.channel.delete_messages(messages)
@@ -106,7 +105,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
     @commands.cooldown(1, 3, commands.BucketType.channel)
-    async def toggle_nsfw(self, ctx: Context, *, channel: Optional[discord.TextChannel] = None):
+    async def toggle_nsfw(self, ctx: Context, *, channel: discord.TextChannel = None):
         """Oznacza lub odznacza wybrany kanał jako NSFW"""
         channel = channel or ctx.channel
         before = channel.nsfw
@@ -117,11 +116,17 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     @commands.bot_has_permissions(manage_channels=True)
     @commands.cooldown(2, 5, commands.BucketType.channel)
-    async def slowmode(self, ctx: Context, channel: Optional[discord.TextChannel], *, time: ClampedNumber(0, 21600)):
-        """Ustawia czas slowmode kanału (wpisz 0, aby wyłączyć)"""
+    async def slowmode(
+            self,
+            ctx: Context,
+            channel: Optional[discord.TextChannel],
+            *,
+            time: Union[Literal[False], ClampedNumber(1, 21600)]
+    ):
+        """Ustawia czas slowmode kanału"""
         channel = channel or ctx.channel
         await channel.edit(slowmode_delay=time)
-        if time > 0:
+        if time is not False:
             await ctx.embed(f'Ustawiono czas slowmode na {channel.mention} na {plural_time(time)}')
         else:
             await ctx.embed(f'Wyłączono slowmode na {channel.mention}')

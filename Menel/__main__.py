@@ -12,11 +12,8 @@ from .utils import logs
 
 def main():
     load_dotenv(PATH.parent / '.env', override=True)
-
     logs.setup()
-
     log = logging.getLogger(__name__)
-
     log.info(f'Python {platform.python_version()}')
     log.info(f'discord.py {discord.__version__}')
 

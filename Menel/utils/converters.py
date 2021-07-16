@@ -26,6 +26,12 @@ class ClampedNumber(commands.Converter):
 
         return argument
 
+    def __call__(self):
+        pass
+
+    def __hash__(self):
+        return hash((self.min_value, self.max_value))
+
 
 class URL(commands.Converter, str):
     async def convert(self, ctx: Context, argument: str) -> str:

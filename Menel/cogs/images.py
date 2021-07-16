@@ -1,6 +1,5 @@
 import asyncio
 import imghdr
-import mimetypes
 import re
 import textwrap
 from io import BytesIO
@@ -9,14 +8,14 @@ from os import environ
 from time import perf_counter
 from typing import Literal, Optional
 
-import aiohttp
 import discord
-from PIL import Image, ImageDraw, ImageFont
+import httpx
 from discord.ext import commands
+from PIL import Image, ImageDraw, ImageFont
 
 from .. import PATH
-from ..utils import embeds, imperial
 from ..bot import Menel
+from ..utils import imperial
 from ..utils.checks import has_attachments
 from ..utils.context import Context
 
@@ -95,10 +94,10 @@ class Images(commands.Cog):
     @commands.max_concurrency(1, commands.BucketType.user)
     @commands.max_concurrency(3)
     async def asciiart(
-        self,
-        ctx: Context,
-        style: Optional[Literal['blocks', 'standard', 'minimal']] = 'blocks',
-        invert: Optional[Literal['invert', 'inv', 'inverted']] = False
+            self,
+            ctx: Context,
+            style: Optional[Literal['blocks', 'standard', 'minimal']] = 'blocks',
+            invert: Literal['invert', 'inv', 'inverted'] = False
     ):
         """
         Generuje ASCII art z załączonego zdjęcia
@@ -116,62 +115,46 @@ class Images(commands.Cog):
             return
 
         image = await asyncio.to_thread(image_to_ascii, image, ASCII_STYLES[style], invert is not None)
-        document = await imperial.create_document(image, expiration=14)
+        document = await imperial.create_document(image, short_urls=True, expiration=14)
         await ctx.send(document.raw_link)
 
     @commands.command(aliases=['burning'])
     async def cooltext(self, ctx: Context, *, text: str):
         """Generuje palący się tekst na stronie cooltext.com"""
         async with ctx.channel.typing():
-            async with aiohttp.request(
-                    'POST', 'https://cooltext.com/PostChange',
-                    data={
-                        'LogoID': 4,
-                        'Text': text,
-                        'FontSize': 70,
-                        'Color1_color': '#FF0000',
-                        'Integer1': 15,
-                        'Boolean1': 'on',
-                        'Integer13': 'on',
-                        'Integer12': 'on',
-                        'BackgroundColor_color': '#000000'
-                    },
-                    timeout=aiohttp.ClientTimeout(total=20)
-            ) as r:
-                file_url = (await r.json())['renderLocation']
+            r = await ctx.client.post(
+                'https://cooltext.com/PostChange', data={
+                    'LogoID': 4,
+                    'Text': text,
+                    'FontSize': 70,
+                    'Color1_color': '#FF0000',
+                    'Integer1': 15,
+                    'Boolean1': 'on',
+                    'Integer13': 'on',
+                    'Integer12': 'on',
+                    'BackgroundColor_color': '#000000'
+                }
+            )
 
-            connector = aiohttp.TCPConnector(verify_ssl=False)
+            async with httpx.AsyncClient(verify=False) as client:
+                r = await client.get(r.json()['renderLocation'])
 
-            async with aiohttp.request(
-                    'GET', file_url,
-                    connector=connector,
-                    timeout=aiohttp.ClientTimeout(total=10)
-            ) as r:
-                file = await r.read()
-
-            await connector.close()
-
-            embed = embeds.with_author(ctx.author, color=discord.Color.orange())
-            embed.set_image(url='attachment://burning.gif')
-
-        await ctx.send(embed=embed, file=discord.File(BytesIO(file), 'burning.gif'))
+        await ctx.send(file=discord.File(BytesIO(r.read()), 'burning.gif'))
 
     @commands.command(aliases=['jesus', 'jestsus'])
     @commands.cooldown(2, 10, commands.BucketType.user)
     async def jezus(self, ctx: Context):
         """Wysyła losowe zdjęcie Jezusa"""
         async with ctx.channel.typing():
-            async with aiohttp.request(
-                    'GET', 'https://obrazium.com/v1/jesus',
-                    headers={'Authorization': environ['OBRAZIUM_TOKEN']},
-                    timeout=aiohttp.ClientTimeout(total=10)
-            ) as r:
-                if r.status == 200:
-                    file = BytesIO(await r.read())
-                    ext = imghdr.what(file) or 'jpeg'
-                    await ctx.send(file=discord.File(file, filename='jezus.' + ext))
-                else:
-                    await ctx.error('Nie działa')
+            r = await ctx.client.get(
+                'https://obrazium.com/v1/jesus', headers={'Authorization': environ['OBRAZIUM_TOKEN']}
+            )
+            if r.status_code == 200:
+                file = BytesIO(r.read())
+                ext = imghdr.what(file) or 'jpeg'
+                await ctx.send(file=discord.File(file, filename='jezus.' + ext))
+            else:
+                await ctx.error('Nie działa')
 
     @commands.command()
     @has_attachments(1, ('text/',))
@@ -206,12 +189,8 @@ class Images(commands.Cog):
     async def tpdne(self, ctx: Context):
         """Pobiera wygenerowaną twarz z thispersondoesnotexist.com"""
         async with ctx.channel.typing():
-            async with aiohttp.request(
-                    'GET', 'https://thispersondoesnotexist.com/image',
-                    timeout=aiohttp.ClientTimeout(total=10)
-            ) as r:
-                ext = mimetypes.guess_extension(r.content_type, strict=False) or '.jpg'
-                await ctx.send(file=discord.File(BytesIO(await r.read()), filename='image' + ext))
+            r = await ctx.client.get('https://thispersondoesnotexist.com/image')
+        await ctx.send(file=discord.File(BytesIO(r.read()), filename='person.jpeg'))
 
 
 def setup(bot: Menel):

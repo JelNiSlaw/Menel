@@ -6,7 +6,7 @@ from discord.ext import commands as dc_commands
 
 from ..utils import embeds
 from ..utils.context import Context
-from ..utils.formatting import code, codeblock
+from ..utils.markdown import code, codeblock
 from ..utils.text_tools import user_input
 
 
@@ -69,10 +69,7 @@ class HelpCommand(dc_commands.HelpCommand):
 
         await ctx.send(
             embed=embeds.with_author(
-                ctx.author,
-                title=cog.qualified_name,
-                description='\n'.join(commands_text),
-                color=discord.Color.green()
+                ctx.author, title=cog.qualified_name, description='\n'.join(commands_text), color=discord.Color.green()
             )
         )
 
@@ -104,11 +101,8 @@ class HelpCommand(dc_commands.HelpCommand):
             ctx.author,
             title=command.qualified_name,
             description='\n'.join(
-                (
-                    command.help,
-                    codeblock(f'{ctx.clean_prefix}{command.qualified_name} {command.signature}'),
-                    'Posiadasz wymagane uprawnienia' if can_run else 'Nie posiadasz wymaganych uprawnień'
-                )
+                (command.help, codeblock(f'{ctx.clean_prefix}{command.qualified_name} {command.signature}'),
+                'Posiadasz wymagane uprawnienia' if can_run else 'Nie posiadasz wymaganych uprawnień')
             ),
             color=discord.Color.green()
         )

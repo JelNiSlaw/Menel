@@ -10,11 +10,10 @@ import discord
 from discord.ext import commands
 
 from ..bot import Menel
-from ..utils import embeds
+from ..utils import embeds, markdown
 from ..utils.context import Context
-from ..utils.formatting import bold, codeblock
 from ..utils.misc import Timer
-from ..utils.text_tools import clean_content, user_input
+from ..utils.text_tools import escape, user_input
 
 
 def oauth2_link(client_id: int, permissions: int) -> str:
@@ -26,7 +25,7 @@ def oauth2_link(client_id: int, permissions: int) -> str:
 async def send_json(ctx: Context, data: dict, filename_id: str) -> None:
     text = json.dumps(data, ensure_ascii=False, indent=2)
     if len(text) <= 4000:
-        await ctx.embed(codeblock(text, 'json', escape=False))
+        await ctx.embed(markdown.codeblock(text, 'json', escape=False))
     else:
         await ctx.send(file=discord.File(io.BytesIO(text.encode()), f"{filename_id}.json"))
 
@@ -36,20 +35,22 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
         self.bot = bot
 
     @commands.command(aliases=['av'])
-    async def avatar(self, ctx: Context, user: Optional[discord.User]):
+    async def avatar(self, ctx: Context, *, user: discord.User = None):
         """Wysyła avatar użytkownika"""
-        if not user:
+        if user is None:
             user = ctx.author
 
         embed = embeds.with_author(user)
         embed.description = ' '.join(
-            f'[{fmt}]({user.avatar.replace(size=4096, format=fmt)})' for fmt in ('png', 'webp', 'jpeg'))
+            f'[{fmt}]({user.avatar.replace(size=4096, format=fmt)})' for fmt in ('png', 'webp', 'jpeg')
+        )
         embed.set_image(url=str(user.avatar.with_size(4096)))
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['name-history', 'namehistory', 'names', 'nick-history', 'nickhistory', 'nicks'])
-    async def name_history(self, ctx: Context, page: Optional[int] = 1, *, user: discord.User):
+    @commands.command('name-history', aliases=['namehistory', 'names', 'nick-history', 'nickhistory', 'nicks'])
+    async def name_history(self, ctx: Context, user: discord.User = None, *, page: Optional[int] = 1):
         """Pokazuje historię nazw wybranego użytkownika"""
+        user = user or ctx.author
         if page <= 0:
             await ctx.error('Numer strony musi być dodatni')
             return
@@ -65,7 +66,7 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
             return
 
         names = names[::-1][(page - 1) * 16:page * 16]
-        embed = embeds.with_author(user, description='\n'.join(clean_content(name) for name in names))
+        embed = embeds.with_author(user, description='\n'.join(escape(name) for name in names))
         embed.set_footer(text=f'Strona {page} z {pages}')
         await ctx.send(embed=embed)
 
@@ -77,11 +78,11 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
         try:
             ban = await ctx.guild.fetch_ban(user)
         except discord.NotFound:
-            await ctx.error(f'{clean_content(str(user))} nie jest zbanowany na tym serwerze')
+            await ctx.error(f'{escape(str(user))} nie jest zbanowany na tym serwerze')
             return
 
         embed = embeds.with_author(ban.user)
-        embed.add_field(name='Powód bana', value=clean_content(ban.reason), inline=False)
+        embed.add_field(name='Powód bana', value=escape(ban.reason), inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['oauth2', 'oauth'])
@@ -107,9 +108,9 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
                 if not bot.bot:
                     await ctx.error(f'{user_input(str(bot))} nie jest botem')
                     return
-                links.append(f'[Link zaproszenia {bold(clean_content(bot.name))}]({oauth2_link(bot.id, 0)})')
+                links.append(f'[Link zaproszenia {markdown.bold(escape(bot.name))}]({oauth2_link(bot.id, 0)})')
             else:
-                links.append(f'[Link zaproszenia {bold(bot.id)}]({oauth2_link(bot.id, 0)})')
+                links.append(f'[Link zaproszenia {markdown.bold(bot.id)}]({oauth2_link(bot.id, 0)})')
 
         if len(bots) > 8:
             links.append('…')
@@ -139,8 +140,10 @@ class DiscordUtilities(commands.Cog, name='Discord Utilities'):
                         name_counter[(emoji.name, emoji.animated)] += 1
                         zip_file.writestr(name, data)
             file.seek(0)
-        await ctx.send(f'Pobrano w {download_timer.time * 1000:.0f} ms, spakowano w {zip_timer.time * 1000:.0f} ms',
-            file=discord.File(file, f'emojis_{ctx.guild.id}.zip'))
+        await ctx.send(
+            f'Pobrano w {download_timer.time * 1000:.0f} ms, spakowano w {zip_timer.time * 1000:.0f} ms',
+            file=discord.File(file, f'emojis_{ctx.guild.id}.zip')
+        )
 
     @commands.group(aliases=['json'], invoke_without_command=True)
     async def raw(self, ctx: Context):
