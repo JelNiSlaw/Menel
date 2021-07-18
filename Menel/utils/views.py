@@ -5,7 +5,7 @@ from .text_tools import escape
 
 
 class Confirm(discord.ui.View):
-    def __init__(self, user: discord.User):
+    def __init__(self, user: discord.abc.User):
         super().__init__(timeout=10)
         self.user = user
         self.result = None

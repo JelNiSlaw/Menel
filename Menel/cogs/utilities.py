@@ -117,10 +117,10 @@ class Utilities(commands.Cog):
                     "q": text,  # query
                     "client": "gtx",  # Google Translate Extension
                     "dj": 1,  # what?
-                    "dt": "t",  # what is this?
+                    "dt": "t",  # ok.
                 },
             )
-            json = await r.json()
+            json = r.json()
 
             if "sentences" not in json:
                 await ctx.error("Tłumacz Google nie zwrócił tłumaczenia")

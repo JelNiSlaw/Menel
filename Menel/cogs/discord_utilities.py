@@ -48,7 +48,7 @@ class DiscordUtilities(commands.Cog, name="Discord Utilities"):
         await ctx.send(embed=embed)
 
     @commands.command("name-history", aliases=["namehistory", "names", "nick-history", "nickhistory", "nicks"])
-    async def name_history(self, ctx: Context, user: discord.User = None, *, page: Optional[int] = 1):
+    async def name_history(self, ctx: Context, user: discord.User = None, *, page: int = 1):
         """Pokazuje historię nazw wybranego użytkownika"""
         user = user or ctx.author
         if page <= 0:
