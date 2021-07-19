@@ -58,9 +58,9 @@ class BotManagement(commands.Cog, name="Bot Management", command_attrs={"hidden"
         await ctx.db.remove_blacklist(*(user.id for user in users))
         await ctx.ok_hand()
 
+    @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
-        wastebasket = "\N{WASTEBASKET}\N{VARIATION SELECTOR-16}"
-        if await self.bot.is_owner(discord.Object(payload.user_id)) and payload.emoji.name == wastebasket:
+        if "\N{WASTEBASKET}" in payload.emoji.name and await self.bot.is_owner(discord.Object(payload.user_id)):
             await self.bot.http.delete_message(payload.channel_id, payload.message_id)
 
 
