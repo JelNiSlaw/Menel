@@ -12,9 +12,10 @@ from .misc import clamp
 from .text_tools import escape, limit_length, plural_time, str_permissions, user_input
 
 
-async def command_error(ctx: Context, error: commands.CommandError) -> None:
-    # sourcery no-metrics
-    if isinstance(error, commands.CommandNotFound):
+async def command_error(ctx: Context, error: commands.CommandError) -> None:  # sourcery no-metrics
+    if isinstance(error, errors.SendError):
+        await ctx.error(str(error))
+    elif isinstance(error, commands.CommandNotFound):
         return
     elif isinstance(error, commands.UserInputError):
         if isinstance(error, commands.TooManyArguments):

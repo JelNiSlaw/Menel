@@ -106,13 +106,22 @@ class Menel(commands.AutoShardedBot):
     async def on_guild_remove(guild: discord.Guild):
         log.info(f"Left server {guild}")
 
+    async def get_or_fetch_channel(
+        self, id: int, /
+    ) -> Union[discord.abc.GuildChannel, discord.abc.PrivateChannel, discord.Thread]:
+        return self.get_channel(id) or await self.fetch_channel(id)
+
+    async def fetch_message(self, channel_id: int, message_id: int, /) -> discord.Message:
+        channel = await self.get_or_fetch_channel(channel_id)
+        return await channel.fetch_message(message_id)  # type: ignore
+
     @staticmethod
     def find_extensions(package: ModuleType) -> set:
         def unqualify(name: str) -> str:
             return name.rsplit(".", maxsplit=1)[-1]
 
         exts = {"jishaku"}
-        for ext in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
+        for ext in pkgutil.walk_packages(package.__path__, package.__name__ + "."):  # type: ignore
             if ext.ispkg or unqualify(ext.name).startswith("_"):
                 continue
             exts.add(ext.name)

@@ -6,6 +6,10 @@ from discord.ext import commands
 from ..utils.text_tools import plural
 
 
+class SendError(commands.CommandError):
+    pass
+
+
 @dataclass
 class BadNumber(commands.BadArgument):
     name: str

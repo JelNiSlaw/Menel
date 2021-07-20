@@ -27,6 +27,8 @@ from ..utils import embeds, imgur, markdown
 from ..utils.checks import has_attachments
 from ..utils.context import Context
 from ..utils.converters import URL, LanguageConverter
+from ..utils.errors import SendError
+from ..utils.misc import get_image_url_from_message_or_reply
 from ..utils.text_tools import escape, escape_str, limit_length, plural
 
 AUTO = "auto"
@@ -232,7 +234,7 @@ class Utilities(commands.Cog):
             embed = discord.Embed(
                 description=("\n".join(output) if output else "Twój kod nic nie wypisał.")
                 + f'\n{json["language"]} {json["version"]}\n'
-                f"Powered by [Piston](https://github.com/engineer-man/piston).",
+                f"Powered by [Piston](https://github.com/engineer-man/piston)",
                 color=discord.Color.green() if not json["stderr"].strip() else discord.Color.red(),
             )
 
@@ -332,7 +334,7 @@ class Utilities(commands.Cog):
                 await asyncio.sleep(2)
 
                 try:
-                    screenshot = await page.screenshot(type="png", fullPage=fullpage is not None, encoding="binary")
+                    screenshot: bytes = await page.screenshot(type="png", fullPage=fullpage is not None, encoding="binary")  # type: ignore
                 except pyppeteer.errors.NetworkError as e:
                     await ctx.error(str(e))
                 else:
@@ -349,6 +351,54 @@ class Utilities(commands.Cog):
             finally:
                 await browser.close()
 
+    @commands.command(aliases=["sauce", "souce", "sn"])
+    @commands.is_nsfw()
+    @commands.cooldown(3, 20, commands.BucketType.user)
+    @commands.cooldown(6, 30)  # API rate limit
+    async def saucenao(self, ctx: Context, *, art_url: URL = None):
+        """Znajduje źródło obrazka używając saucenao.com API"""
+        url = art_url or await get_image_url_from_message_or_reply(ctx)
+        if url is None:
+            raise SendError("Podaj URL obrazka, załącz plik lub odpowiedz na wiadomość z załącznikiem")
+
+        async with ctx.typing():
+            r = await ctx.client.get(
+                "https://saucenao.com/search.php",
+                params={"url": url, "output_type": 2, "numres": 8, "api_key": os.environ["SAUCENAO_KEY"]},
+            )
+            json = r.json()
+
+        header = json["header"]
+
+        if header["status"] != 0:
+            raise SendError(f'{header["status"]}: {header["message"]}')
+
+        minimum_similarity: float = header["minimum_similarity"]
+
+        texts = []
+        for result in json["results"]:
+            header = result["header"]
+            data = result["data"]
+            similarity = float(header["similarity"])
+            if similarity < minimum_similarity:
+                continue
+            if "ext_urls" not in data:
+                continue
+            text = [f'**{similarity / 100:.0%}** {escape(header["index_name"])}']
+            text.extend(data["ext_urls"])
+            if "source" in data:
+                text.append(f'Source: {data["source"]}')
+            texts.append("\n".join(text))
+
+        if not texts:
+            raise SendError("Nie znaleziono źródła podanego obrazka")
+
+        await ctx.send(
+            embed=embeds.with_author(ctx.author, description="\n\n".join(texts)).set_footer(
+                text="Powered by saucenao.com"
+            )
+        )
+
     @commands.command("unshorten-url", aliases=["unshorten", "unshort"])
     async def unshorten_url(self, ctx: Context, *, url: URL):
         """Pokazuje przekierowania skróconego linku"""
@@ -356,18 +406,16 @@ class Utilities(commands.Cog):
         shortened = False
         async with ctx.typing():
             while True:
-                async with aiohttp.request(
-                    "HEAD", url, allow_redirects=False, timeout=aiohttp.ClientTimeout(total=5)
-                ) as r:
-                    urls.append(str(r.real_url))
+                r = await ctx.client.head(url, allow_redirects=False)
+                urls.append(str(r.url))
 
-                    if "Location" not in r.headers:
-                        break
+                if "Location" not in r.headers:
+                    break
 
-                    url = r.headers["Location"]
-                    if len(urls) >= 16 or url in urls:
-                        shortened = True
-                        break
+                url = r.headers["Location"]
+                if len(urls) >= 16 or url in urls:
+                    shortened = True
+                    break
 
         if len(urls) <= 1:
             await ctx.error("Ten link nie jest skrócony")
