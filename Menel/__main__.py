@@ -3,6 +3,7 @@ import platform
 from os import environ
 
 import discord
+from discord.http import Route
 from dotenv import load_dotenv
 
 from . import PATH
@@ -14,6 +15,9 @@ def main():
     load_dotenv(PATH.parent / ".env", override=True)
     logs.setup()
     log = logging.getLogger(__name__)
+
+    Route.BASE = Route.BASE.replace("//discord.com/", "//canary.discord.com/")
+
     log.info(f"Python {platform.python_version()}")
     log.info(f"discord.py {discord.__version__}")
 
