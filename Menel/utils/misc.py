@@ -20,8 +20,13 @@ def get_image_url_from_message(message: discord.Message) -> Optional[str]:
     if attachments := message.attachments:
         return attachments[0].url
 
-    elif (embeds := message.embeds) and (embed := discord.utils.get(embeds, type="image")):
-        return embed.url  # type: ignore
+    embeds = message.embeds
+    if embeds:
+        if embed := discord.utils.get(embeds, type="image"):
+            return embed.url  # type: ignore
+
+        if embed := discord.utils.find(lambda e: e.image.url, embeds):
+            return embed.image.url  # type: ignore
 
 
 async def get_image_url_from_message_or_reply(ctx: Context) -> Optional[str]:
