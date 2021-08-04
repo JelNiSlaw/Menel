@@ -80,12 +80,12 @@ class Other(commands.Cog):
     @commands.cooldown(1, 30, commands.BucketType.channel)
     @commands.cooldown(2, 20, commands.BucketType.user)
     async def komentarz_synoptyka(self, ctx: Context):
-        with ctx.channel.typing():
+        async with ctx.channel.typing():
             r = await ctx.client.get("https://meteo.pl/komentarze/")
             soup = BeautifulSoup(r.content, "html.parser")
             text = soup.find_all("div")[3].get_text()
-            tts = BytesIO()
             gtts = gTTS(text=text, lang="pl", lang_check=False, pre_processor_funcs=[])
+            tts = BytesIO()
             await asyncio.to_thread(gtts.write_to_fp, tts)
             tts.seek(0)
 
@@ -98,7 +98,7 @@ class Other(commands.Cog):
             await ctx.error("Przekroczono maksymalną długość linku")
             return
 
-        with ctx.channel.typing():
+        async with ctx.channel.typing():
             r = await ctx.client.get(f"https://api.{'a' * 56}.com/a", params={"url": url})
             text = r.text
 
