@@ -1,3 +1,5 @@
+from typing import Union
+
 import discord
 
 from .markdown import bold
@@ -5,7 +7,7 @@ from .text_tools import escape
 
 
 class Confirm(discord.ui.View):
-    def __init__(self, user: discord.abc.User):
+    def __init__(self, user: Union[discord.Member, discord.abc.User]):
         super().__init__(timeout=10)
         self.user = user
         self.result = None

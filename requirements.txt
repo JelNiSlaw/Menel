@@ -10,3 +10,5 @@ git+https://github.com/dateutil/dateutil
 git+https://github.com/kvesteri/validators
 git+https://github.com/ytdl-org/youtube-dl
 git+https://github.com/avian2/unidecode
+beautifulsoup4
+git+https://github.com/pndurette/gTTS

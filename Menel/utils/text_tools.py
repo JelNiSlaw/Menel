@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import discord
 from discord.ext import commands
@@ -69,9 +69,9 @@ def human_size(num: int, suffix: str = "B") -> str:
     for unit in "", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi", "Yi":
         if abs(num) < 1024:
             break
-        num /= 1024
+        num /= 1024  # type: ignore
 
-    return f"{num:,.1f} {unit}{suffix}"
+    return f"{num:,.1f} {unit}{suffix}"  # type: ignore
 
 
 def escape_str(text: str) -> str:
@@ -86,7 +86,9 @@ def ctx_location(ctx: commands.Context) -> str:
     return location(ctx.author, ctx.channel, ctx.guild)
 
 
-def location(author: discord.abc.User, channel: discord.abc.Messageable, guild: Optional[discord.Guild]) -> str:
+def location(
+    author: Union[discord.Member, discord.abc.User], channel: discord.abc.Messageable, guild: Optional[discord.Guild]
+) -> str:
     text = f"@{author} in #{channel}"
     if guild is not None:
         text += f" in {guild}"

@@ -17,7 +17,7 @@ class Tasks(commands.Cog):
         self.status_loop.start()
         self.message_count_loop.start()
 
-    @tasks.loop(seconds=20)
+    @tasks.loop(minutes=2)
     async def status_loop(self):
         users = sum(g.member_count for g in self.bot.guilds)
         guilds = len(self.bot.guilds)

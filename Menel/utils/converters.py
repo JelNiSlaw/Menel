@@ -9,22 +9,22 @@ from ..utils.errors import BadLanguage, BadNumber
 
 
 @dataclass
-class ClampedNumber(commands.Converter):
+class ClampedNumber(commands.Converter[int]):
     min_value: int
     max_value: int
 
     async def convert(self, ctx: Context, argument: str) -> int:
         try:
-            argument = int(argument)
+            value = int(argument)
         except ValueError:
             raise commands.BadArgument()
 
-        if argument < self.min_value:
+        if value < self.min_value:
             raise BadNumber("Liczba", "mniejsza", self.min_value)
-        if argument > self.max_value:
+        if value > self.max_value:
             raise BadNumber("Liczba", "większa", self.max_value)
 
-        return argument
+        return value
 
     def __call__(self):
         pass
@@ -33,18 +33,18 @@ class ClampedNumber(commands.Converter):
         return hash((self.min_value, self.max_value))
 
 
-class URL(commands.Converter, str):
+class URL(commands.Converter[str]):
     async def convert(self, ctx: Context, argument: str) -> str:
         if argument.startswith("<") and argument.endswith(">"):
             argument = argument[1:-1]
 
-        if not validators.url(argument):
+        if not validators.url(argument):  # type: ignore
             raise commands.BadArgument("nieprawidłowy adres URL")
-        else:
-            return argument
+
+        return argument
 
 
-class LanguageConverter(commands.Converter, str):
+class LanguageConverter(commands.Converter[str]):
     async def convert(self, ctx: Context, argument: str) -> str:
         argument = argument.lower()
         if argument != "auto" and argument not in LANGUAGES:

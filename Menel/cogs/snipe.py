@@ -37,7 +37,7 @@ class Snipe(commands.Cog):
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error, SnipeNotFound):
-            await ctx.error("Nie wykryłem żadnej wiadomości")
+            await ctx.error("Nie ma")
 
     @staticmethod
     def create_snipe_embed(ctx: Context, snipes: _SNIPES_TYPE) -> discord.Embed:

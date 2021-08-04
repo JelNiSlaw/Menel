@@ -1,16 +1,18 @@
-import io
+import asyncio
 import random
+from io import BytesIO
 from os import environ
 from typing import Optional
 
 import discord
+from bs4 import BeautifulSoup
 from discord.ext import commands
+from gtts import gTTS
 
 from ..bot import Menel
 from ..utils import markdown
 from ..utils.context import Context
 from ..utils.converters import URL
-from ..utils.misc import chunk
 from ..utils.text_tools import escape
 
 
@@ -74,6 +76,21 @@ class Other(commands.Cog):
         else:
             await ctx.error(f"{r.status_code}: {message}")
 
+    @commands.command("komentarz-synoptyka", aliases=["przeziębienie"])
+    @commands.cooldown(1, 30, commands.BucketType.channel)
+    @commands.cooldown(2, 20, commands.BucketType.user)
+    async def komentarz_synoptyka(self, ctx: Context):
+        with ctx.channel.typing():
+            r = await ctx.client.get("https://meteo.pl/komentarze/")
+            soup = BeautifulSoup(r.content, "html.parser")
+            text = soup.find_all("div")[3].get_text()
+            tts = BytesIO()
+            gtts = gTTS(text=text, lang="pl", lang_check=False, pre_processor_funcs=[])
+            await asyncio.to_thread(gtts.write_to_fp, tts)
+            tts.seek(0)
+
+        await ctx.send(file=discord.File(tts, "komentarz_synoptyka.mp3"))
+
     @commands.command("lengthen-url", aliases=["lengthen"])
     async def lengthen_url(self, ctx: Context, *, url: URL):
         """Wydłuża zbyt krótki link"""
@@ -90,19 +107,6 @@ class Other(commands.Cog):
                 return
 
         await ctx.send(text)
-
-    @commands.command(aliases=["str-rot", "rot-str", "rot"])
-    async def rotate(self, ctx: Context, n: Optional[int] = 1, *, text: str):
-        """Obraca bity w podanym tekście"""
-        bytes_ = "".join(format(char, "0>8b") for char in bytearray(text, "utf-8"))
-        # n %= int(math.copysign(len(bytes_), n))
-        bytes_ = bytes_[n:] + bytes_[:n]
-        text = "".join(chr(int(c, 2)) for c in chunk(bytes_, 8))
-
-        if len(text) < 1024:
-            await ctx.send(escape(text))
-        else:
-            await ctx.send(file=discord.File(io.BytesIO(text.encode()), "text.json"))
 
     @commands.command(aliases=["leave"])
     @commands.guild_only()
