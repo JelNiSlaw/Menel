@@ -22,7 +22,7 @@ class BotManagement(commands.Cog, name="Bot Management", command_attrs={"hidden"
         self.bot.reload_extensions()
         await ctx.react_or_send("\N{OK HAND SIGN}")
 
-    @commands.command(aliases=["stop", "s"])
+    @commands.command(aliases=["stop"])
     async def shutdown(self, ctx: Context):
         """Zamyka połączenie z Discordem i wyłącza bota"""
         await ctx.ok_hand()

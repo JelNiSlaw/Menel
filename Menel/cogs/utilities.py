@@ -12,6 +12,7 @@ from urllib import parse
 import aiohttp
 import dateutil.parser
 import discord
+import httpx
 import pyppeteer
 import pyppeteer.errors
 import unidecode
@@ -96,7 +97,14 @@ class YouTubeDownloader:
 class Utilities(commands.Cog):
     @commands.command(aliases=["trans", "tr"])
     @commands.cooldown(2, 5, commands.BucketType.user)
-    async def translate(self, ctx: Context, lang1: LanguageConverter, lang2: Optional[LanguageConverter], *, text: str):
+    async def translate(
+        self,
+        ctx: Context,
+        lang1: LanguageConverter = "en",
+        lang2: Optional[LanguageConverter] = None,
+        *,
+        text: str = None,
+    ):
         """
         Tłumaczy teskt Tłumaczem Google
         `lang1`: język docelowy, lub źródłowy jeśli podany jest argument `lang2`
@@ -109,6 +117,12 @@ class Utilities(commands.Cog):
         else:
             src = AUTO
             dest = lang1
+
+        if text is None and (ref := ctx.message.reference):
+            msg = ref.resolved or await ctx.bot.fetch_message(ref.channel_id, ref.message_id)
+            text = msg.content
+            if text is None:
+                raise SendError("Podaj tekst do przetłumaczenia lub odpowiedz na wiadomość")
 
         async with ctx.typing():
             r = await ctx.bot.client.get(
@@ -146,11 +160,10 @@ class Utilities(commands.Cog):
             r = await ctx.client.head(
                 "https://www.urbandictionary.com/define.php", params={"term": query}, allow_redirects=False
             )
-            if r.status_code == 200:
-                query = parse.quote(query)
-            elif r.status_code == 302:
-                query = r.headers["Location"].split("term=", 1)[1]
-            else:
+            if r.status_code == 302:
+                url = httpx.URL(r.headers["Location"])
+                query = url.params["term"]
+            elif r.status_code != 200:
                 await ctx.error("Nie znalazłem tej frazy w Urban Dictionary.")
                 return
 

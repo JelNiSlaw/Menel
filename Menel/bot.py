@@ -31,7 +31,7 @@ class Menel(commands.AutoShardedBot):
             max_messages=5 * 1024,
             intents=discord.Intents(messages=True, guilds=True, members=True, reactions=True),
             member_cache_flags=discord.MemberCacheFlags(joined=True, voice=False),
-            chunk_guilds_at_startup=True,
+            chunk_guilds_at_startup=False,
             status=discord.Status.online,
             allowed_mentions=discord.AllowedMentions.none(),
             heartbeat_timeout=120,

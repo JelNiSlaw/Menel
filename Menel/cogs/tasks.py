@@ -14,7 +14,6 @@ class Tasks(commands.Cog):
         self._message_count = 0
         self._db_message_count = 0
 
-        self.status_loop.start()
         self.message_count_loop.start()
 
     @tasks.loop(minutes=2)
@@ -41,20 +40,17 @@ class Tasks(commands.Cog):
             )
         )
 
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=1)
     async def message_count_loop(self):
         if self._message_count > 0:
             self._db_message_count = await self.bot.db.increase_message_count(self._message_count)
             self._message_count = 0
 
-    @status_loop.before_loop
-    async def before_status_loop(self):
-        await self.bot.wait_until_ready()
-
     @message_count_loop.before_loop
     async def before_message_count_loop(self):
         await self.bot.wait_until_ready()
         self._db_message_count = await self.bot.db.get_message_count()
+        self.status_loop.start()
 
     @message_count_loop.after_loop
     async def after_message_count_loop(self):
