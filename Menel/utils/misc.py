@@ -34,7 +34,7 @@ async def get_image_url_from_message_or_reply(ctx: Context) -> Optional[str]:
         return url
 
     if ref := ctx.message.reference:
-        msg = ref.cached_message or await ctx.bot.fetch_message(ref.channel_id, ref.message_id)
+        msg = ref.resolved or await ctx.bot.fetch_message(ref.channel_id, ref.message_id)
         return get_image_url_from_message(msg)
 
 

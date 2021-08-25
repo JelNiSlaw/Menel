@@ -1,3 +1,4 @@
+from collections import defaultdict
 from os import environ
 from typing import Any, Hashable, Optional
 
@@ -5,66 +6,53 @@ import discord
 import motor
 import motor.motor_asyncio
 import pymongo
+import pymongo.collection
 
 
-class DocumentCache:
-    def __init__(self, collection: pymongo.collection.Collection, default: Any = None):
+class CollectionCache:
+    _update_kwargs = {"projection": {"_id": False}, "upsert": True, "return_document": pymongo.ReturnDocument.AFTER}
+
+    def __init__(self, collection: Any) -> None:
         self.collection = collection
-        self.default = default
-        self.cache = {}
+        self.cache: defaultdict[Hashable, Optional[dict]] = defaultdict(dict)
 
-    async def get(self, document_id: Hashable, key: Optional[str]) -> Optional[Any]:
-        if document_id is None or key is None:
-            return self.default[key]
-
-        cache = self.cache.get(document_id)
-        if cache is None:
+    async def get(self, document_id: Hashable, key: str) -> Optional[Any]:
+        if document_id not in self.cache:
+            print(document_id, key)
             document = await self.collection.find_one(document_id)
-            if document is None:
-                self.cache[document_id] = {}
+            if document is not None:
+                id = document.pop("_id")
+                self.cache[id] = document
+                return document.get(key)
             else:
-                del document["_id"]
-                self.cache[document_id] = document
-                if key in document:
-                    return document[key]
+                self.cache[document_id] = None
+                return None
 
-        elif key in cache:
-            return cache[key]
-        return self.default[key]
+        cache = self.cache[document_id]
+        if cache is not None:
+            return cache.get(key)
+        else:
+            return None
 
     async def set(self, document_id: Hashable, key: str, value: Any) -> None:
-        await self.collection.update_one({"_id": document_id}, {"$set": {key: value}}, upsert=True)
-        self.prepare_document(document_id)
-        self.cache[document_id][key] = value
-
-    async def add_to_set(self, document_id: Hashable, key: str, *values: Any):
-        await self.collection.update_one({"_id": document_id}, {"$addToSet": {key: {"$each": values}}}, upsert=True)
-        self.prepare_list(document_id, key)
-        self.cache[document_id][key].extend(values)
-        self.cache[document_id][key] = list(set(self.cache[document_id][key]))
-
-    async def pull(self, document_id: Hashable, key: str, *values: Any):
-        await self.collection.update_one({"_id": document_id}, {"$pull": {key: {"$in": values}}}, upsert=True)
-        self.prepare_list(document_id, key)
-        cache = set(self.cache[document_id][key])
-        cache.difference_update(values)
-        self.cache[document_id][key] = list(cache)
+        self.cache[document_id] = await self.collection.find_one_and_update(
+            {"_id": document_id}, {"$set": {key: value}}, **self._update_kwargs
+        )
 
     async def unset(self, document_id: Hashable, key: str) -> None:
-        await self.collection.update_one({"_id": document_id}, {"$unset": {key: None}}, upsert=True)
-        try:
-            del self.cache[document_id][key]
-        except KeyError:
-            pass
+        self.cache[document_id] = await self.collection.find_one_and_update(
+            {"_id": document_id}, {"$unset": {key: None}}, **self._update_kwargs
+        )
 
-    def prepare_document(self, document_id: Hashable) -> None:
-        if document_id not in self.cache:
-            self.cache[document_id] = {}
+    async def add_to_set(self, document_id: Hashable, key: str, *values: Any) -> None:
+        self.cache[document_id] = await self.collection.find_one_and_update(
+            {"_id": document_id}, {"$addToSet": {key: {"$each": values}}}, **self._update_kwargs
+        )
 
-    def prepare_list(self, document_id: Hashable, key: str) -> None:
-        self.prepare_document(document_id)
-        if key not in self.cache[document_id]:
-            self.cache[document_id][key] = []
+    async def pull(self, document_id: Hashable, key: str, *values: Any) -> None:
+        self.cache[document_id] = await self.collection.find_one_and_update(
+            {"_id": document_id}, {"$pull": {key: {"$in": values}}}, **self._update_kwargs
+        )
 
 
 class Database:
@@ -87,13 +75,20 @@ class Database:
         self.name_history = self._db["name_history"]
         self.bot_config = self._db["bot_config"]
         self.guild_config = self._db["guild_config"]
-        self.bot_config_cache = DocumentCache(self.bot_config, {"users": []})
-        self.guild_config_cache = DocumentCache(self.guild_config, {"prefixes": ["?"]})
+
+        self.bot_config_cache = CollectionCache(self.bot_config)
+        self.guild_config_cache = CollectionCache(self.guild_config)
 
     # prefixes
 
     async def get_prefixes(self, guild: Optional[discord.Guild]) -> list[str]:
-        return await self.guild_config_cache.get(guild.id if guild else None, "prefixes")
+        default = [".", "?"]
+        if guild is None:
+            return default
+        prefixes = await self.guild_config_cache.get(guild.id, "prefixes")
+        if prefixes is not None:
+            return prefixes
+        return default
 
     async def set_prefixes(self, guild_id: int, prefixes: list[str]) -> None:
         await self.guild_config_cache.set(guild_id, "prefixes", prefixes)
@@ -103,8 +98,11 @@ class Database:
 
     # blacklist
 
-    async def get_blacklist(self) -> set[int]:
-        return set(await self.bot_config_cache.get("blacklist", "users"))
+    async def get_blacklist(self) -> list[int]:
+        users = await self.bot_config_cache.get("blacklist", "users")
+        if users is not None:
+            return users
+        return []
 
     async def add_blacklist(self, *user_ids: int) -> None:
         await self.bot_config_cache.add_to_set("blacklist", "users", *user_ids)
@@ -115,7 +113,7 @@ class Database:
     # message count
 
     async def get_message_count(self) -> int:
-        document = await self.bot_config.find_one("stats")
+        document = await self.bot_config.find_one("stats", projection={"message_count": True, "_id": False})
         return document["message_count"]
 
     async def increase_message_count(self, amount: int) -> int:
