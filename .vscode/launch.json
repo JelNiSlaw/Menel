@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "name": "Run Bot",
+      "type": "python",
+      "request": "launch",
+      "module": "Menel"
+    }
+  ]
+}
