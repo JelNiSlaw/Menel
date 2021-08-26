@@ -83,13 +83,21 @@ class Other(commands.Cog):
         async with ctx.channel.typing():
             r = await ctx.client.get("https://meteo.pl/komentarze/")
             soup = BeautifulSoup(r.content, "html.parser")
-            text = soup.find_all("div")[3].get_text()
+            text: str = soup.find_all("div")[3].get_text().strip()
             gtts = gTTS(text=text, lang="pl", lang_check=False, pre_processor_funcs=[])
             tts = BytesIO()
             await asyncio.to_thread(gtts.write_to_fp, tts)
             tts.seek(0)
 
-        await ctx.send(file=discord.File(tts, "komentarz_synoptyka.mp3"))
+        files = [discord.File(tts, "komentarz_synoptyka.mp3")]
+        escaped = escape(text)
+        if len(escaped) <= 2000:
+            content = escaped
+        else:
+            content = None
+            files.insert(0, discord.File(BytesIO(text.encode()), "komentarz_synoptyka.txt"))
+
+        await ctx.send(content, files=files)
 
     @commands.command("lengthen-url", aliases=["lengthen"])
     async def lengthen_url(self, ctx: Context, *, url: URL):
