@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 class Context(commands.Context):
     message: discord.Message
     guild: Optional[discord.Guild]
-    author: Union[discord.Member, discord.abc.User]
+    author: Union[discord.Member, discord.User]
     bot: Menel
 
     def __init__(self, **kwargs):

@@ -35,17 +35,38 @@ class DiscordUtilities(commands.Cog, name="Discord Utilities"):
         self.bot = bot
 
     @commands.command(aliases=["av"])
-    async def avatar(self, ctx: Context, *, user: discord.User = None):
+    async def avatar(self, ctx: Context, *, user: Union[discord.Member, discord.User] = None):
         """Wysyła avatar użytkownika"""
         if user is None:
             user = ctx.author
 
-        embed = embeds.with_author(user)
-        embed.description = " ".join(
-            f"[{fmt}]({user.avatar.replace(size=4096, format=fmt)})" for fmt in ("png", "webp", "jpeg")
-        )
-        embed.set_image(url=str(user.avatar.with_size(4096)))
-        await ctx.send(embed=embed)
+        avatars: list[discord.Asset] = []
+        message_embeds: list[discord.Embed] = []
+
+        if (avatar := user.avatar) is not None:
+            avatars.append(avatar)
+        else:
+            message_embeds.append(
+                embeds.with_author(user, description=f"Użytkownik posiada [domyślny avatar]({user.default_avatar})")
+            )
+        if isinstance(user, discord.Member) and (guild_avatar := user.guild_avatar) is not None:
+            avatars.append(guild_avatar)
+
+        for avatar in avatars:
+            formats = {"png": "PNG", "webp": "WebP", "jpeg": "JPEG"}
+            if avatar.is_animated():
+                formats.update({"gif": "GIF"})
+
+            embed = embeds.with_author(
+                user,
+                description=" ".join(
+                    f"[{name}]({user.avatar.replace(size=4096, format=format)})" for format, name in formats.items()
+                ),
+            )
+            embed.set_image(url=str(user.avatar.with_size(4096)))
+            message_embeds.append(embed)
+
+        await ctx.send(embeds=message_embeds)
 
     @commands.command("name-history", aliases=["namehistory", "names", "nick-history", "nickhistory", "nicks"])
     async def name_history(self, ctx: Context, user: discord.User = None, *, page: int = 1):
