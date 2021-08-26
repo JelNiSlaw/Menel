@@ -40,7 +40,7 @@ async def get_image_url_from_message_or_reply(ctx: Context) -> Optional[str]:
 
 class Timer:
     def __init__(self):
-        self.time: Optional[float] = None
+        self.time: float = 0
 
     def __enter__(self):
         self._start = time.perf_counter()

@@ -4,7 +4,7 @@ import json
 import math
 import zipfile
 from collections import Counter
-from typing import Optional, Union
+from typing import Union
 
 import discord
 from discord.ext import commands
@@ -57,13 +57,15 @@ class DiscordUtilities(commands.Cog, name="Discord Utilities"):
             if avatar.is_animated():
                 formats.update({"gif": "GIF"})
 
+            avatar = avatar.with_size(4096)
+
             embed = embeds.with_author(
                 user,
                 description=" ".join(
-                    f"[{name}]({user.avatar.replace(size=4096, format=format)})" for format, name in formats.items()
+                    f"[{name}]({avatar.with_format(format)})" for format, name in formats.items()  # type: ignore
                 ),
             )
-            embed.set_image(url=str(user.avatar.with_size(4096)))
+            embed.set_image(url=str(avatar))
             message_embeds.append(embed)
 
         await ctx.send(embeds=message_embeds)
@@ -71,7 +73,7 @@ class DiscordUtilities(commands.Cog, name="Discord Utilities"):
     @commands.command("name-history", aliases=["namehistory", "names", "nick-history", "nickhistory", "nicks"])
     async def name_history(self, ctx: Context, user: discord.User = None, *, page: int = 1):
         """Pokazuje historię nazw wybranego użytkownika"""
-        user = user or ctx.author
+        user = user or ctx.author  # type: ignore
         if page <= 0:
             await ctx.error("Numer strony musi być dodatni")
             return
@@ -103,7 +105,8 @@ class DiscordUtilities(commands.Cog, name="Discord Utilities"):
             return
 
         embed = embeds.with_author(ban.user)
-        embed.add_field(name="Powód bana", value=escape(ban.reason), inline=False)
+        reason = ban.reason
+        embed.add_field(name="Powód bana", value=escape(reason) if reason else "Nie podano powodu", inline=False)
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["oauth2", "oauth"])
@@ -112,8 +115,7 @@ class DiscordUtilities(commands.Cog, name="Discord Utilities"):
         Tworzy link autoryzacji bota
         `bots`: wzmianki lub ID botów
         """
-        # noinspection PyProtectedMember
-        bots = discord.utils._unique(bots)
+        bots = discord.utils._unique(bots)  # type: ignore
 
         if not bots or len(bots) == 1 and bots[0] == ctx.bot.user:
             await ctx.embed(
@@ -188,57 +190,57 @@ class DiscordUtilities(commands.Cog, name="Discord Utilities"):
         try:
             data = await ctx.bot.http.get_message(message.channel.id, message.id)
         except discord.NotFound:
-            raise commands.MessageNotFound(message.id)
+            raise commands.MessageNotFound(str(message.id))
 
-        await send_json(ctx, data, f"message_{message.id}")
+        await send_json(ctx, data, f"message_{message.id}")  # type: ignore
 
     @raw.command("member")
     async def raw_member(self, ctx: Context, *, member: discord.Member):
         """Wysyła informacje o wybranym członku"""
         data = await ctx.bot.http.get_member(ctx.guild.id, member.id)
-        await send_json(ctx, data, f"member_{member.id}")
+        await send_json(ctx, data, f"member_{member.id}")  # type: ignore
 
     @raw.command("user")
     async def raw_user(self, ctx: Context, *, user: discord.User):
         """Wysyła informacje o wybranym użytkowniku"""
         data = await ctx.bot.http.get_user(user.id)
-        await send_json(ctx, data, f"user_{user.id}")
+        await send_json(ctx, data, f"user_{user.id}")  # type: ignore
 
     @raw.command("channel")
     async def raw_channel(self, ctx: Context, *, channel: discord.abc.GuildChannel):
         """Wysyła informacje o wybranym kanale"""
         data = await ctx.bot.http.get_channel(channel.id)
-        await send_json(ctx, data, f"channel_{channel.id}")
+        await send_json(ctx, data, f"channel_{channel.id}")  # type: ignore
 
     @raw.command("guild")
     async def raw_guild(self, ctx: Context):
         """Wysyła informacje o serwerze"""
         data = await ctx.bot.http.get_guild(ctx.guild.id)
-        await send_json(ctx, data, f"guild_{ctx.guild.id}")
+        await send_json(ctx, data, f"guild_{ctx.guild.id}")  # type: ignore
 
     @raw.command("roles")
     async def raw_roles(self, ctx: Context):
         """Wysyła informacje o wszystkich rolach"""
         data = await ctx.bot.http.get_roles(ctx.guild.id)
-        await send_json(ctx, data, f"roles_{ctx.guild.id}")
+        await send_json(ctx, data, f"roles_{ctx.guild.id}")  # type: ignore
 
     @raw.command("emoji")
     async def raw_emoji(self, ctx: Context, *, emoji: discord.Emoji):
         """Wysyła informacje o wybranym emoji"""
         data = await ctx.bot.http.get_custom_emoji(emoji.guild_id, emoji.id)
-        await send_json(ctx, data, f"emoji_{emoji.id}")
+        await send_json(ctx, data, f"emoji_{emoji.id}")  # type: ignore
 
     @raw.command("emojis")
     async def raw_emojis(self, ctx: Context):
         """Wysyła informacje o wszystkich emoji"""
         data = await ctx.bot.http.get_all_custom_emojis(ctx.guild.id)
-        await send_json(ctx, data, f"emojis_{ctx.guild.id}")
+        await send_json(ctx, data, f"emojis_{ctx.guild.id}")  # type: ignore
 
     @raw.command("invite")
     async def raw_invite(self, ctx: Context, *, invite: discord.Invite):
         """Wysyła informacje o wybranym zaproszeniu"""
         data = await ctx.bot.http.get_invite(invite.code)
-        await send_json(ctx, data, f"invite_{invite.id}")
+        await send_json(ctx, data, f"invite_{invite.id}")  # type: ignore
 
     @commands.Cog.listener()
     async def on_user_update(self, before: discord.User, after: discord.User):
